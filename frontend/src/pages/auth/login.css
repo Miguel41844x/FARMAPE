@@ -1,0 +1,91 @@
+/* CONTENEDOR GENERAL */
+.login-layout {
+  display: flex;
+  height: 100vh;
+}
+
+/* IZQUIERDA - IMAGEN */
+.login-image {
+  flex: 1;
+  background: url("/login-bg.jpg") no-repeat center center/cover;
+  position: relative;
+}
+
+/* overlay para que se vea profesional */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(27, 127, 121, 0.8); /* tu color con transparencia */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.overlay h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.overlay p {
+  font-size: 16px;
+}
+
+/* DERECHA - LOGIN */
+.login-form-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--primary-light);
+}
+
+/* CARD */
+.login-card {
+  background: white;
+  padding: 40px;
+  border-radius: 12px;
+  width: 320px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.login-card h2 {
+  text-align: center;
+  color: var(--primary);
+}
+
+.login-card p {
+  text-align: center;
+  color: var(--text-soft);
+  margin-bottom: 20px;
+}
+
+.login-card input {
+  margin-bottom: 15px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  outline: none;
+}
+
+.login-card input:focus {
+  border-color: var(--primary);
+}
+
+.login-card button {
+  padding: 12px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.login-card button:hover {
+  background: var(--primary-dark);
+}
