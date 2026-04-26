@@ -8,8 +8,13 @@ const Hero = () => {
     return(
         <section className="hero">
             <div className="hero-content">
-                <h1>Sistema Integral de Gestión Farmacéutica</h1>
-                <p>Centraliza ventas, inventario, proveedores y recetas magistrales en una sola plataforma eficiente.</p>
+                <div className="hero-content-tittle">
+                    <h4>Sistema de gestión farmaceútica</h4>
+                </div>
+                <h1>Gestión de procesos con <span>seguridad</span> y <span>eficiencia</span></h1>
+                <p>En Farmacias Perú trabajamos para simplificar la gestión diaria, integrando control, eficiencia y confianza 
+                    en cada proceso. Nuestra plataforma reúne ventas, inventario y clientes en un solo lugar,
+                    permitiendo una operación más ágil, ordenada y segura.</p>
                 <div className="hero-buttons">
                     <button className="primary" onClick={() => navigate("/login")}>
                         Acceder al sistema

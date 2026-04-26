@@ -1,7 +1,6 @@
 /* HERO */
 .hero{
   padding:80px 60px;
-  background:var(--primary-light);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -15,10 +14,25 @@
   margin:15px 5px;
 }
 
+.hero-content-tittle{
+  display: inline-block;
+  padding: 6px 12px;
+  background: var(--primary-light);
+  border-radius: 1pc;
+}
+
+.hero h4{
+  color:var(--primary-dark);
+}
+
 .hero h1{
   font-size:36px;
   margin-bottom:20px;
   color:var(--text-main);
+}
+
+.hero-content span{
+  color: var(--primary-dark);
 }
 
 .hero p{
@@ -47,7 +61,7 @@ background:var(--primary-dark);
 
 /* CONTENEDOR DEL CARRUSEL */
 .hero-carousel{
-  flex: 1;                  /* ocupa 50% */
+  flex: 1;   
   display: flex;
   justify-content: center;
 }   
