@@ -8,7 +8,7 @@ const images = [
 ];
 
 
-function Carousel() {
+const Carousel = () => {
   const [index, setIndex] = useState(0);
 
   useEffect(() => {

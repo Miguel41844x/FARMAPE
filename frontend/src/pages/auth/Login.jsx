@@ -3,7 +3,7 @@ import { IoIosLogIn } from "react-icons/io";
 import { FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./login.css";
 
-function Login() {
+const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
