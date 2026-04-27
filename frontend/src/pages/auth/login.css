@@ -1,91 +1,175 @@
-/* CONTENEDOR GENERAL */
+* {
+  box-sizing: border-box;
+}
+
 .login-layout {
   display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100vh;
+  background: 
+    linear-gradient(135deg, rgba(194, 255, 191, 0.7), rgba(193, 191, 255, 0.7)),
+    url("/fondo_login.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-/* IZQUIERDA - IMAGEN */
-.login-image {
-  flex: 1;
-  background: url("/login-bg.jpg") no-repeat center center/cover;
-  position: relative;
-}
-
-/* overlay para que se vea profesional */
-.overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(27, 127, 121, 0.8);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  text-align: center;
-  padding: 20px;
-}
-
-.overlay h1 {
-  font-size: 32px;
-  margin-bottom: 10px;
-}
-
-.overlay p {
-  font-size: 16px;
-}
-
-/* DERECHA - LOGIN */
-.login-form-container {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: var(--primary-light);
-}
-
-/* CARD */
 .login-card {
-  background: white;
-  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  background-color: #fff;
+  padding: 30px;
   border-radius: 12px;
-  width: 320px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
   display: flex;
   flex-direction: column;
+  min-height: 420px;
 }
 
 .login-card h2 {
-  text-align: center;
+  margin: 8px 0 6px;
+}
+
+.login-card span {
   color: var(--primary);
 }
 
-.login-card p {
-  text-align: center;
-  color: var(--text-soft);
-  margin-bottom: 20px;
+.login-subtext {
+  margin: 0 0 25px;
+  color: #989898;
+  font-size: 13px;
 }
 
-.login-card input {
-  margin-bottom: 15px;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  outline: none;
+.login-help {
+  margin: 5px 0 10px;
+  font-size: 12px;
+  color: #888;
 }
 
-.login-card input:focus {
-  border-color: var(--primary);
+.login-help span {
+  color: var(--primary-dark);
 }
 
-.login-card button {
-  padding: 12px;
-  background: var(--primary);
-  color: white;
-  border: none;
-  border-radius: 6px;
+.login-help span:hover{
   cursor: pointer;
 }
 
-.login-card button:hover {
-  background: var(--primary-dark);
+/* FORM */
+
+.login-card label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: border 0.2s;
+}
+
+.login-card input:focus {
+  outline: none;
+  border-color: var(--primary-dark);
+}
+
+/* PASSWORD */
+
+.password-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-container input {
+  width: 100%;
+  padding-right: 35px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 10px;
+  top: 38%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #777;
+  font-size: 16px;
+  transition: color 0.2s, transform 0.1s;
+}
+
+.password-toggle:hover {
+  color: var(--primary);
+}
+
+.password-toggle:active {
+  transform: translateY(-50%) scale(0.9);
+}
+
+/* BUTTON */
+
+.login-button {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.login-button button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px;
+  width: 60%;
+  height: 2.2rem;
+  background: var(--primary);
+  color: white;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.login-button button svg {
+  font-size: 20px;
+}
+
+.login-button button:hover {
+  cursor: pointer;
+  background-color: var(--primary-dark);
+}
+
+/* FOOTER */
+
+.login-footer {
+  margin-top: auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+
+  height: 60px;
+  text-align: center;
+}
+
+.login-secure {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #999;
+  padding-top: 15px;
+  margin: 0;
+}
+
+.login-copy {
+  margin: 0;
+  font-size: 11px;
+  color: #999;
 }
