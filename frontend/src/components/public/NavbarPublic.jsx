@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
-import { FaRegCircleUser } from "react-icons/fa6";
+import { IoIosHelpCircleOutline } from "react-icons/io";
+
 import "./navbarPublic.css"
 
 const NavbarPublic = () => {
@@ -17,6 +18,7 @@ const NavbarPublic = () => {
                 <Link to="/login" className="header-button-login">
                     Iniciar Sesión
                 </Link>
+                <IoIosHelpCircleOutline className="header-icon-help"/>
             </div>
         </header>
     );

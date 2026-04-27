@@ -9,18 +9,16 @@ const MisionVision = () => {
             <div className="mv-card">
                 <h2>Misión</h2>
                 <p>
-                    Brindar soluciones integrales para la gestión farmacéutica,
-                    optimizando procesos de ventas, inventario y control de recetas,
-                    garantizando eficiencia, seguridad y calidad en el servicio.
+                    Brindar medicamentos y productos de salud de calidad, ofreciendo una atención cercana, 
+                    confiable y accesible, orientada al bienestar y la satisfacción de nuestros clientes.
                 </p>
             </div>
 
             <div className="mv-card">
                 <h2>Visión</h2>
                 <p>
-                    Ser la plataforma líder en transformación digital del sector
-                    farmacéutico, impulsando la innovación y mejorando la gestión
-                    de farmacias a nivel nacional.
+                    Ser una farmacia reconocida en el Perú por la calidad de sus productos, la excelencia
+                     en el servicio y el compromiso con la salud de la comunidad.
                 </p>
             </div>
 

@@ -15,7 +15,7 @@
 .overlay {
   position: absolute;
   inset: 0;
-  background: rgba(27, 127, 121, 0.8); /* tu color con transparencia */
+  background: rgba(27, 127, 121, 0.8);
   display: flex;
   flex-direction: column;
   justify-content: center;

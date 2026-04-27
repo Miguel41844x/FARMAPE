@@ -76,3 +76,11 @@
   color: white;
   background: var(--primary);
 }
+
+.header-icon-help {
+  font-size: 26px;
+  color: var(--primary);
+  margin-left: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
