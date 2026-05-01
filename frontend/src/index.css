@@ -1,0 +1,18 @@
+:root {
+  --primary: #1B7F79;
+  --primary-dark: #14635E;
+  --primary-light: #E6F4F3;
+  --primary-mid: #244F53;
+  --accent: #34AFA3;
+  --text-main: #1F2D3D;
+  --text-soft: #5F6F7F;
+  --border: #d9e4ec;
+}
+
+
+body{
+  margin: 0;
+  padding: 0;
+  font-family:Arial, Helvetica, sans-serif;
+  background-color: #f5f7fa;
+}

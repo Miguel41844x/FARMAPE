@@ -1,0 +1,41 @@
+/* CONTENEDOR */
+.carousel {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  height: 300px;
+  overflow: hidden;
+}
+
+.carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* DOTS */
+.dots {
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* DOT */
+.dot {
+  width: 7px;
+  height: 7px;
+  background: rgba(245, 243, 243, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* ACTIVO */
+.dot.active {
+  background: #1B7F79;
+  transform: scale(1.2);
+}
