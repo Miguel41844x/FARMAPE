@@ -3,9 +3,9 @@ import Hero from "../../components/public/Hero";
 import Modules from "../../components/public/Modules";
 import Footer from "../../components/public/Footer";
 import MisionVision from "../../components/public/MisionVision";
-import "./homePublic";
+import "./homePublic.css";
 
-export function HomePublic (){
+const HomePublic = () => {
     return(
         <>
             <NavbarPublic/>
@@ -16,3 +16,5 @@ export function HomePublic (){
         </>
     );    
 }
+
+export default HomePublic;

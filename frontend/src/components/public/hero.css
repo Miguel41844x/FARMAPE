@@ -64,3 +64,11 @@ background:var(--primary-dark);
   display: flex;
   justify-content: center;
 }   
+
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column;
+    text-align: center;
+    padding: 30px 20px;
+  }
+}

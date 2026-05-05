@@ -1,6 +1,7 @@
 
 /* MODULES */
 .modules{
+    display: grid;
     padding:60px;
     background: white;
 }
@@ -39,4 +40,18 @@ color:var(--primary);
 .card p{
 font-size:14px;
 color:var(--text-soft);
+}
+
+/* tablet */
+@media (max-width: 992px) {
+  .modules {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* móvil */
+@media (max-width: 600px) {
+  .modules {
+    grid-template-columns: 1fr;
+  }
 }

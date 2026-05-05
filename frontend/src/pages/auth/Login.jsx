@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { IoIosLogIn } from "react-icons/io";
 import { FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useAuth } from "../../context/AuthContext";
 import "./login.css";
 
 const Login = () => {
@@ -8,9 +9,47 @@ const Login = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleSubmit = (e) => {
+    const { setUser } = useAuth();
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log(email, password);
+
+        try {
+            const response = await fetch("http://localhost:8080/api/auth/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    email: email,
+                    clave: password,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error("Email o contraseña incorrectos");
+            }
+
+            const data = await response.json();
+
+            localStorage.setItem("token", data.token);
+
+            const userData = {
+                email: data.email,
+                rol: data.rol,
+                nombres: data.nombres,
+                apellidos: data.apellidos,
+                token: data.token,
+            };
+
+            setUser(userData);
+
+            console.log("Login exitoso:", userData);
+
+        } catch (error) {
+            console.error(error.message);
+            alert(error.message);
+        }
     };
 
     return (

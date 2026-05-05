@@ -1,0 +1,47 @@
+/* CONTENEDOR LOGO */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+/* IMAGEN */
+.logo-img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+/* TEXTO */
+.logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+/* Farmacias */
+.logo-top {
+  font-size: 18px;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+/* Perú con líneas */
+.logo-bottom {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  font-size: 12px;
+  color: var(--text-soft);
+  gap: 6px;
+}
+
+.logo-bottom::before,
+.logo-bottom::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--primary);
+}
+
