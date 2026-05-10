@@ -1,15 +1,41 @@
 import { useState } from "react";
+//Iconos
 import { IoIosLogIn } from "react-icons/io";
 import { FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
+
+//Conexto de autentificación
 import { useAuth } from "../../context/AuthContext";
 import "./login.css";
 
+/**
+ * Componente Login
+ *
+ * Permite autenticar usuarios mediante:
+ * - Email
+ * - Contraseña
+ *
+ * Funcionalidades:
+ * - Mostrar/Ocultar contraseña
+ * - Consumo de API login
+ * - Guardado de token
+ * - Persistencia del usuario en contexto
+ */
+
 const Login = () => {
+
+    // Estados del formulario
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+
+    // Control visual de contraseña
     const [showPassword, setShowPassword] = useState(false);
 
+    // Contexto global de usuario
     const { setUser } = useAuth();
+
+    /**
+    * Maneja el envío del formulario
+    */
 
     const handleSubmit = async (e) => {
         e.preventDefault();
