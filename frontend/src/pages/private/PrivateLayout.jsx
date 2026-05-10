@@ -6,7 +6,7 @@ const PrivateLayout = () => {
     return(
         <div className="layout">
             <Sidebar/>
-            <div className="main- content">
+            <div className="main-content">
                 <Outlet/>
             </div>
         </div>
