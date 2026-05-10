@@ -6,7 +6,6 @@ import Login from "../pages/auth/Login";
 
 import HomePrivate from "../pages/private/HomePrivate";
 
-
 function AppRouter (){
     return(
         <Routes>
