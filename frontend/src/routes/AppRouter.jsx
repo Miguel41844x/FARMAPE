@@ -1,10 +1,22 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import PrivateLayout from "../pages/private/PrivateLayout";
 
+// Páginas públicas
 import HomePublic from "../pages/public/HomePublic";
 import Login from "../pages/auth/Login";
 
+// Páginas privadas
 import HomePrivate from "../pages/private/HomePrivate";
+
+/**
+ * AppRouter
+ *
+ * Maneja todas las rutas principales de la aplicación.
+ *
+ * Estructura:
+ * - Rutas públicas
+ * - Rutas privadas dentro de PrivateLayout
+ */
 
 function AppRouter (){
     return(
