@@ -1,8 +1,9 @@
-package com.farmape.backend.controller;
+package com.farmape.backend.roles.controller;
 
-import com.farmape.backend.model.Rol;
-import com.farmape.backend.service.RolService;
 import org.springframework.web.bind.annotation.*;
+
+import com.farmape.backend.roles.model.Rol;
+import com.farmape.backend.roles.service.RolService;
 
 import java.util.List;
 

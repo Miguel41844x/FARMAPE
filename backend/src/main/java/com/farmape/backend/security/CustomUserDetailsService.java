@@ -1,8 +1,9 @@
 package com.farmape.backend.security;
 
-import com.farmape.backend.model.CuentaUsuario;
-import com.farmape.backend.model.enums.EstadoCuentaUsuario;
-import com.farmape.backend.repository.CuentaUsuarioRepository;
+import com.farmape.backend.usuarios.enums.EstadoCuentaUsuario;
+import com.farmape.backend.usuarios.model.CuentaUsuario;
+import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
+
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;

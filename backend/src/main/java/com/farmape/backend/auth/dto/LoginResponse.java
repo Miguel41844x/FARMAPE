@@ -1,4 +1,4 @@
-package com.farmape.backend.dto.auth;
+package com.farmape.backend.auth.dto;
 
 public record LoginResponse(
         String token,

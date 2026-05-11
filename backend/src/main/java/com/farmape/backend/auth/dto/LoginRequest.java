@@ -1,4 +1,4 @@
-package com.farmape.backend.dto.auth;
+package com.farmape.backend.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

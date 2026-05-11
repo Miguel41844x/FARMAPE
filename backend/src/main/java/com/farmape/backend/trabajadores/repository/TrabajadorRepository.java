@@ -1,7 +1,8 @@
-package com.farmape.backend.repository;
+package com.farmape.backend.trabajadores.repository;
 
-import com.farmape.backend.model.Trabajador;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.farmape.backend.trabajadores.model.Trabajador;
 
 import java.util.Optional;
 

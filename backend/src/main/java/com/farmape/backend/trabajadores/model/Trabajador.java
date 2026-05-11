@@ -1,6 +1,8 @@
-package com.farmape.backend.model;
+package com.farmape.backend.trabajadores.model;
 
-import com.farmape.backend.model.enums.EstadoTrabajador;
+import com.farmape.backend.roles.model.Rol;
+import com.farmape.backend.usuarios.enums.EstadoTrabajador;
+
 import jakarta.persistence.*;
 import lombok.*;
 

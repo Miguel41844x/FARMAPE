@@ -1,7 +1,8 @@
-package com.farmape.backend.repository;
+package com.farmape.backend.usuarios.repository;
 
-import com.farmape.backend.model.CuentaUsuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.farmape.backend.usuarios.model.CuentaUsuario;
 
 import java.util.Optional;
 

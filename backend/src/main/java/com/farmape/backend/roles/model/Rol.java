@@ -1,4 +1,4 @@
-package com.farmape.backend.model;
+package com.farmape.backend.roles.model;
 
 import jakarta.persistence.*;
 import lombok.*;

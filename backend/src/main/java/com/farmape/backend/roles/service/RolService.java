@@ -1,8 +1,9 @@
-package com.farmape.backend.service;
+package com.farmape.backend.roles.service;
 
-import com.farmape.backend.model.Rol;
-import com.farmape.backend.repository.RolRepository;
 import org.springframework.stereotype.Service;
+
+import com.farmape.backend.roles.model.Rol;
+import com.farmape.backend.roles.repository.RolRepository;
 
 import java.util.List;
 

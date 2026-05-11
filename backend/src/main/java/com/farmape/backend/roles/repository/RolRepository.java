@@ -1,7 +1,8 @@
-package com.farmape.backend.repository;
+package com.farmape.backend.roles.repository;
 
-import com.farmape.backend.model.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import com.farmape.backend.roles.model.Rol;
 
 public interface RolRepository extends JpaRepository<Rol, Integer> {
 }

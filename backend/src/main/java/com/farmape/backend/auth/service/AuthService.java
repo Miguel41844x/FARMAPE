@@ -1,9 +1,8 @@
-package com.farmape.backend.service;
+package com.farmape.backend.auth.service;
 
-import com.farmape.backend.dto.auth.LoginRequest;
-import com.farmape.backend.dto.auth.LoginResponse;
-import com.farmape.backend.model.CuentaUsuario;
-import com.farmape.backend.repository.CuentaUsuarioRepository;
+import com.farmape.backend.usuarios.model.CuentaUsuario;
+import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
