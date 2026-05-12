@@ -3,10 +3,14 @@ package com.farmape.backend.auth.service;
 import com.farmape.backend.usuarios.model.CuentaUsuario;
 import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
 
+import com.farmape.backend.auth.dto.LoginRequest;
+import com.farmape.backend.auth.dto.LoginResponse;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -33,12 +37,12 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(
-                request.email(),
+                request.usuario(),
                 request.clave()
         )
 );
 
-        CuentaUsuario cuenta = cuentaUsuarioRepository.findByEmail(request.email())
+        CuentaUsuario cuenta = cuentaUsuarioRepository.findByUsuario(request.usuario())
             .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));
 
         cuenta.setUltimoAcceso(LocalDateTime.now());
@@ -52,17 +56,21 @@ public class AuthService {
                 .issuer("farmape-backend")
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expirationMinutes * 60))
-                .subject(cuenta.getEmail())
+                .subject(cuenta.getUsuario())
                 .claim("rol", rol)
                 .claim("idCuenta", cuenta.getIdCuenta())
                 .claim("idTrabajador", cuenta.getTrabajador().getIdTrabajador())
                 .build();
 
-        String token = jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
+
+        String token = jwtEncoder.encode(
+                JwtEncoderParameters.from(header, claims)
+        ).getTokenValue();
 
         return new LoginResponse(
                 token,
-                cuenta.getEmail(),
+                cuenta.getUsuario(),
                 rol,
                 cuenta.getTrabajador().getNombres(),
                 cuenta.getTrabajador().getApellidos()

@@ -1,6 +1,8 @@
 package com.farmape.backend.auth.controller;
 
 import jakarta.validation.Valid;
+import com.farmape.backend.auth.dto.LoginRequest;
+import com.farmape.backend.auth.dto.LoginResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

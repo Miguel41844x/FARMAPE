@@ -26,10 +26,7 @@ public class CuentaUsuario {
     @JoinColumn(name = "id_trabajador", nullable = false, unique = true)
     private Trabajador trabajador;
 
-    @Column(name = "email", nullable = false, unique = true, length = 50)
-    private String email;
-
-    @Column(name = "usuario", nullable = false, unique = true, length = 50)
+    @Column(name = "usuario", nullable = false, unique = true, length = 100)
     private String usuario;
 
     @Column(name = "clave", nullable = false, length = 255)

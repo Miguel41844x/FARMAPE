@@ -18,17 +18,17 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String usuario) throws UsernameNotFoundException {
 
-        CuentaUsuario cuenta = cuentaUsuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Email no encontrado"));
+        CuentaUsuario cuenta = cuentaUsuarioRepository.findByUsuario(usuario)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
         if (cuenta.getEstado() != EstadoCuentaUsuario.Activo) {
             throw new DisabledException("La cuenta no está activa");
         }
 
         return User.builder()
-                .username(cuenta.getEmail())
+                .username(cuenta.getUsuario())
                 .password(cuenta.getClave())
                 .roles(cuenta.getTrabajador().getRol().getNombreRol())
                 .build();
