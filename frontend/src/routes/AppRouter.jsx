@@ -7,7 +7,7 @@ import Login from "../pages/auth/Login";
 
 // Páginas privadas
 import HomePrivate from "../pages/private/HomePrivate";
-
+import Mantenimiento from "../pages/private/Mantenimiento";
 /**
  * AppRouter
  *
@@ -27,6 +27,7 @@ function AppRouter (){
 
             <Route element={<PrivateLayout />}>
                 <Route path="/homePrivate" element={<HomePrivate />} />
+                <Route path="/mantenimiento" element={<Mantenimiento/>} />
             </Route> 
         </Routes>
     );

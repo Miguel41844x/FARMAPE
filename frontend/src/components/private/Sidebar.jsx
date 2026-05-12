@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { CiShoppingCart, CiHome, CiFileOn } from "react-icons/ci";
 import { FiLogOut } from "react-icons/fi";
 import { PiListBold } from "react-icons/pi";
-
+import { GrHostMaintenance } from "react-icons/gr";
 import Logo from "./Logo";
 import "./sidebar.css";
 
@@ -48,6 +48,10 @@ const Sidebar = () => {
                 <NavLink to="/reportes" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
                     <CiFileOn />
                     {isOpen && <span>Reportes</span>}
+                </NavLink>
+                <NavLink to="/mantenimiento" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
+                    <GrHostMaintenance />
+                    {isOpen && <span>Mantenimiento</span>}
                 </NavLink>
             </nav>
 
