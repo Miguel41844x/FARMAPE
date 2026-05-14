@@ -17,7 +17,7 @@ const Sidebar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const handleLogout = () => {
-        setUser(null);
+        logout();
         navigate("/", {replace: true});
     };
 
@@ -40,7 +40,7 @@ const Sidebar = () => {
                     {isOpen && <span>Inicio</span>}
                 </NavLink>
 
-                <NavLink to="/productos" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
+                <NavLink to="/ventas" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
                     <CiShoppingCart />
                     {isOpen && <span>Ventas</span>}
                 </NavLink>

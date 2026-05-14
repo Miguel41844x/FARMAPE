@@ -53,7 +53,7 @@ const Login = () => {
                 apellidos: data.apellidos,
                 token: data.token,
             };
-
+            
             localStorage.setItem("token", data.token);
             localStorage.setItem("usuario", data.usuario);
             localStorage.setItem("rol", data.rol);
