@@ -133,21 +133,6 @@ const UsuarioForms = ({ cerrarFormulario }) => {
                     </div>
                 </div>
 
-                <div className="form-group">
-                    <label>Confirmación de contraseña</label>
-                    <div className="password-container">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            name="confirmarPassword"
-                            value={formData.confirmarPassword}
-                            placeholder="**********"
-                            onChange={handleChange}
-                        />
-                        <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
-                            {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </span>
-                    </div>
-                </div>
 
                 <button type="submit" className="usuario-submit-btn">
                     Registrar usuario

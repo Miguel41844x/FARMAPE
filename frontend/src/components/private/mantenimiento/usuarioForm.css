@@ -1,39 +1,38 @@
 .usuario-form-container {
     width: 100%;
-    background: white;
-    border-radius: 18px;
+    background: #fff;
+    border-radius: 22px;
     padding: 2rem;
-    box-shadow: 0 4px 18px rgba(0,0,0,.08);
+    box-shadow: 0 18px 45px rgba(27, 127, 121, 0.18);
+    border: 1px solid rgba(27, 127, 121, 0.08);
 }
 
-/* 
-   HEADER
- */
+/* HEADER */
 
 .usuario-form-header {
     margin-bottom: 2rem;
+    padding-bottom: 1.2rem;
+    border-bottom: 1px solid rgba(27, 127, 121, 0.12);
 }
 
 .usuario-form-header h2 {
     color: var(--primary);
-    font-size: 1.6rem;
-    font-weight: 700;
+    font-size: 2rem;
+    letter-spacing: -0.5px;
 }
 
 .usuario-form-header p {
-    margin-top: .4rem;
+    margin-top: .45rem;
     color: var(--text-secondary);
     font-size: .95rem;
 }
 
-/* 
-   FORMULARIO
- */
+/* FORMULARIO */
 
 .usuario-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.25rem 1.4rem;
 }
 
 .form-group {
@@ -42,52 +41,66 @@
 }
 
 .form-group label {
-    margin-bottom: .5rem;
-    font-size: .95rem;
-    font-weight: 600;
+    margin-bottom: .45rem;
+    font-size: .88rem;
+    font-weight: 700;
     color: var(--text-primary);
 }
 
-/* 
-   INPUTS
- */
+/* INPUTS */
 
 .form-group input,
 .form-group select {
     width: 100%;
-    padding: .9rem 1rem;
-    border-radius: 12px;
-    border: 1px solid var(--border-color);
+    height: 46px;
+    padding: 0 .95rem;
+    border-radius: 14px;
+    border: 1px solid rgba(27, 127, 121, 0.18);
     outline: none;
     font-size: .95rem;
-    transition: .2s;
-    background: var(--background-light);
+    background: #f9fbfb;
     color: var(--text-primary);
+    transition: all .2s ease;
+}
+
+.form-group input::placeholder {
+    color: #9aa5a4;
+}
+
+.form-group input:hover,
+.form-group select:hover {
+    border-color: rgba(27, 127, 121, 0.35);
+    background: #fff;
 }
 
 .form-group input:focus,
 .form-group select:focus {
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(0,0,0,.05);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(27, 127, 121, 0.12);
 }
 
-/* 
-   SELECT
- */
+/* SELECT */
 
 .form-group select {
     cursor: pointer;
     appearance: none;
+    background-position:
+        calc(100% - 20px) 19px,
+        calc(100% - 14px) 19px;
+    background-size:
+        6px 6px,
+        6px 6px;
+    background-repeat: no-repeat;
+    padding-right: 2.5rem;
 }
 
 .form-group select option {
-    background: var(--white);
+    background: #fff;
     color: var(--text-primary);
 }
 
-/* 
-   PASSWORD
- */
+/* PASSWORD */
 
 .password-container {
     position: relative;
@@ -96,7 +109,7 @@
 
 .password-container input {
     width: 100%;
-    padding-right: 45px;
+    padding-right: 46px;
 }
 
 .password-toggle {
@@ -105,57 +118,59 @@
     top: 50%;
     transform: translateY(-50%);
     cursor: pointer;
-    color: #777;
+    color: #7c8987;
     font-size: 16px;
-    transition: .2s;
+    transition: all .2s ease;
 }
 
 .password-toggle:hover {
     color: var(--primary);
+    transform: translateY(-50%) scale(1.08);
 }
 
 .password-toggle:active {
     transform: translateY(-50%) scale(.92);
 }
 
-/* 
-   BOTÓN
- */
+/* BOTÓN */
 
 .usuario-submit-btn {
-    margin-top: 1rem;
+    grid-column: span 2;
+    margin-top: .6rem;
+    height: 48px;
     border: none;
-    border-radius: 14px;
-    padding: 1rem;
-    background: var(--primary);
-    color: white;
+    border-radius: 15px;
+    background: linear-gradient(135deg, var(--primary), #25a69d);
+    color: #fff;
     font-size: 1rem;
-    font-weight: 600;
+    font-weight: 700;
     cursor: pointer;
-    transition: .2s;
+    box-shadow: 0 12px 25px rgba(27, 127, 121, 0.28);
+    transition: all .2s ease;
 }
 
 .usuario-submit-btn:hover {
-    opacity: .92;
+    transform: translateY(-2px);
+    box-shadow: 0 16px 30px rgba(27, 127, 121, 0.34);
 }
 
-/* 
-   SCROLL
- */
-
-.usuario-form-container::-webkit-scrollbar {
-    width: 8px;
+.usuario-submit-btn:active {
+    transform: translateY(0);
 }
 
-.usuario-form-container::-webkit-scrollbar-track {
-    background: transparent;
-}
+/* RESPONSIVE */
 
-.usuario-form-container::-webkit-scrollbar-thumb {
-    background: rgba(27, 127, 121, 0.35);
-    border-radius: 999px;
-}
+@media (max-width: 768px) {
+    .usuario-form-container {
+        padding: 1.5rem;
+        border-radius: 18px;
+    }
 
-.usuario-form-container::-webkit-scrollbar-thumb:hover {
-    background: rgba(27, 127, 121, 0.6);
+    .usuario-form {
+        grid-template-columns: 1fr;
+    }
+
+    .usuario-submit-btn {
+        grid-column: span 1;
+    }
 }
