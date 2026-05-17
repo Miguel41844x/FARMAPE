@@ -76,27 +76,27 @@ const UsuarioForms = ({ cerrarFormulario }) => {
             <form className="usuario-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>DNI</label>
-                    <input name="dni" value={formData.dni} onChange={handleChange} />
+                    <input name="dni" value={formData.dni} placeholder="77777777" onChange={handleChange} />
                 </div>
 
                 <div className="form-group">
                     <label>Nombres</label>
-                    <input name="nombres" value={formData.nombres} onChange={handleChange} />
+                    <input name="nombres" value={formData.nombres} placeholder="Juan" onChange={handleChange} />
                 </div>
 
                 <div className="form-group">
                     <label>Apellidos</label>
-                    <input name="apellidos" value={formData.apellidos} onChange={handleChange} />
+                    <input name="apellidos" value={formData.apellidos} placeholder="Ramos Martines" onChange={handleChange} />
                 </div>
 
                 <div className="form-group">
                     <label>Teléfono</label>
-                    <input name="telefono" value={formData.telefono} onChange={handleChange} />
+                    <input name="telefono" value={formData.telefono} placeholder="985632154" onChange={handleChange} />
                 </div>
 
                 <div className="form-group">
                     <label>Dirección</label>
-                    <input name="direccion" value={formData.direccion} onChange={handleChange} />
+                    <input name="direccion" value={formData.direccion} placeholder="Av. Brasil" onChange={handleChange} />
                 </div>
 
                 <div className="form-group">
@@ -114,7 +114,7 @@ const UsuarioForms = ({ cerrarFormulario }) => {
 
                 <div className="form-group">
                     <label>Email</label>
-                    <input type="email" name="email" value={formData.email} onChange={handleChange} />
+                    <input type="email" name="email" value={formData.email} placeholder="example@gmail.com" onChange={handleChange} />
                 </div>
 
                 <div className="form-group">
@@ -124,6 +124,7 @@ const UsuarioForms = ({ cerrarFormulario }) => {
                             type={showPassword ? "text" : "password"}
                             name="password"
                             value={formData.password}
+                            placeholder="**********"
                             onChange={handleChange}
                         />
                         <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
@@ -139,6 +140,7 @@ const UsuarioForms = ({ cerrarFormulario }) => {
                             type={showPassword ? "text" : "password"}
                             name="confirmarPassword"
                             value={formData.confirmarPassword}
+                            placeholder="**********"
                             onChange={handleChange}
                         />
                         <span className="password-toggle" onClick={() => setShowPassword(!showPassword)}>
