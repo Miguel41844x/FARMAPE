@@ -1,6 +1,6 @@
 import "./homePrivate.css";
 import { useAuth } from "../../context/AuthContext";
-import OrdersTable from "../../components/private/OrdersTable";
+import OrdersTable from "../../components/private/homePrivate/OrdersTable";
 const HomePrivate = () => {
 	const { user } = useAuth();
 
