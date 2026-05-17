@@ -1,0 +1,138 @@
+/* 
+   CONTENEDOR PRINCIPAL
+ */
+
+.usuarios-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 30px;
+  background: var(--background-light);
+}
+
+/* 
+   HEADER
+ */
+
+.usuarios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.usuarios-header h1 {
+  margin-bottom: 10px;
+  color: var(--primary);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.usuarios-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* 
+   BOTÓN CREAR
+ */
+
+.usuarios-create-btn {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.usuarios-create-btn:hover {
+  opacity: 0.92;
+  transform: translateY(-2px);
+}
+
+/* 
+   MODAL
+ */
+
+.usuarios-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 25px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.usuarios-modal-content {
+  width: 100%;
+  max-width: 850px;
+  animation: modalShow 0.25s ease;
+}
+
+/* 
+   SCROLL DEL FORMULARIO
+ */
+
+.usuario-form-container {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.usuario-form-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.usuario-form-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.usuario-form-container::-webkit-scrollbar-thumb {
+  background: rgba(27, 127, 121, 0.35);
+  border-radius: 999px;
+}
+
+.usuario-form-container::-webkit-scrollbar-thumb:hover {
+  background: rgba(27, 127, 121, 0.6);
+}
+
+/* 
+   ANIMACIONES
+ */
+
+@keyframes modalShow {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 
+   RESPONSIVE
+ */
+
+@media (max-width: 768px) {
+  .usuarios-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .usuarios-create-btn {
+    width: 100%;
+  }
+
+  .usuarios-modal-content {
+    max-width: 100%;
+  }
+}
