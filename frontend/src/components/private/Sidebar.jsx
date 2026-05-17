@@ -12,7 +12,7 @@ import "./sidebar.css";
 const Sidebar = () => {
 
     const navigate = useNavigate();
-    const { user, setUser } = useAuth();
+    const { user, logout } = useAuth();
     const [isOpen, setIsOpen] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
 
@@ -21,7 +21,7 @@ const Sidebar = () => {
         navigate("/", {replace: true});
     };
 
-    const initial = user?.name?.charAt(0).toUpperCase();
+    const initial = user?.nombres?.charAt(0).toUpperCase();
 
     return (
         <aside className={`sidebar ${isOpen ? "open" : "closed"}`}>
@@ -66,8 +66,8 @@ const Sidebar = () => {
                         </div>
 
                         <div className="user-info">
-                            <span className="user-name">{user?.name}</span>
-                            <span className="user-email">{user?.email}</span>
+                            <span className="user-name">{user?.nombres}</span>
+                            <span className="user-email">{user?.usuario}</span>
                         </div>
                     </div>
 
