@@ -1,0 +1,103 @@
+.usuario-form-container{
+    width: 100%;
+    background: white;
+    border-radius: 18px;
+    padding: 2rem;
+    box-shadow: 0 4px 18px rgba(0,0,0,.08);
+}
+
+.usuario-form-header{
+    margin-bottom: 2rem;
+}
+
+.usuario-form-header h2{
+    color: var(--primary);
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.usuario-form-header p{
+    margin-top: .4rem;
+    color: var(--text-secondary);
+    font-size: .95rem;
+}
+
+.usuario-form{
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label{
+    margin-bottom: .5rem;
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.form-group input{
+    width: 100%;
+    padding: .9rem 1rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    outline: none;
+    font-size: .95rem;
+    transition: .2s;
+    background: var(--background-light);
+}
+
+.form-group input:focus{
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(0,0,0,.05);
+}
+
+.password-container{
+    position: relative;
+    width: 100%;
+}
+
+.password-container input{
+    width: 100%;
+    padding-right: 45px;
+}
+
+.password-toggle{
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #777;
+    font-size: 16px;
+    transition: .2s;
+}
+
+.password-toggle:hover{
+    color: var(--primary);
+}
+
+.password-toggle:active{
+    transform: translateY(-50%) scale(.92);
+}
+
+.usuario-submit-btn{
+    margin-top: 1rem;
+    border: none;
+    border-radius: 14px;
+    padding: 1rem;
+    background: var(--primary);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.usuario-submit-btn:hover{
+    opacity: .92;
+}
