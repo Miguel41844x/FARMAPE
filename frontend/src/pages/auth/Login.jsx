@@ -18,6 +18,7 @@ const Login = () => {
     const { setUser } = useAuth();
     const navigate = useNavigate();
 
+    //Cambiar a false si es que se usará el backend
     const MODO_DEV = true;
 
     const handleSubmit = async (e) => {
