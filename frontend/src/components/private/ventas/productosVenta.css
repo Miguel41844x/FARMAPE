@@ -6,6 +6,28 @@
     border: 1px solid rgba(27, 127, 121, 0.08);
 }
 
+/* HEADER */
+
+.venta-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.venta-section-header h2 {
+    color: var(--text-primary);
+    font-size: 1.35rem;
+}
+
+.venta-section-header span {
+    color: var(--primary);
+    font-size: .9rem;
+}
+
+/* BUSCADOR */
+
 .venta-search {
     width: 100%;
     height: 44px;
@@ -16,6 +38,8 @@
     outline: none;
     background: #f9fbfb;
     color: var(--text-primary);
+    font-size: .94rem;
+    transition: .2s ease;
 }
 
 .venta-search:focus {
@@ -24,17 +48,28 @@
     box-shadow: 0 0 0 4px rgba(27, 127, 121, 0.12);
 }
 
+/* LISTA */
+
 .venta-productos-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
     max-height: 620px;
     overflow-y: auto;
-    padding-right: 4px;
+
+    margin-left: -24px;
+    margin-right: -24px;
+
+    border-top: 1px solid #e1e5e8;
 }
+
+/* SCROLL */
 
 .venta-productos-list::-webkit-scrollbar {
     width: 7px;
+}
+
+.venta-productos-list::-webkit-scrollbar-track {
+    background: transparent;
 }
 
 .venta-productos-list::-webkit-scrollbar-thumb {
@@ -42,69 +77,101 @@
     border-radius: 999px;
 }
 
+.venta-productos-list::-webkit-scrollbar-thumb:hover {
+    background: rgba(27, 127, 121, 0.55);
+}
+
+/* ITEM PRODUCTO */
+
 .venta-producto-card {
+    width: 100%;
     display: flex;
     justify-content: space-between;
-    gap: 16px;
-    padding: 16px;
-    border-radius: 16px;
-    background: #f9fbfb;
-    border: 1px solid rgba(27, 127, 121, 0.08);
-    transition: .2s ease;
+    align-items: center;
+    gap: 14px;
+
+    padding: 14px 24px;
+
+    background: transparent;
+    border-bottom: 1px solid #e1e5e8;
+
+    transition: background .2s ease;
 }
 
 .venta-producto-card:hover {
-    background: #fff;
-    border-color: rgba(27, 127, 121, 0.22);
-    transform: translateY(-2px);
+    background: rgba(27, 127, 121, 0.045);
 }
 
 .venta-producto-card h3 {
     color: var(--text-primary);
+    font-size: .95rem;
 }
 
 .venta-producto-card p {
     margin-top: 4px;
     color: var(--text-secondary);
-    font-size: .88rem;
+    font-size: .86rem;
 }
 
 .venta-producto-card span {
     display: block;
-    margin-top: 6px;
+    margin-top: 5px;
     color: var(--primary);
-    font-size: .82rem;
+    font-size: .8rem;
 }
 
+/* ACCIÓN PRODUCTO */
+
 .venta-producto-action {
+    min-width: 96px;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 10px;
+    gap: 8px;
 }
 
 .venta-producto-action strong {
     color: var(--primary);
+    font-size: .95rem;
 }
 
 .venta-producto-action button {
     border: none;
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--primary);
     color: #fff;
-    padding: 9px 14px;
+    padding: 8px 12px;
     cursor: pointer;
     transition: .2s ease;
 }
 
 .venta-producto-action button:hover {
-    transform: translateY(-2px);
+    opacity: .92;
 }
+
+/* EMPTY */
 
 .venta-productos-empty {
     padding: 30px 15px;
-    border-radius: 16px;
     text-align: center;
     color: var(--text-secondary);
     background: rgba(27, 127, 121, 0.04);
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+    .venta-producto-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .venta-producto-action {
+        width: 100%;
+        align-items: flex-start;
+    }
+
+    .venta-producto-action button {
+        width: 100%;
+    }
 }
