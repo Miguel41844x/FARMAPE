@@ -35,12 +35,12 @@ public class AuthService {
     }
 
     public LoginResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(
-                request.usuario(),
-                request.clave()
-        )
-);
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.usuario(),
+                        request.clave()
+                )
+        );
 
         CuentaUsuario cuenta = cuentaUsuarioRepository
                 .findByUsuarioOrEmail(request.usuario(), request.usuario())
