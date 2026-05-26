@@ -23,31 +23,31 @@ const CarritoVenta = ({
             ) : (
                 <div className="venta-carrito-list">
                     {carrito.map((item) => (
-                        <div className="venta-carrito-item" key={item.id}>
+                        <div className="venta-carrito-item" key={item.idProducto}>
                             <div>
                                 <h3>{item.nombre}</h3>
-                                <p>S/ {item.precio.toFixed(2)}</p>
+                                <p>S/ {item.precioVenta.toFixed(2)}</p>
                             </div>
 
                             <div className="venta-item-actions">
-                                <button onClick={() => disminuirCantidad(item.id)}>
+                                <button onClick={() => disminuirCantidad(item.idProducto)}>
                                     -
                                 </button>
 
                                 <span>{item.cantidad}</span>
 
-                                <button onClick={() => aumentarCantidad(item.id)}>
+                                <button onClick={() => aumentarCantidad(item.idProducto)}>
                                     +
                                 </button>
                             </div>
 
                             <strong>
-                                S/ {(item.precio * item.cantidad).toFixed(2)}
+                                S/ {(item.precioVenta * item.cantidad).toFixed(2)}
                             </strong>
 
                             <button
                                 className="venta-remove-btn"
-                                onClick={() => eliminarProducto(item.id)}
+                                onClick={() => eliminarProducto(item.idProducto)}
                             >
                                 Quitar
                             </button>

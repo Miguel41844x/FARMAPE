@@ -47,7 +47,6 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
         usuario: "",
         email: "",
         password: "",
-        confirmarPassword: "",
         rol: "",
         estado: "Activo",
     });
@@ -90,7 +89,6 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
             usuario: usuarioEditar.usuario ?? "",
             email: usuarioEditar.email ?? "",
             password: "",
-            confirmarPassword: "",
             rol: usuarioEditar.rol ?? "",
             estado: usuarioEditar.estado ?? "Activo",
         });
@@ -150,13 +148,6 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
             return false;
         }
 
-        if (formData.password || formData.confirmarPassword) {
-            if (formData.password !== formData.confirmarPassword) {
-                alert("Las contraseñas no coinciden");
-                return false;
-            }
-        }
-
         return true;
     };
 
@@ -169,12 +160,7 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
             const token = localStorage.getItem("token");
 
             if (esEdicion) {
-                /*
-                    Si tu backend solo permite cambiar estado desde /api/usuarios,
-                    aquí puedes actualizar estado de cuenta y, si tienes endpoint de trabajadores,
-                    actualizar datos personales por separado.
-                */
-
+                
                 const responseTrabajador = await fetch(
                     `http://localhost:8080/api/trabajadores/${formData.idTrabajador}`,
                     {
