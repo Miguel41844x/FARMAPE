@@ -77,15 +77,14 @@ const Ventas = () => {
     });
 
     const agregarProducto = (producto) => {
-        const productoId = producto.idProducto || producto.id;
-        const precioProducto = producto.precioVenta ?? producto.precio ?? 0;
-
-        const existe = carrito.find((item) => item.id === productoId);
+        const existe = carrito.find(
+            (item) => item.idProducto === producto.idProducto
+        );
 
         if (existe) {
             setCarrito(
                 carrito.map((item) =>
-                    item.id === productoId
+                    item.idProducto === producto.idProducto
                         ? { ...item, cantidad: item.cantidad + 1 }
                         : item
                 )
@@ -94,32 +93,32 @@ const Ventas = () => {
             setCarrito([
                 ...carrito,
                 {
-                    id: productoId,
+                    idProducto: producto.idProducto,
                     nombre: producto.nombre,
                     categoria: producto.categoria,
-                    precio: precioProducto,
-                    stock: producto.stock,
+                    precioVenta: Number(producto.precioVenta || 0),
+                    stockActual: producto.stockActual,
                     cantidad: 1,
                 },
             ]);
         }
     };
 
-    const aumentarCantidad = (id) => {
+    const aumentarCantidad = (idProducto) => {
         setCarrito(
             carrito.map((item) =>
-                item.id === id
+                item.idProducto === idProducto
                     ? { ...item, cantidad: item.cantidad + 1 }
                     : item
             )
         );
     };
 
-    const disminuirCantidad = (id) => {
+    const disminuirCantidad = (idProducto) => {
         setCarrito(
             carrito
                 .map((item) =>
-                    item.id === id
+                    item.idProducto === idProducto
                         ? { ...item, cantidad: item.cantidad - 1 }
                         : item
                 )
@@ -127,12 +126,12 @@ const Ventas = () => {
         );
     };
 
-    const eliminarProducto = (id) => {
-        setCarrito(carrito.filter((item) => item.id !== id));
+    const eliminarProducto = (idProducto) => {
+        setCarrito(carrito.filter((item) => item.idProducto !== idProducto));
     };
 
     const totalVenta = carrito.reduce(
-        (total, item) => total + item.precio * item.cantidad,
+        (total, item) => total + Number(item.precioVenta || 0) * item.cantidad,
         0
     );
 
@@ -151,56 +150,70 @@ const Ventas = () => {
     };
 
     const generarTicket = async () => {
-        if (carrito.length === 0) {
-            alert("Agrega productos a la orden");
-            return;
-        }
-
-        if (!idCliente) {
-            alert("Selecciona un cliente");
-            return;
-        }
-
         try {
             setLoadingTicket(true);
 
             const token = localStorage.getItem("token");
+            const idTrabajador = localStorage.getItem("idTrabajador");
 
-            const response = await fetch("http://localhost:8080/api/ordenes/ticket", {
+            if (!idCliente) {
+                alert("Selecciona un cliente para registrar la venta");
+                return;
+            }
+
+            if (!idTrabajador) {
+                alert("No se encontró el trabajador logueado. Cierra sesión e inicia sesión nuevamente.");
+                return;
+            }
+
+            if (carrito.length === 0) {
+                alert("Agrega productos al carrito");
+                return;
+            }
+            const hayProductoSinId = carrito.some((item) => !item.idProducto);
+
+            if (hayProductoSinId) {
+                console.error("Carrito con producto sin idProducto:", carrito);
+                alert("Hay un producto sin ID válido en el carrito. Elimina el producto y vuelve a agregarlo.");
+                return;
+            }
+
+            const ventaRequest = {
+                idCliente: Number(idCliente),
+                idEmpleado: Number(idTrabajador),
+                canalPedido,
+                observacion: observacion || "Venta registrada desde frontend",
+                detalles: carrito.map((item) => ({
+                    idProducto: item.idProducto,
+                    cantidad: item.cantidad,
+                })),
+            };
+
+            const response = await fetch("http://localhost:8080/api/ventas", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({
-                    idCliente,
-                    canalPedido,
-                    observacion,
-                    productos: carrito.map((item) => ({
-                        productoId: item.id,
-                        cantidad: item.cantidad,
-                    })),
-                }),
+                body: JSON.stringify(ventaRequest),
             });
 
             if (!response.ok) {
-                throw new Error("No se pudo generar el ticket");
+                const errorText = await response.text();
+                throw new Error(errorText || "No se pudo generar el ticket");
             }
 
-            const blob = await response.blob();
+            const ventaCreada = await response.json();
 
-            descargarPdf(blob, "ticket-orden.pdf");
+            alert(`Ticket generado correctamente. Orden N° ${ventaCreada.idOrdenVenta}`);
 
             setCarrito([]);
             setIdCliente("");
             setCanalPedido("Presencial");
             setObservacion("");
-            setPanelDerecho("productos");
-
-            obtenerProductos();
         } catch (error) {
-            console.error(error);
-            alert(error.message);
+            console.error("Error:", error);
+            alert("Error: " + error.message);
         } finally {
             setLoadingTicket(false);
         }
