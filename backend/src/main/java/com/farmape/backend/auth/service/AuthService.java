@@ -42,8 +42,9 @@ public class AuthService {
         )
 );
 
-        CuentaUsuario cuenta = cuentaUsuarioRepository.findByUsuario(request.usuario())
-            .orElseThrow(() -> new BadCredentialsException("Credenciales inválidas"));
+        CuentaUsuario cuenta = cuentaUsuarioRepository
+                .findByUsuarioOrEmail(request.usuario(), request.usuario())
+                .orElseThrow(() -> new RuntimeException("Usuario o email no encontrado"));
 
         cuenta.setUltimoAcceso(LocalDateTime.now());
         cuentaUsuarioRepository.save(cuenta);
@@ -57,6 +58,8 @@ public class AuthService {
                 .issuedAt(now)
                 .expiresAt(now.plusSeconds(expirationMinutes * 60))
                 .subject(cuenta.getUsuario())
+                .claim("usuario", cuenta.getUsuario())
+                .claim("email", cuenta.getEmail())
                 .claim("rol", rol)
                 .claim("idCuenta", cuenta.getIdCuenta())
                 .claim("idTrabajador", cuenta.getTrabajador().getIdTrabajador())
@@ -73,7 +76,9 @@ public class AuthService {
                 cuenta.getUsuario(),
                 rol,
                 cuenta.getTrabajador().getNombres(),
-                cuenta.getTrabajador().getApellidos()
+                cuenta.getTrabajador().getApellidos(),
+                cuenta.getIdCuenta(),
+                cuenta.getTrabajador().getIdTrabajador()
         );
     }
 }

@@ -8,6 +8,7 @@ const CarritoVenta = ({
     eliminarProducto,
     generarTicket,
     loadingTicket,
+    idCliente,
 }) => {
     return (
         <section className="venta-carrito">
@@ -64,7 +65,7 @@ const CarritoVenta = ({
 
                 <button
                     onClick={generarTicket}
-                    disabled={carrito.length === 0 || loadingTicket}
+                    disabled={!idCliente || carrito.length === 0 || loadingTicket}
                 >
                     {loadingTicket ? "Generando..." : "Generar ticket"}
                 </button>

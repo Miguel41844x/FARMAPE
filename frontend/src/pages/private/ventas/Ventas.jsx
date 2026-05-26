@@ -3,12 +3,45 @@ import "./ventas.css";
 
 import CarritoVenta from "../../../components/private/ventas/CarritoVenta";
 import ProductosVenta from "../../../components/private/ventas/ProductosVenta";
+import DatosVenta from "../../../components/private/ventas/DatosVenta";
 
 const Ventas = () => {
     const [productos, setProductos] = useState([]);
     const [busqueda, setBusqueda] = useState("");
     const [carrito, setCarrito] = useState([]);
     const [loadingTicket, setLoadingTicket] = useState(false);
+    const [clientes, setClientes] = useState([]);
+    const [idCliente, setIdCliente] = useState("");
+    const [canalPedido, setCanalPedido] = useState("Presencial");
+    const [observacion, setObservacion] = useState("");
+
+
+    useEffect(() => {
+        cargarClientes();
+    }, []);
+
+    const cargarClientes = async () => {
+        try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch("http://localhost:8080/api/clientes", {
+            method: "GET",
+            headers: {
+            Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error("No se pudieron cargar los clientes");
+        }
+
+        const data = await response.json();
+        setClientes(data);
+        } catch (error) {
+        console.error("Error al cargar clientes:", error);
+        alert("No se pudieron cargar los clientes");
+        }
+    };
 
     useEffect(() => {
         obtenerProductos();
@@ -56,7 +89,7 @@ const Ventas = () => {
         if (existe) {
             setCarrito(
                 carrito.map((item) =>
-                    item.id === producto.id
+                    item.id === producto.idProducto
                         ? { ...item, cantidad: item.cantidad + 1 }
                         : item
                 )
@@ -65,11 +98,11 @@ const Ventas = () => {
             setCarrito([
                 ...carrito,
                 {
-                    id: producto.id,
+                    id: producto.idProducto,
                     nombre: producto.nombre,
                     categoria: producto.categoria,
                     precio: precioProducto,
-                    stock: producto.stock,
+                    stock: producto.stockActual,
                     cantidad: 1,
                 },
             ]);
@@ -122,78 +155,99 @@ const Ventas = () => {
     };
 
     const generarTicket = async () => {
-        if (carrito.length === 0) {
-            alert("Agrega productos a la orden");
-            return;
-        }
-
         try {
-            setLoadingTicket(true);
-
             const token = localStorage.getItem("token");
+            const idTrabajador = localStorage.getItem("idTrabajador");
 
-            const response = await fetch("http://localhost:8080/api/ordenes/ticket", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    productos: carrito.map((item) => ({
-                        productoId: item.id,
-                        cantidad: item.cantidad,
-                    })),
-                }),
+            if (!idCliente) {
+            alert("Selecciona un cliente para registrar la venta");
+            return;
+            }
+
+            if (!idTrabajador) {
+            alert("No se encontró el trabajador logueado. Cierra sesión e inicia sesión nuevamente.");
+            return;
+            }
+
+            if (carrito.length === 0) {
+            alert("Agrega productos al carrito");
+            return;
+            }
+
+            const ventaRequest = {
+            idCliente: Number(idCliente),
+            idEmpleado: Number(idTrabajador),
+            canalPedido,
+            observacion: observacion || "Venta registrada desde frontend",
+            detalles: carrito.map((item) => ({
+                idProducto: item.idProducto,
+                cantidad: item.cantidad,
+            })),
+            };
+
+            const response = await fetch("http://localhost:8080/api/ventas", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(ventaRequest),
             });
 
             if (!response.ok) {
-                throw new Error("No se pudo generar el ticket");
+            const errorText = await response.text();
+            throw new Error(errorText || "No se pudo registrar la venta");
             }
 
-            const blob = await response.blob();
+            const ventaCreada = await response.json();
 
-            descargarPdf(blob, "ticket-orden.pdf");
+            alert(`Venta registrada correctamente. Orden N° ${ventaCreada.idOrdenVenta}`);
 
             setCarrito([]);
-            obtenerProductos();
-
+            setIdCliente("");
+            setCanalPedido("Presencial");
+            setObservacion("");
         } catch (error) {
-            console.error(error);
-            alert(error.message);
-        } finally {
-            setLoadingTicket(false);
+            console.error("Error al registrar venta:", error);
+            alert("Error al registrar venta: " + error.message);
         }
     };
 
     return (
-        <div className="ventas-container">
+        <div className="ventas-page">
             <div className="ventas-header">
                 <h1>Ventas</h1>
-                <p>
-                    Registra productos y genera un ticket de orden para caja.
-                </p>
+                <p>Registra productos y genera un ticket de orden para caja.</p>
             </div>
 
-            <div className="ventas-layout">
+            <div className="ventas-layout-superior">
                 <CarritoVenta
                     carrito={carrito}
+                    setCarrito={setCarrito}
                     totalVenta={totalVenta}
-                    aumentarCantidad={aumentarCantidad}
-                    disminuirCantidad={disminuirCantidad}
-                    eliminarProducto={eliminarProducto}
                     generarTicket={generarTicket}
                     loadingTicket={loadingTicket}
+                    idCliente={idCliente}
                 />
 
-                <aside className="ventas-right-panel">
-                    <ProductosVenta
-                        busqueda={busqueda}
-                        setBusqueda={setBusqueda}
-                        productos={productosFiltrados}
-                        agregarProducto={agregarProducto}
-                    />
-                </aside>
+                <ProductosVenta
+                    productos={productos}
+                    busqueda={busqueda}
+                    setBusqueda={setBusqueda}
+                    agregarProducto={agregarProducto}
+                />
             </div>
+
+            <DatosVenta
+                clientes={clientes}
+                idCliente={idCliente}
+                setIdCliente={setIdCliente}
+                canalPedido={canalPedido}
+                setCanalPedido={setCanalPedido}
+                observacion={observacion}
+                setObservacion={setObservacion}
+                cargarClientes={cargarClientes}
+            />
         </div>
     );
 };

@@ -33,12 +33,12 @@ const ProductosVenta = ({
                         return (
                             <div
                                 className="venta-producto-card"
-                                key={producto.id}
+                                key={producto.idProducto}
                             >
                                 <div>
                                     <h3>{producto.nombre}</h3>
                                     <p>{producto.categoria || "Sin categoría"}</p>
-                                    <span>Stock: {producto.stock}</span>
+                                    <span>Stock: {producto.stockActual}</span>
                                 </div>
 
                                 <div className="venta-producto-action">

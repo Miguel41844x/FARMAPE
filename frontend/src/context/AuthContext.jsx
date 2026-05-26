@@ -29,6 +29,8 @@ export const AuthProvider = ({ children }) => {
             rol : localStorage.getItem("rol"),
             nombres : localStorage.getItem("nombres"),
             apellidos : localStorage.getItem("apellidos"),
+            idCuenta: localStorage.getItem("idCuenta"),
+            idTrabajador: localStorage.getItem("idTrabajador"),
             token,
         };
     });
@@ -39,6 +41,8 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("rol");
         localStorage.removeItem("nombres");
         localStorage.removeItem("apellidos");
+        localStorage.removeItem("idCuenta");
+        localStorage.removeItem("idTrabajador");
         
         setUser(null);
     };

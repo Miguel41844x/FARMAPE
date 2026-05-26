@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public record CuentaUsuarioResponse(
         Integer idCuenta,
         String usuario,
+        String email,
         EstadoCuentaUsuario estado,
         LocalDateTime ultimoAcceso,
         LocalDateTime fechaCreacion,

@@ -46,6 +46,7 @@ public class CuentaUsuarioService {
         return new CuentaUsuarioResponse(
                 cuenta.getIdCuenta(),
                 cuenta.getUsuario(),
+                cuenta.getEmail(),
                 cuenta.getEstado(),
                 cuenta.getUltimoAcceso(),
                 cuenta.getFechaCreacion(),

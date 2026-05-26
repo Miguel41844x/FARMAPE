@@ -75,7 +75,7 @@ const Sidebar = () => {
 
                         <div className="user-info">
                             <span className="user-name">{user?.nombres}</span>
-                            <span className="user-email">{user?.usuario}</span>
+                            <span className="user-rol">{user?.rol}</span>
                         </div>
                     </div>
 

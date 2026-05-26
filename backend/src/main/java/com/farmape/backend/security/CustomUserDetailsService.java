@@ -18,10 +18,11 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String usuario) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        CuentaUsuario cuenta = cuentaUsuarioRepository.findByUsuario(usuario)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+        CuentaUsuario cuenta = cuentaUsuarioRepository
+            .findByUsuarioOrEmail(username, username)
+            .orElseThrow(() -> new UsernameNotFoundException("Usuario o email no encontrado"));
 
         if (cuenta.getEstado() != EstadoCuentaUsuario.Activo) {
             throw new DisabledException("La cuenta no está activa");

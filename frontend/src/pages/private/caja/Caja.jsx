@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import "./caja.css";
 
-import ValidarVenta from "../../components/private/caja/ValidarVenta";
-import PagoComprobante from "../../components/private/caja/PagoComprobante";
-import EstadoVenta from "../../components/private/caja/EstadoVenta";
+import ValidarVenta from "../../../components/private/caja/ValidarVenta";
+import PagoComprobante from "../../../components/private/caja/PagoComprobante";
+import EstadoVenta from "../../../components/private/caja/EstadoVenta";
 
 const MODO_DEV = true;
 

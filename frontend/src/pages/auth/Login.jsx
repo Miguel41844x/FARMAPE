@@ -60,6 +60,8 @@ const Login = () => {
             localStorage.setItem("rol", data.rol);
             localStorage.setItem("nombres", data.nombres);
             localStorage.setItem("apellidos", data.apellidos);
+            localStorage.setItem("idCuenta", data.idCuenta);
+            localStorage.setItem("idTrabajador", data.idTrabajador);
 
             setUser(userData);
 
@@ -89,10 +91,10 @@ const Login = () => {
                 <p className="login-subtext">Ingresa con tus credenciales</p>
 
                 <form onSubmit={handleSubmit}>
-                    <label>Usuario</label>
+                    <label>Usuario o Correo</label>
                     <input
                         type="text"
-                        placeholder="e.g: admin@farmape.com.pe"
+                        placeholder="e.g: usuario o usuario@farmaceuticasperu.com"
                         value={usuario}
                         onChange={(e) => setUsuario(e.target.value)}
                     />

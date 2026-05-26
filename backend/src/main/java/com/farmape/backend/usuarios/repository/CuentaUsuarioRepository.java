@@ -10,5 +10,11 @@ public interface CuentaUsuarioRepository extends JpaRepository<CuentaUsuario, In
 
     Optional<CuentaUsuario> findByUsuario(String usuario);
 
+    Optional<CuentaUsuario> findByEmail(String email);
+
+    Optional<CuentaUsuario> findByUsuarioOrEmail(String usuario, String email);
+
     boolean existsByUsuario(String usuario);
+
+    boolean existsByEmail(String email);
 }
