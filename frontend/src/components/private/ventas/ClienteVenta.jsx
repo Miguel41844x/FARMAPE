@@ -1,6 +1,12 @@
 import { useState } from "react";
 import "./clienteVenta.css";
 
+const comprobantes = {
+    BOLETA_SIMPLE: "Boleta simple",
+    BOLETA_DNI: "Boleta con DNI",
+    FACTURA: "Factura",
+};
+
 const ClienteVenta = ({
     totalVenta,
     carrito,
@@ -8,6 +14,7 @@ const ClienteVenta = ({
     confirmarVenta,
 }) => {
     const [tipoComprobante, setTipoComprobante] = useState("BOLETA_SIMPLE");
+    const [menuAbierto, setMenuAbierto] = useState(false);
     const [buscandoCliente, setBuscandoCliente] = useState(false);
 
     const [cliente, setCliente] = useState({
@@ -25,6 +32,11 @@ const ClienteVenta = ({
             ...cliente,
             [e.target.name]: e.target.value,
         });
+    };
+
+    const seleccionarComprobante = (tipo) => {
+        setTipoComprobante(tipo);
+        setMenuAbierto(false);
     };
 
     const buscarClientePorDni = async () => {
@@ -150,27 +162,34 @@ const ClienteVenta = ({
                 </button>
             </div>
 
-            <div className="comprobante-options">
-                <button
-                    className={tipoComprobante === "BOLETA_SIMPLE" ? "active" : ""}
-                    onClick={() => setTipoComprobante("BOLETA_SIMPLE")}
-                >
-                    Boleta simple
-                </button>
+            <div className="comprobante-dropdown">
+                <label>Tipo de comprobante</label>
 
                 <button
-                    className={tipoComprobante === "BOLETA_DNI" ? "active" : ""}
-                    onClick={() => setTipoComprobante("BOLETA_DNI")}
+                    type="button"
+                    className="comprobante-dropdown-btn"
+                    onClick={() => setMenuAbierto(!menuAbierto)}
                 >
-                    Boleta con DNI
+                    <span>{comprobantes[tipoComprobante]}</span>
+                    <span className={`dropdown-arrow ${menuAbierto ? "open" : ""}`}>
+                        ▾
+                    </span>
                 </button>
 
-                <button
-                    className={tipoComprobante === "FACTURA" ? "active" : ""}
-                    onClick={() => setTipoComprobante("FACTURA")}
-                >
-                    Factura
-                </button>
+                {menuAbierto && (
+                    <div className="comprobante-dropdown-menu">
+                        {Object.entries(comprobantes).map(([key, value]) => (
+                            <button
+                                key={key}
+                                type="button"
+                                className={tipoComprobante === key ? "active" : ""}
+                                onClick={() => seleccionarComprobante(key)}
+                            >
+                                {value}
+                            </button>
+                        ))}
+                    </div>
+                )}
             </div>
 
             {tipoComprobante === "BOLETA_SIMPLE" && (

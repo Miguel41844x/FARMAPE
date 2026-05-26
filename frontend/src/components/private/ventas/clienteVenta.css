@@ -17,7 +17,6 @@
 .cliente-venta-header h2 {
     color: var(--text-primary);
     font-size: 1.35rem;
-    font-weight: 900;
 }
 
 .cliente-venta-header p {
@@ -33,33 +32,85 @@
     background: rgba(27, 127, 121, 0.1);
     color: var(--primary);
     cursor: pointer;
-    font-weight: 800;
 }
 
-.comprobante-options {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 10px;
+/* Dropdown comprobante */
+
+.comprobante-dropdown {
+    position: relative;
     margin-bottom: 18px;
 }
 
-.comprobante-options button {
-    border: 1px solid rgba(27, 127, 121, 0.15);
+.comprobante-dropdown label {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--text-primary);
+    font-size: .86rem;
+}
+
+.comprobante-dropdown-btn {
+    width: 100%;
+    height: 44px;
+    border: 1px solid rgba(27, 127, 121, 0.18);
     border-radius: 14px;
-    padding: 12px;
     background: #f9fbfb;
     color: var(--text-primary);
+    padding: 0 14px;
     cursor: pointer;
-    font-weight: 800;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     transition: .2s ease;
 }
 
-.comprobante-options button:hover,
-.comprobante-options button.active {
-    background: var(--primary);
-    color: #fff;
-    border-color: var(--primary);
+.comprobante-dropdown-btn:hover {
+    border-color: rgba(27, 127, 121, 0.35);
+    background: #fff;
 }
+
+.dropdown-arrow {
+    color: var(--primary);
+    transition: .2s ease;
+}
+
+.dropdown-arrow.open {
+    transform: rotate(180deg);
+}
+
+.comprobante-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 20;
+
+    background: #fff;
+    border: 1px solid rgba(27, 127, 121, 0.12);
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+}
+
+.comprobante-dropdown-menu button {
+    width: 100%;
+    border: none;
+    border-radius: 11px;
+    padding: 11px 12px;
+    background: transparent;
+    color: var(--text-primary);
+    text-align: left;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.comprobante-dropdown-menu button:hover,
+.comprobante-dropdown-menu button.active {
+    background: rgba(27, 127, 121, 0.1);
+    color: var(--primary);
+}
+
+/* Info */
 
 .cliente-info-box {
     padding: 18px;
@@ -72,7 +123,6 @@
 .cliente-info-box h3 {
     color: var(--primary);
     font-size: 1rem;
-    font-weight: 900;
 }
 
 .cliente-info-box p {
@@ -80,6 +130,8 @@
     color: var(--text-secondary);
     font-size: .9rem;
 }
+
+/* Formulario */
 
 .cliente-form {
     display: flex;
@@ -104,7 +156,6 @@
     margin-bottom: 7px;
     color: var(--text-primary);
     font-size: .86rem;
-    font-weight: 800;
 }
 
 .cliente-form-group input {
@@ -132,13 +183,14 @@
     background: var(--primary);
     color: #fff;
     cursor: pointer;
-    font-weight: 800;
 }
 
 .cliente-search-row button:disabled {
     opacity: .6;
     cursor: not-allowed;
 }
+
+/* Total */
 
 .cliente-total-card {
     padding: 18px;
@@ -153,26 +205,25 @@
 
 .cliente-total-card span {
     color: var(--text-secondary);
-    font-weight: 800;
     font-size: .9rem;
 }
 
 .cliente-total-card h2 {
     margin-top: 4px;
-    color: var(--primary);
-    font-size: 1.8rem;
-    font-weight: 900;
+    color: black;
+    font-size: 1.5 rem;
 }
+
+/* Botón confirmar */
 
 .cliente-confirmar-btn {
     width: 100%;
     height: 46px;
     border: none;
     border-radius: 14px;
-    background: linear-gradient(135deg, var(--primary), #25a69d);
+    background: var(--primary);
     color: #fff;
     cursor: pointer;
-    font-weight: 900;
     box-shadow: 0 10px 24px rgba(27, 127, 121, 0.22);
     transition: .2s ease;
 }
