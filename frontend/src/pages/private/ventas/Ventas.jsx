@@ -4,39 +4,6 @@ import "./ventas.css";
 import CarritoVenta from "../../../components/private/ventas/CarritoVenta";
 import ProductosVenta from "../../../components/private/ventas/ProductosVenta";
 
-const MODO_DEV = true;
-
-const productosPrueba = [
-    {
-        id: 1,
-        nombre: "Paracetamol 500mg",
-        categoria: "Analgésico",
-        precio: 6.5,
-        stock: 40,
-    },
-    {
-        id: 2,
-        nombre: "Ibuprofeno 400mg",
-        categoria: "Antiinflamatorio",
-        precio: 8.9,
-        stock: 25,
-    },
-    {
-        id: 3,
-        nombre: "Loratadina 10mg",
-        categoria: "Antialérgico",
-        precio: 5.2,
-        stock: 60,
-    },
-    {
-        id: 4,
-        nombre: "Amoxicilina 500mg",
-        categoria: "Antibiótico",
-        precio: 18.5,
-        stock: 15,
-    },
-];
-
 const Ventas = () => {
     const [productos, setProductos] = useState([]);
     const [busqueda, setBusqueda] = useState("");
@@ -48,11 +15,6 @@ const Ventas = () => {
     }, []);
 
     const obtenerProductos = async () => {
-        if (MODO_DEV) {
-            setProductos(productosPrueba);
-            return;
-        }
-
         try {
             const token = localStorage.getItem("token");
 
@@ -165,16 +127,6 @@ const Ventas = () => {
             return;
         }
 
-        if (MODO_DEV) {
-            alert("En modo prueba no se descarga PDF porque aún no hay backend.");
-            console.log("Orden simulada:", {
-                productos: carrito,
-                total: totalVenta,
-                estado: "PENDIENTE_PAGO",
-            });
-            return;
-        }
-
         try {
             setLoadingTicket(true);
 
@@ -190,10 +142,7 @@ const Ventas = () => {
                     productos: carrito.map((item) => ({
                         productoId: item.id,
                         cantidad: item.cantidad,
-                        precioUnitario: item.precio,
                     })),
-                    total: totalVenta,
-                    estado: "PENDIENTE_PAGO",
                 }),
             });
 
