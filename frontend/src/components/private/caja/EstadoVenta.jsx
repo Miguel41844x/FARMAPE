@@ -1,79 +1,113 @@
-import { useState, useEffect } from "react";
 import "./estadoVenta.css";
 
-const EstadoVenta = ({ orden, actualizarEstado }) => {
-    const [estado, setEstado] = useState("");
-
-    useEffect(() => {
-        if (orden) {
-            setEstado(orden.estado || "Pendiente");
-        }
-    }, [orden]);
-
+const EstadoVenta = ({ orden, resultadoPago }) => {
     if (!orden) {
         return (
             <div className="estado-card placeholder-state">
-                <h2>Detalle de la Orden</h2>
-                <p className="estado-placeholder">No hay ninguna orden activa para inspeccionar.</p>
+                <h2>Detalle de orden</h2>
+                <p className="estado-placeholder">
+                    Selecciona una orden para ver sus productos y datos de pago.
+                </p>
             </div>
         );
     }
 
-    const esPagado = orden.estado === "Pagado";
+    const total = Number(orden.total || 0);
 
     return (
         <div className="estado-card">
-            <h2>Detalles de Venta: {orden.codigoVenta || orden.id}</h2>
+            <h2>Detalle de orden #{orden.idOrdenVenta}</h2>
+
+            <div className="detalle-orden-info">
+                <div>
+                    <span>Cliente</span>
+                    <strong>{orden.cliente || "Cliente no registrado"}</strong>
+                </div>
+
+                <div>
+                    <span>Empleado</span>
+                    <strong>{orden.empleado || "No registrado"}</strong>
+                </div>
+
+                <div>
+                    <span>Canal</span>
+                    <strong>{orden.canalPedido}</strong>
+                </div>
+
+                <div>
+                    <span>Estado</span>
+                    <strong>{orden.estado}</strong>
+                </div>
+            </div>
+
+            {orden.observacion && (
+                <div className="detalle-observacion">
+                    <span>Observación</span>
+                    <p>{orden.observacion}</p>
+                </div>
+            )}
 
             <div className="estado-productos-resumen">
-                <h3>Medicamentos cargados:</h3>
+                <h3>Productos:</h3>
+
                 <ul className="caja-productos-lista">
-                    {orden.productos?.map((prod, index) => (
-                        <li key={index} className="caja-producto-item">
-                            <span className="producto-nombre">
-                                {prod.nombre} <span className="producto-cantidad">x{prod.cantidad}</span>
-                            </span>
-                            <strong className="producto-subtotal">
-                                S/ {prod.subtotal.toFixed(2)}
-                            </strong>
-                        </li>
-                    ))}
+                    {orden.detalles?.map((prod) => {
+                        const subtotal = Number(prod.subtotal || 0);
+
+                        return (
+                            <li key={prod.idDetalleVenta} className="caja-producto-item">
+                                <span className="producto-nombre">
+                                    {prod.producto}
+                                    <span className="producto-cantidad">
+                                        x{prod.cantidad}
+                                    </span>
+                                </span>
+
+                                <strong className="producto-subtotal">
+                                    S/ {subtotal.toFixed(2)}
+                                </strong>
+                            </li>
+                        );
+                    })}
                 </ul>
             </div>
 
-            <div className="estado-form-caja">
-                <label htmlFor="estadoProceso">Estado Actual del Proceso</label>
-                <select 
-                    id="estadoProceso"
-                    value={estado} 
-                    onChange={(e) => setEstado(e.target.value)}
-                    disabled={!esPagado}
-                    className={!esPagado ? "select-bloqueado" : "select-editable"}
-                >
-                    {orden.estado === "Pendiente" ? (
-                        <option value="Pendiente">Pendiente</option>
-                    ) : (
-                        <>
-                            <option value="Pagado">Pagado</option>
-                            <option value="Entregado">Entregado</option>
-                            <option value="Anulado">Anulado</option>
-                        </>
-                    )}
-                </select>
-
-                <button
-                    className="btn-emitir-comprobante"
-                    disabled={!esPagado || estado === orden.estado}
-                    onClick={() => {
-                        if (estado !== orden.estado) {
-                            actualizarEstado(estado);
-                        }
-                    }}
-                    style={{ marginTop: "12px", cursor: esPagado && estado !== orden.estado ? "pointer" : "not-allowed" }}
-                >
-                    Cambiar estado
-                </button>
+            <div className="detalle-total-caja">
+                <span>Total</span>
+                <strong>S/ {total.toFixed(2)}</strong>
             </div>
+
+            {resultadoPago && (
+                <div className="comprobante-box">
+                    <h3>Comprobante emitido</h3>
+
+                    <div className="detalle-orden-info">
+                        <div>
+                            <span>Tipo</span>
+                            <strong>{resultadoPago.comprobante.tipoComprobante}</strong>
+                        </div>
+
+                        <div>
+                            <span>Número</span>
+                            <strong>
+                                {resultadoPago.comprobante.serie}-{resultadoPago.comprobante.numero}
+                            </strong>
+                        </div>
+
+                        <div>
+                            <span>Método</span>
+                            <strong>{resultadoPago.pago.metodoPago}</strong>
+                        </div>
+
+                        <div>
+                            <span>Monto pagado</span>
+                            <strong>
+                                S/ {Number(resultadoPago.pago.montoPagado || 0).toFixed(2)}
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

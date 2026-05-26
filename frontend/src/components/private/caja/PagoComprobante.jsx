@@ -1,105 +1,136 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "./pagoComprobante.css";
 
-const PagoComprobante = ({ orden, procesarPago }) => {
+const PagoComprobante = ({ orden, procesarPago, loadingPago }) => {
     const [metodoPago, setMetodoPago] = useState("Efectivo");
-    const [montoRecibido, setMontoRecibido] = useState("");
+    const [tipoComprobante, setTipoComprobante] = useState("Boleta");
+    const [montoPagado, setMontoPagado] = useState("");
     const [vuelto, setVuelto] = useState(0);
 
     useEffect(() => {
         if (!orden) {
-            setMontoRecibido("");
+            setMetodoPago("Efectivo");
+            setTipoComprobante("Boleta");
+            setMontoPagado("");
             setVuelto(0);
-            return;
-        }
-
-        if (orden.estado === "Pagado" || orden.estado === "Entregado" || orden.estado === "Anulado") {
-            setMetodoPago(orden.metodoPago || "Efectivo");
-            setMontoRecibido(orden.montoRecibido || orden.total);
-            
-            const recibidoFijo = parseFloat(orden.montoRecibido) || orden.total;
-            const calculoVueltoFijo = recibidoFijo - orden.total;
-            setVuelto(calculoVueltoFijo > 0 ? calculoVueltoFijo : 0);
             return;
         }
 
         if (metodoPago !== "Efectivo") {
-            setMontoRecibido(orden.total);
+            setMontoPagado(String(Number(orden.total || 0)));
             setVuelto(0);
-        } else {
-            const recibido = parseFloat(montoRecibido) || 0;
-            const calculoVuelto = recibido - orden.total;
-            setVuelto(calculoVuelto > 0 ? calculoVuelto : 0);
+            return;
         }
-    }, [montoRecibido, metodoPago, orden]);
 
-    useEffect(() => {
-        if (orden && (orden.estado === "Pagado" || orden.estado === "Entregado" || orden.estado === "Anulado")) {
-            setMetodoPago(orden.metodoPago || "Efectivo");
-            setMontoRecibido(orden.montoRecibido || orden.total);
-        } else {
-            setMontoRecibido("");
-            setMetodoPago("Efectivo");
-        }
-    }, [orden]);
+        const recibido = Number(montoPagado || 0);
+        const total = Number(orden.total || 0);
+        const calculo = recibido - total;
+
+        setVuelto(calculo > 0 ? calculo : 0);
+    }, [orden, metodoPago, montoPagado]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const montoNum = parseFloat(montoRecibido) || 0;
-        if (metodoPago === "Efectivo" && montoNum < 0) {
-            alert("El monto recibido no puede ser menor a cero (0)");
-            setMontoRecibido("");
+
+        if (!orden) {
+            alert("Selecciona una orden primero");
             return;
         }
-        procesarPago({ metodoPago, montoRecibido });
+
+        const total = Number(orden.total || 0);
+        const monto = metodoPago === "Efectivo"
+            ? Number(montoPagado || 0)
+            : total;
+
+        if (monto <= 0) {
+            alert("El monto pagado debe ser mayor a 0");
+            return;
+        }
+
+        if (monto < total) {
+            alert("El monto pagado no cubre el total de la orden");
+            return;
+        }
+
+        procesarPago({
+            montoPagado: monto,
+            metodoPago,
+            tipoComprobante,
+        });
     };
 
     if (!orden) {
         return (
             <div className="pago-card placeholder-state">
                 <h2>Registrar pago</h2>
-                <p className="pago-placeholder">Selecciona una orden de venta para registrar el pago.</p>
+                <p className="pago-placeholder">
+                    Selecciona una orden pendiente para registrar el pago.
+                </p>
             </div>
         );
     }
 
-    const yaFinalizado = orden.estado === "Pagado" || orden.estado === "Entregado" || orden.estado === "Anulado";
-    const montoNum = parseFloat(montoRecibido) || 0;
-    const botonDeshabilitado = yaFinalizado || (metodoPago === "Efectivo" && (montoRecibido === "" || montoNum < orden.total));
+    const total = Number(orden.total || 0);
+    const monto = Number(montoPagado || 0);
+    const botonDeshabilitado =
+        loadingPago ||
+        orden.estado !== "Pendiente" ||
+        (metodoPago === "Efectivo" && (montoPagado === "" || monto < total));
 
     return (
         <div className="pago-card">
             <h2>Registrar pago</h2>
+
+            <div className="pago-resumen-orden">
+                <span>Total de la orden</span>
+                <strong>S/ {total.toFixed(2)}</strong>
+            </div>
+
             <form className="pago-form" onSubmit={handleSubmit}>
                 <div className="pago-field">
-                    <label htmlFor="metodoPago">Método de Pago</label>
-                    <select 
+                    <label htmlFor="tipoComprobante">Tipo de comprobante</label>
+                    <select
+                        id="tipoComprobante"
+                        value={tipoComprobante}
+                        onChange={(e) => setTipoComprobante(e.target.value)}
+                        disabled={loadingPago || orden.estado !== "Pendiente"}
+                    >
+                        <option value="Boleta">Boleta</option>
+                        <option value="Factura">Factura</option>
+                    </select>
+                </div>
+
+                <div className="pago-field">
+                    <label htmlFor="metodoPago">Método de pago</label>
+                    <select
                         id="metodoPago"
-                        value={metodoPago} 
+                        value={metodoPago}
                         onChange={(e) => setMetodoPago(e.target.value)}
-                        disabled={yaFinalizado} 
+                        disabled={loadingPago || orden.estado !== "Pendiente"}
                     >
                         <option value="Efectivo">Efectivo</option>
-                        <option value="Yape">Yape</option>
                         <option value="Tarjeta">Tarjeta</option>
+                        <option value="Yape">Yape</option>
+                        <option value="Plin">Plin</option>
+                        <option value="Transferencia">Transferencia</option>
                     </select>
                 </div>
 
                 {metodoPago === "Efectivo" && (
                     <div className="pago-field">
-                        <label htmlFor="montoRecibido">Monto Recibido</label>
+                        <label htmlFor="montoPagado">Monto recibido</label>
                         <div className="input-with-prefix">
                             <span className="currency-prefix">S/</span>
                             <input
-                                id="montoRecibido"
+                                id="montoPagado"
                                 type="number"
                                 step="0.10"
                                 min="0"
                                 placeholder="0.00"
-                                value={montoRecibido}
-                                onChange={(e) => setMontoRecibido(e.target.value)}
+                                value={montoPagado}
+                                onChange={(e) => setMontoPagado(e.target.value)}
                                 required
-                                disabled={yaFinalizado} 
+                                disabled={loadingPago || orden.estado !== "Pendiente"}
                             />
                         </div>
                     </div>
@@ -114,12 +145,21 @@ const PagoComprobante = ({ orden, procesarPago }) => {
                     </div>
                 )}
 
-                <button 
-                    type="submit" 
+                {metodoPago !== "Efectivo" && (
+                    <div className="pago-vuelto-container">
+                        <span className="vuelto-label">Monto a cobrar:</span>
+                        <strong className="vuelto-monto">
+                            S/ {total.toFixed(2)}
+                        </strong>
+                    </div>
+                )}
+
+                <button
+                    type="submit"
                     className="btn-emitir-comprobante"
                     disabled={botonDeshabilitado}
                 >
-                    {orden.estado === "Anulado" ? "Venta Anulada" : `Emitir ${orden.tipoComprobante}`}
+                    {loadingPago ? "Procesando..." : `Emitir ${tipoComprobante}`}
                 </button>
             </form>
         </div>

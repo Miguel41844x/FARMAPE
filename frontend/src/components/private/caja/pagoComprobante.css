@@ -126,3 +126,31 @@
     cursor: not-allowed;      
     
 }
+
+.pago-resumen-orden {
+    margin: 14px 0 18px;
+    padding: 16px;
+    border-radius: 16px;
+    background: #e9f7f6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pago-resumen-orden span {
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.pago-resumen-orden strong {
+    color: #0f827d;
+    font-size: 22px;
+}
+
+.caja-empty-message {
+    padding: 18px;
+    color: #64748b;
+    background: #f8fafc;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+}

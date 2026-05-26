@@ -71,11 +71,11 @@ public class VentaService {
 
             if (producto.getEstado() != EstadoProducto.Activo) {
                 throw new RuntimeException("El producto " + producto.getNombre() + " no está activo");
-            }
+                }
 
-            if (producto.getStockActual() < detalleRequest.cantidad()) {
+            if (producto.getStockActual() == null || producto.getStockActual() < detalleRequest.cantidad()) {
                 throw new RuntimeException("Stock insuficiente para el producto: " + producto.getNombre());
-            }
+                }
 
             BigDecimal precioUnitario = producto.getPrecioVenta();
             BigDecimal subtotal = precioUnitario.multiply(BigDecimal.valueOf(detalleRequest.cantidad()));

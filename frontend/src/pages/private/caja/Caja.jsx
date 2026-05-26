@@ -5,157 +5,131 @@ import ValidarVenta from "../../../components/private/caja/ValidarVenta";
 import PagoComprobante from "../../../components/private/caja/PagoComprobante";
 import EstadoVenta from "../../../components/private/caja/EstadoVenta";
 
-const MODO_DEV = true;
-
-const ordenesPrueba = [
-    {
-        id: 1,
-        codigoVenta: "V001",
-        cliente: "Juan Pérez",
-        tipoComprobante: "Boleta",
-        estado: "Pendiente",
-        total: 85.60,
-        productos: [
-            { productoId: 1, nombre: "Paracetamol 500mg", cantidad: 10, precioUnitario: 6.5, subtotal: 65.0 },
-            { productoId: 3, nombre: "Loratadina 10mg", cantidad: 3, precioUnitario: 5.2, subtotal: 15.6 }
-        ]
-    },
-    {
-        id: 2,
-        codigoVenta: "V002",
-        cliente: "María López",
-        tipoComprobante: "Factura",
-        estado: "Pendiente",
-        total: 35.60,
-        productos: [
-            { productoId: 2, nombre: "Ibuprofeno 400mg", cantidad: 4, precioUnitario: 8.9, subtotal: 35.6 }
-        ]
-    }
-];
-
 const Caja = () => {
     const [ordenes, setOrdenes] = useState([]);
     const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
+    const [resultadoPago, setResultadoPago] = useState(null);
+    const [loadingOrdenes, setLoadingOrdenes] = useState(false);
+    const [loadingPago, setLoadingPago] = useState(false);
 
     useEffect(() => {
         obtenerOrdenesPendientes();
     }, []);
 
     const obtenerOrdenesPendientes = async () => {
-        if (MODO_DEV) {
-            setOrdenes(prevOrdenes => prevOrdenes.length > 0 ? prevOrdenes : ordenesPrueba);
-            return;
-        }
-
         try {
+            setLoadingOrdenes(true);
+
             const token = localStorage.getItem("token");
 
-            const response = await fetch("http://localhost:8080/api/ventas/pendientes", {
+            const response = await fetch("http://localhost:8080/api/caja/ordenes-pendientes", {
+                method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
             if (!response.ok) {
-                throw new Error("Error al obtener las órdenes pendientes");
+                throw new Error("No se pudieron obtener las órdenes pendientes");
             }
 
             const data = await response.json();
             setOrdenes(data);
         } catch (error) {
-            console.error(error);
+            console.error("Error al cargar órdenes pendientes:", error);
+            alert(error.message);
+        } finally {
+            setLoadingOrdenes(false);
+        }
+    };
+
+    const seleccionarOrden = async (orden) => {
+        try {
+            if (!orden) {
+                setOrdenSeleccionada(null);
+                setResultadoPago(null);
+                return;
+            }
+
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(`http://localhost:8080/api/caja/ordenes/${orden.idOrdenVenta}`, {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("No se pudo obtener el detalle de la orden");
+            }
+
+            const data = await response.json();
+
+            setOrdenSeleccionada(data);
+            setResultadoPago(null);
+        } catch (error) {
+            console.error("Error al seleccionar orden:", error);
             alert(error.message);
         }
     };
 
     const procesarPago = async (datosPago) => {
         if (!ordenSeleccionada) {
-            alert("Por favor, selecciona una orden de venta primero");
-            return;
-        }
-
-        const pago = {
-            ventaId: ordenSeleccionada.id,
-            codigoVenta: ordenSeleccionada.codigoVenta,
-            metodoPago: datosPago.metodoPago, // 'Efectivo', 'Tarjeta', 'Yape'
-            montoRecibido: parseFloat(datosPago.montoRecibido) || 0,
-            total: ordenSeleccionada.total,
-            vuelto: (parseFloat(datosPago.montoRecibido) || 0) - ordenSeleccionada.total
-        };
-
-        if (MODO_DEV) {
-            alert("Comprobante emitido y pago registrado correctamente (Modo Prueba)");
-            
-            const ordenesActualizadas = ordenes.map(item => 
-                item.id === ordenSeleccionada.id 
-                    ? { ...item, estado: "Pagado", metodoPago: datosPago.metodoPago, montoRecibido: datosPago.montoRecibido } 
-                    : item
-            );
-            setOrdenes(ordenesActualizadas);
-            setOrdenSeleccionada({ ...ordenSeleccionada, estado: "Pagado", metodoPago: datosPago.metodoPago, montoRecibido: datosPago.montoRecibido });
+            alert("Selecciona una orden de venta primero");
             return;
         }
 
         try {
+            setLoadingPago(true);
+
             const token = localStorage.getItem("token");
+            const idCajero = localStorage.getItem("idTrabajador");
 
-            const response = await fetch("http://localhost:8080/api/caja/pagar", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(pago),
-            });
-
-            if (!response.ok) {
-                throw new Error("No se pudo registrar el pago de la orden");
+            if (!idCajero) {
+                alert("No se encontró el cajero logueado. Cierra sesión e inicia sesión nuevamente.");
+                return;
             }
 
-            alert("Pago procesado con éxito y venta finalizada");
-            
-            obtenerOrdenesPendientes(); 
-            setOrdenSeleccionada({ ...ordenSeleccionada, estado: "Pagado", metodoPago: datosPago.metodoPago, montoRecibido: datosPago.montoRecibido });
-        } catch (error) {
-            console.error(error);
-            alert(error.message);
-        }
-    };
+            const request = {
+                idCajero: Number(idCajero),
+                montoPagado: Number(datosPago.montoPagado),
+                metodoPago: datosPago.metodoPago,
+                tipoComprobante: datosPago.tipoComprobante,
+            };
 
-    const actualizarEstadoOrden = async (nuevoEstado) => {
-        if (MODO_DEV) {
-            alert(`Estado actualizado a ${nuevoEstado} con éxito`);
-            
-            const ordenesActualizadas = ordenes.map(item => 
-                item.id === ordenSeleccionada.id 
-                    ? { ...item, estado: nuevoEstado, metodoPago: ordenSeleccionada.metodoPago, montoRecibido: ordenSeleccionada.montoRecibido } 
-                    : item
+            const response = await fetch(
+                `http://localhost:8080/api/caja/ordenes/${ordenSeleccionada.idOrdenVenta}/pagar`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify(request),
+                }
             );
-            setOrdenes(ordenesActualizadas);
-            setOrdenSeleccionada({ ...ordenSeleccionada, estado: nuevoEstado, metodoPago: ordenSeleccionada.metodoPago, montoRecibido: ordenSeleccionada.montoRecibido });
-            return;
-        }
 
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`http://localhost:8080/api/caja/estado`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({ ventaId: ordenSeleccionada.id, estado: nuevoEstado }),
-            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "No se pudo registrar el pago");
+            }
 
-            if (!response.ok) throw new Error("No se pudo actualizar el estado");
+            const data = await response.json();
 
-            alert("Estado actualizado correctamente");
-            obtenerOrdenesPendientes();
-            
-            setOrdenSeleccionada({ ...ordenSeleccionada, estado: nuevoEstado, metodoPago: ordenSeleccionada.metodoPago, montoRecibido: ordenSeleccionada.montoRecibido });
+            setResultadoPago(data);
+            setOrdenSeleccionada(data.ordenVenta);
+
+            await obtenerOrdenesPendientes();
+
+            alert(
+                `Pago registrado correctamente. Comprobante: ${data.comprobante.serie}-${data.comprobante.numero}`
+            );
         } catch (error) {
-            console.error(error);
-            alert(error.message);
+            console.error("Error al procesar pago:", error);
+            alert("Error al procesar pago: " + error.message);
+        } finally {
+            setLoadingPago(false);
         }
     };
 
@@ -163,25 +137,27 @@ const Caja = () => {
         <div className="caja-container">
             <div className="caja-header">
                 <h1>Caja</h1>
-                <p>Valida órdenes, registra pagos y actualiza el estado de venta.</p>
+                <p>Valida órdenes pendientes, registra pagos y emite comprobantes.</p>
             </div>
 
             <div className="caja-layout">
-                <ValidarVenta 
+                <ValidarVenta
                     ordenes={ordenes}
                     ordenSeleccionada={ordenSeleccionada}
-                    seleccionarOrden={setOrdenSeleccionada}
+                    seleccionarOrden={seleccionarOrden}
+                    loading={loadingOrdenes}
                 />
 
                 <aside className="caja-right-panel">
-                    <PagoComprobante 
+                    <PagoComprobante
                         orden={ordenSeleccionada}
                         procesarPago={procesarPago}
+                        loadingPago={loadingPago}
                     />
-                    
-                    <EstadoVenta 
+
+                    <EstadoVenta
                         orden={ordenSeleccionada}
-                        actualizarEstado={actualizarEstadoOrden}
+                        resultadoPago={resultadoPago}
                     />
                 </aside>
             </div>
