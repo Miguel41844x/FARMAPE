@@ -3,9 +3,12 @@ import "./usuarioForm.css";
 import { useEffect, useRef, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
-const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
+const UsuarioForms = ({
+    cerrarFormulario,
+    obtenerUsuarios,
+    usuarioEditando = null,
+}) => {
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const [menuRolAbierto, setMenuRolAbierto] = useState(false);
     const rolDropdownRef = useRef(null);
@@ -13,7 +16,7 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
     const [menuEstadoAbierto, setMenuEstadoAbierto] = useState(false);
     const estadoDropdownRef = useRef(null);
 
-    const esEdicion = Boolean(usuarioEditar);
+    const esEdicion = Boolean(usuarioEditando);
 
     const roles = [
         "Administrador",
@@ -25,16 +28,7 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
         "Gerente",
     ];
 
-    const estados = ["Activo", "Bloqueado", "Inactivo"];
-
-    const seleccionarEstado = (estado) => {
-        setFormData((prev) => ({
-            ...prev,
-            estado,
-        }));
-
-        setMenuEstadoAbierto(false);
-    };
+    const estados = ["ACTIVO", "BLOQUEADO", "INACTIVO"];
 
     const [formData, setFormData] = useState({
         idCuenta: null,
@@ -48,7 +42,7 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
         email: "",
         password: "",
         rol: "",
-        estado: "Activo",
+        estado: "ACTIVO",
     });
 
     useEffect(() => {
@@ -76,23 +70,27 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
     }, []);
 
     useEffect(() => {
-        if (!usuarioEditar) return;
+        if (!usuarioEditando) return;
 
         setFormData({
-            idCuenta: usuarioEditar.idCuenta ?? null,
-            idTrabajador: usuarioEditar.idTrabajador ?? null,
-            dni: usuarioEditar.dni ?? "",
-            nombres: usuarioEditar.nombres ?? "",
-            apellidos: usuarioEditar.apellidos ?? "",
-            telefono: usuarioEditar.telefono ?? "",
-            direccion: usuarioEditar.direccion ?? "",
-            usuario: usuarioEditar.usuario ?? "",
-            email: usuarioEditar.email ?? "",
+            idCuenta: usuarioEditando.idCuenta ?? null,
+            idTrabajador: usuarioEditando.idTrabajador ?? null,
+            dni: usuarioEditando.dni ?? "",
+            nombres: usuarioEditando.nombres ?? "",
+            apellidos: usuarioEditando.apellidos ?? "",
+            telefono: usuarioEditando.telefono ?? "",
+            direccion: usuarioEditando.direccion ?? "",
+            usuario: usuarioEditando.usuario ?? usuarioEditando.cuenta?.usuario ?? "",
+            email: usuarioEditando.email ?? usuarioEditando.correo ?? "",
             password: "",
-            rol: usuarioEditar.rol ?? "",
-            estado: usuarioEditar.estado ?? "Activo",
+            rol:
+                usuarioEditando.rol?.nombre ??
+                usuarioEditando.nombreRol ??
+                usuarioEditando.rol ??
+                "",
+            estado: usuarioEditando.estado ?? "ACTIVO",
         });
-    }, [usuarioEditar]);
+    }, [usuarioEditando]);
 
     const seleccionarRol = (rol) => {
         setFormData((prev) => ({
@@ -101,6 +99,15 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
         }));
 
         setMenuRolAbierto(false);
+    };
+
+    const seleccionarEstado = (estado) => {
+        setFormData((prev) => ({
+            ...prev,
+            estado,
+        }));
+
+        setMenuEstadoAbierto(false);
     };
 
     const handleChange = (e) => {
@@ -133,12 +140,12 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
             return false;
         }
 
-        if (!formData.usuario.trim()) {
+        if (!esEdicion && !formData.usuario.trim()) {
             alert("Ingrese el usuario de acceso");
             return false;
         }
 
-        if (!formData.email.trim()) {
+        if (!esEdicion && !formData.email.trim()) {
             alert("Ingrese el email");
             return false;
         }
@@ -160,7 +167,6 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
             const token = localStorage.getItem("token");
 
             if (esEdicion) {
-                
                 const responseTrabajador = await fetch(
                     `http://localhost:8080/api/trabajadores/${formData.idTrabajador}`,
                     {
@@ -176,7 +182,6 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
                             telefono: formData.telefono,
                             direccion: formData.direccion,
                             rol: formData.rol,
-                            estado: formData.estado,
                         }),
                     }
                 );
@@ -186,26 +191,33 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
                     throw new Error(errorText || "No se pudo actualizar el trabajador");
                 }
 
-                const responseUsuario = await fetch(
-                    `http://localhost:8080/api/usuarios/${formData.idCuenta}/estado`,
-                    {
-                        method: "PATCH",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({
-                            estado: formData.estado,
-                        }),
-                    }
-                );
+                if (formData.estado) {
+                    const responseEstado = await fetch(
+                        `http://localhost:8080/api/trabajadores/${formData.idTrabajador}/estado`,
+                        {
+                            method: "PATCH",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({
+                                estado: formData.estado,
+                            }),
+                        }
+                    );
 
-                if (!responseUsuario.ok) {
-                    const errorText = await responseUsuario.text();
-                    throw new Error(errorText || "No se pudo actualizar el estado del usuario");
+                    if (!responseEstado.ok) {
+                        const errorText = await responseEstado.text();
+                        throw new Error(errorText || "No se pudo actualizar el estado");
+                    }
                 }
 
-                alert("Usuario actualizado correctamente");
+                alert("Trabajador actualizado correctamente");
+
+                if (obtenerUsuarios) {
+                    obtenerUsuarios();
+                }
+
                 cerrarFormulario();
                 return;
             }
@@ -236,6 +248,11 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
             }
 
             alert("Usuario registrado correctamente");
+
+            if (obtenerUsuarios) {
+                obtenerUsuarios();
+            }
+
             cerrarFormulario();
         } catch (error) {
             console.error(error);
@@ -335,106 +352,85 @@ const UsuarioForms = ({ cerrarFormulario, usuarioEditar = null }) => {
                     )}
                 </div>
 
-                <div className="form-group">
-                    <label>Usuario</label>
-                    <input
-                        name="usuario"
-                        value={formData.usuario}
-                        placeholder="Ingrese usuario de acceso"
-                        onChange={handleChange}
-                    />
-                </div>
-
-                <div className="form-group">
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        placeholder="Ingrese correo electrónico"
-                        onChange={handleChange}
-                    />
-                </div>
-
-                <div className="form-group rol-dropdown-wrapper" ref={estadoDropdownRef}>
-                    <label>Estado</label>
-
-                    <button
-                        type="button"
-                        className="rol-dropdown-btn"
-                        onClick={() => setMenuEstadoAbierto(!menuEstadoAbierto)}
-                    >
-                        <span>{formData.estado || "Seleccione un estado"}</span>
-                        <span className={`rol-dropdown-arrow ${menuEstadoAbierto ? "open" : ""}`}>
-                            ▾
-                        </span>
-                    </button>
-
-                    {menuEstadoAbierto && (
-                        <div className="rol-dropdown-menu">
-                            {estados.map((estado) => (
-                                <button
-                                    key={estado}
-                                    type="button"
-                                    className={formData.estado === estado ? "active" : ""}
-                                    onClick={() => seleccionarEstado(estado)}
-                                >
-                                    {estado}
-                                </button>
-                            ))}
+                {!esEdicion && (
+                    <>
+                        <div className="form-group">
+                            <label>Usuario</label>
+                            <input
+                                name="usuario"
+                                value={formData.usuario}
+                                placeholder="Ingrese usuario de acceso"
+                                onChange={handleChange}
+                            />
                         </div>
-                    )}
-                </div>
 
-                <div className="form-group">
-                    <label>
-                        {esEdicion
-                            ? "Nueva contraseña (opcional)"
-                            : "Contraseña"}
-                    </label>
+                        <div className="form-group">
+                            <label>Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                placeholder="Ingrese correo electrónico"
+                                onChange={handleChange}
+                            />
+                        </div>
+                    </>
+                )}
 
-                    <div className="password-container">
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            name="password"
-                            value={formData.password}
-                            placeholder={
-                                esEdicion
-                                    ? "Dejar vacío para mantener la actual"
-                                    : "Ingrese contraseña"
-                            }
-                            onChange={handleChange}
-                        />
+                {esEdicion && (
+                    <div className="form-group rol-dropdown-wrapper" ref={estadoDropdownRef}>
+                        <label>Estado</label>
 
-                        <span
-                            className="password-toggle"
-                            onClick={() => setShowPassword(!showPassword)}
+                        <button
+                            type="button"
+                            className="rol-dropdown-btn"
+                            onClick={() => setMenuEstadoAbierto(!menuEstadoAbierto)}
                         >
-                            {showPassword ? <FaEyeSlash /> : <FaEye />}
-                        </span>
+                            <span>{formData.estado || "Seleccione un estado"}</span>
+                            <span className={`rol-dropdown-arrow ${menuEstadoAbierto ? "open" : ""}`}>
+                                ▾
+                            </span>
+                        </button>
+
+                        {menuEstadoAbierto && (
+                            <div className="rol-dropdown-menu">
+                                {estados.map((estado) => (
+                                    <button
+                                        key={estado}
+                                        type="button"
+                                        className={formData.estado === estado ? "active" : ""}
+                                        onClick={() => seleccionarEstado(estado)}
+                                    >
+                                        {estado}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
-                </div>
+                )}
 
-                <div className="form-group">
-                    <label>Confirmar contraseña</label>
+                {!esEdicion && (
+                    <div className="form-group">
+                        <label>Contraseña</label>
 
-                    <div className="password-container">
-                        <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            name="confirmarPassword"
-                            value={formData.confirmarPassword}
-                            placeholder="Repita la contraseña"
-                            onChange={handleChange}
-                        />
+                        <div className="password-container">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                name="password"
+                                value={formData.password}
+                                placeholder="Ingrese contraseña"
+                                onChange={handleChange}
+                            />
 
-                        <span
-                            className="password-toggle"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                        >
-                            {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
-                        </span>
+                            <span
+                                className="password-toggle"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? <FaEyeSlash /> : <FaEye />}
+                            </span>
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <button type="submit" className="usuario-submit-btn">
                     {esEdicion ? "Guardar cambios" : "Registrar usuario"}
