@@ -9,7 +9,7 @@ import Login from "../pages/auth/Login";
 // Páginas privadas
 import HomePrivate from "../pages/private/HomePrivate";
 import Ventas from "../pages/private/ventas/Ventas";
-import Caja from "../pages/private/ventas/Caja";
+import Caja from "../pages/private/caja/Caja";
 import Reporte from "../pages/private/Reportes";
 import Mantenimiento from "../pages/private/mantenimiento/Mantenimiento";
 import Usuarios from "../pages/private/mantenimiento/Usuarios";
