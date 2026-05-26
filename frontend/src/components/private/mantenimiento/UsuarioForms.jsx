@@ -5,6 +5,27 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 const UsuarioForms = ({ cerrarFormulario }) => {
     const [showPassword, setShowPassword] = useState(false);
 
+    const [menuRolAbierto, setMenuRolAbierto] = useState(false);
+
+    const roles = [
+        "Administrador",
+        "Empleado",
+        "Cajero",
+        "Encargado de Despacho",
+        "Encargado de Almacen",
+        "Quimico Farmaceutico",
+        "Gerente",
+    ];
+
+    const seleccionarRol = (rol) => {
+        setFormData({
+            ...formData,
+            rol,
+        });
+
+        setMenuRolAbierto(false);
+    };
+
     const [formData, setFormData] = useState({
         dni: "",
         nombres: "",
@@ -99,17 +120,34 @@ const UsuarioForms = ({ cerrarFormulario }) => {
                     <input name="direccion" value={formData.direccion} placeholder="Av. Brasil" onChange={handleChange} />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group rol-dropdown-wrapper">
                     <label>Rol</label>
-                    <select name="rol" value={formData.rol} onChange={handleChange}>
-                        <option value="Administrador">Administrador</option>
-                        <option value="Empleado">Empleado</option>
-                        <option value="Cajero">Cajero</option>
-                        <option value="Encargado de Despacho">Encargado de Despacho</option>
-                        <option value="Encargado de Almacen">Encargado de Almacen</option>
-                        <option value="Quimico Farmaceutico">Quimico Farmaceutico</option>
-                        <option value="Gerente">Gerente</option>
-                    </select>
+
+                    <button
+                        type="button"
+                        className="rol-dropdown-btn"
+                        onClick={() => setMenuRolAbierto(!menuRolAbierto)}
+                    >
+                        <span>{formData.rol || "Seleccione un rol"}</span>
+                        <span className={`rol-dropdown-arrow ${menuRolAbierto ? "open" : ""}`}>
+                            ▾
+                        </span>
+                    </button>
+
+                    {menuRolAbierto && (
+                        <div className="rol-dropdown-menu">
+                            {roles.map((rol) => (
+                                <button
+                                    key={rol}
+                                    type="button"
+                                    className={formData.rol === rol ? "active" : ""}
+                                    onClick={() => seleccionarRol(rol)}
+                                >
+                                    {rol}
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className="form-group">
