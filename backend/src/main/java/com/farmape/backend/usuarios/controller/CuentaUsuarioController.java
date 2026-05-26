@@ -3,6 +3,7 @@ package com.farmape.backend.usuarios.controller;
 import com.farmape.backend.usuarios.dto.CambiarEstadoCuentaRequest;
 import com.farmape.backend.usuarios.dto.CuentaUsuarioResponse;
 import com.farmape.backend.usuarios.service.CuentaUsuarioService;
+import com.farmape.backend.usuarios.dto.CrearUsuarioRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,11 @@ public class CuentaUsuarioController {
     @GetMapping("/{id}")
     public CuentaUsuarioResponse obtenerPorId(@PathVariable Integer id) {
         return cuentaUsuarioService.obtenerPorId(id);
+    }
+
+    @PostMapping
+    public CuentaUsuarioResponse crear(@Valid @RequestBody CrearUsuarioRequest request) {
+        return cuentaUsuarioService.crear(request);
     }
 
     @PatchMapping("/{id}/estado")
