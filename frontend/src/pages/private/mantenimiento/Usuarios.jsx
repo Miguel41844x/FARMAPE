@@ -23,7 +23,7 @@ const Usuarios = () => {
         try {
             setLoading(true);
 
-            const toker = localStorage.getItem("token");
+            const token = localStorage.getItem("token");
 
             const response = await fetch("http://localhost:8080/api/usuarios", {
                 headers: {
