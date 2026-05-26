@@ -18,31 +18,8 @@ const Login = () => {
     const { setUser } = useAuth();
     const navigate = useNavigate();
 
-    const MODO_DEV = false;
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (MODO_DEV) {
-            const userData = {
-                usuario: usuario || "admin@farmape.com.pe",
-                rol: "ADMIN",
-                nombres: "Renzo",
-                apellidos: "Pérez",
-                token: "token-falso-dev",
-            };
-
-            localStorage.setItem("token", userData.token);
-            localStorage.setItem("usuario", userData.usuario);
-            localStorage.setItem("rol", userData.rol);
-            localStorage.setItem("nombres", userData.nombres);
-            localStorage.setItem("apellidos", userData.apellidos);
-
-            setUser(userData);
-            navigate("/homePrivate");
-
-            return;
-        }
 
         
         if (!usuario.trim() || !password.trim()) {
