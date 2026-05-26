@@ -14,6 +14,8 @@ public record CuentaUsuarioResponse(
         Integer idTrabajador,
         String nombres,
         String apellidos,
+        String dni,
+        String telefono,
         String rol
 ) {
 }

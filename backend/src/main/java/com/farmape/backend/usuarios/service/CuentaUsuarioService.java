@@ -53,6 +53,8 @@ public class CuentaUsuarioService {
                 cuenta.getTrabajador().getIdTrabajador(),
                 cuenta.getTrabajador().getNombres(),
                 cuenta.getTrabajador().getApellidos(),
+                cuenta.getTrabajador().getDni(),
+                cuenta.getTrabajador().getTelefono(),
                 cuenta.getTrabajador().getRol().getNombreRol()
         );
     }
