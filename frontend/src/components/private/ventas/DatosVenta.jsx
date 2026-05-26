@@ -10,6 +10,10 @@ function DatosVenta({
     observacion,
     setObservacion,
     cargarClientes,
+    volverProductos,
+    generarTicket,
+    loadingTicket,
+    totalVenta,
 }) {
     const [busquedaCliente, setBusquedaCliente] = useState("");
     const [mostrarRegistro, setMostrarRegistro] = useState(false);
@@ -117,7 +121,7 @@ function DatosVenta({
                 <div className="datos-venta-header">
                     <div>
                         <h3>Datos de la venta</h3>
-                        <p>Busca o registra un cliente, selecciona el canal y agrega una observación.</p>
+                        <p>Selecciona el cliente, canal de pedido y agrega una observación.</p>
                     </div>
 
                     <button
@@ -177,6 +181,30 @@ function DatosVenta({
                             rows="3"
                         />
                     </div>
+                </div>
+
+                <div className="datos-venta-total">
+                    <span>Total de la orden</span>
+                    <h2>S/ {Number(totalVenta || 0).toFixed(2)}</h2>
+                </div>
+
+                <div className="datos-venta-actions">
+                    <button
+                        type="button"
+                        className="btn-volver-carrito"
+                        onClick={volverProductos}
+                    >
+                        Volver a productos
+                    </button>
+
+                    <button
+                        type="button"
+                        className="btn-generar-ticket"
+                        onClick={generarTicket}
+                        disabled={!idCliente || loadingTicket}
+                    >
+                        {loadingTicket ? "Generando..." : "Confirmar y generar ticket"}
+                    </button>
                 </div>
             </section>
 
