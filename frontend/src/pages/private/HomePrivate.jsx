@@ -1,13 +1,13 @@
 import "./homePrivate.css";
 import { useAuth } from "../../context/AuthContext";
-import OrdersTable from "../../components/private/OrdersTable";
+import OrdersTable from "../../components/private/homePrivate/OrdersTable";
 const HomePrivate = () => {
 	const { user } = useAuth();
 
 	return (
 		<div className="home-container">
 			<h1 className="home-title">
-				Bienvenido, {user?.name || "Usuario"}
+				Bienvenido, {user?.nombres}
 			</h1>
 
 			<p className="home-subtitle">
