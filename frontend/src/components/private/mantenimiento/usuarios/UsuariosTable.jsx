@@ -62,15 +62,15 @@ const UsuariosTable = ({
                             </tr>
                         ) : (
                             usuarios.map((usuario) => (
-                                <tr key={usuario.id}>
+                                <tr key={usuario.idTrabajador}>
                                     <td>{usuario.dni}</td>
                                     <td>{usuario.nombres} {usuario.apellidos}</td>
-                                    <td>{usuario.usuario || usuario.email}</td>
-                                    <td>{usuario.telefono}</td>
-                                    <td>{usuario.rol}</td>
+                                    <td>{usuario.telefono || "-"}</td>
+                                    <td>{usuario.direccion || "-"}</td>
+                                    <td>{usuario.rol?.nombre || usuario.nombreRol || usuario.rol || "-"}</td>
                                     <td>
                                         <span className="usuarios-status">
-                                            {usuario.estado || "Activo"}
+                                            {usuario.estado}
                                         </span>
                                     </td>
                                     <td>
@@ -81,9 +81,9 @@ const UsuariosTable = ({
 
                                             <button
                                                 className="delete"
-                                                onClick={() => onDelete(usuario.id)}
+                                                onClick={() => onDelete(usuario.idTrabajador)}
                                             >
-                                                Eliminar
+                                                Desactivar
                                             </button>
                                         </div>
                                     </td>

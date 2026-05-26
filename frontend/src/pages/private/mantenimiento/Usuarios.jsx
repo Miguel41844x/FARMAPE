@@ -25,7 +25,7 @@ const Usuarios = () => {
 
             const token = localStorage.getItem("token");
 
-            const response = await fetch("http://localhost:8080/api/usuarios", {
+            const response = await fetch("http://localhost:8080/api/trabajadores", {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -58,25 +58,34 @@ const Usuarios = () => {
     };
 
     const eliminarUsuario = async (id) => {
-        const confirmar = confirm("¿Seguro que deseas eliminar este usuario?")
+        const confirmar = confirm("¿Seguro que deseas desactivar este trabajador?");
+        if (!confirmar) return;
 
-        if(!confirmar) return;
-
-        try{
+        try {
             const token = localStorage.getItem("token");
 
-             const response = await fetch(`http://localhost:8080/api/usuarios/${id}`, {
-                method: "DELETE",
+            const response = await fetch(`http://localhost:8080/api/trabajadores/${id}/estado`, {
+                method: "PATCH",
                 headers: {
+                    "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
+                body: JSON.stringify({
+                    estado: "INACTIVO",
+                }),
             });
 
             if (!response.ok) {
-                throw new Error("No se pudo eliminar el usuario");
+                throw new Error("No se pudo desactivar el trabajador");
             }
 
-            setUsuarios(usuarios.filter((usuario) => usuario.id !== id));
+            const trabajadorActualizado = await response.json();
+
+            setUsuarios(
+                usuarios.map((usuario) =>
+                    usuario.idTrabajador === id ? trabajadorActualizado : usuario
+                )
+            );
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -91,13 +100,22 @@ const Usuarios = () => {
     const usuariosFiltrados = usuarios.filter((usuario) => {
         const texto = busqueda.toLowerCase();
 
+        const dni = usuario.dni || "";
+        const nombres = usuario.nombres || "";
+        const apellidos = usuario.apellidos || "";
+        const telefono = usuario.telefono || "";
+        const direccion = usuario.direccion || "";
+        const estado = usuario.estado || "";
+        const rol = usuario.rol?.nombre || usuario.nombreRol || "";
+
         return (
-            usuario.dni?.toLowerCase().includes(texto) ||
-            usuario.nombres?.toLowerCase().includes(texto) ||
-            usuario.apellidos?.toLowerCase().includes(texto) ||
-            usuario.usuario?.toLowerCase().includes(texto) ||
-            usuario.email?.toLowerCase().includes(texto) ||
-            usuario.rol?.toLowerCase().includes(texto)
+            dni.toLowerCase().includes(texto) ||
+            nombres.toLowerCase().includes(texto) ||
+            apellidos.toLowerCase().includes(texto) ||
+            telefono.toLowerCase().includes(texto) ||
+            direccion.toLowerCase().includes(texto) ||
+            estado.toLowerCase().includes(texto) ||
+            rol.toLowerCase().includes(texto)
         );
     });
 
