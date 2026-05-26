@@ -6,6 +6,8 @@ import { CiShoppingCart, CiHome, CiFileOn } from "react-icons/ci";
 import { FiLogOut } from "react-icons/fi";
 import { PiListBold } from "react-icons/pi";
 import { CiSettings } from "react-icons/ci";
+import { CiCoinInsert } from "react-icons/ci";
+
 import Logo from "./Logo";
 import "./sidebar.css";
 
@@ -45,10 +47,16 @@ const Sidebar = () => {
                     {isOpen && <span>Ventas</span>}
                 </NavLink>
 
+                <NavLink to="/caja" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
+                    <CiCoinInsert />
+                    {isOpen && <span>Caja</span>}
+                </NavLink>
+
                 <NavLink to="/reportes" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
                     <CiFileOn />
                     {isOpen && <span>Reportes</span>}
                 </NavLink>
+
                 <NavLink to="/mantenimiento" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
                     <CiSettings />
                     {isOpen && <span>Mantenimiento</span>}
