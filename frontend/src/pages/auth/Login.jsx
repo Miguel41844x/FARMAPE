@@ -18,7 +18,7 @@ const Login = () => {
     const { setUser } = useAuth();
     const navigate = useNavigate();
 
-    const MODO_DEV = true;
+    const MODO_DEV = false;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
