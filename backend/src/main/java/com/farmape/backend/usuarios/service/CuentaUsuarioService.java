@@ -121,6 +121,7 @@ public class CuentaUsuarioService {
                 cuenta.getTrabajador().getApellidos(),
                 cuenta.getTrabajador().getDni(),
                 cuenta.getTrabajador().getTelefono(),
+                cuenta.getTrabajador().getRol().getIdRol(),
                 cuenta.getTrabajador().getRol().getNombreRol()
         );
     }

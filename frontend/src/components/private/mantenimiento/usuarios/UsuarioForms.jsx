@@ -19,16 +19,16 @@ const UsuarioForms = ({
     const esEdicion = Boolean(usuarioEditando);
 
     const roles = [
-        "Administrador",
-        "Empleado",
-        "Cajero",
-        "Encargado de Despacho",
-        "Encargado de Almacen",
-        "Quimico Farmaceutico",
-        "Gerente",
+        { idRol: 1, nombreRol: "Administrador" },
+        { idRol: 2, nombreRol: "Empleado" },
+        { idRol: 3, nombreRol: "Cajero" },
+        { idRol: 4, nombreRol: "Encargado de Despacho" },
+        { idRol: 5, nombreRol: "Encargado de Almacen" },
+        { idRol: 6, nombreRol: "Quimico Farmaceutico" },
+        { idRol: 7, nombreRol: "Gerente" },
     ];
 
-    const estados = ["ACTIVO", "BLOQUEADO", "INACTIVO"];
+    const estados = ["Activo", "Bloqueado", "Inactivo"];
 
     const [formData, setFormData] = useState({
         idCuenta: null,
@@ -41,6 +41,7 @@ const UsuarioForms = ({
         usuario: "",
         email: "",
         password: "",
+        idRol: "",
         rol: "",
         estado: "ACTIVO",
     });
@@ -83,6 +84,7 @@ const UsuarioForms = ({
             usuario: usuarioEditando.usuario ?? usuarioEditando.cuenta?.usuario ?? "",
             email: usuarioEditando.email ?? usuarioEditando.correo ?? "",
             password: "",
+            idRol: usuarioEditando.idRol ?? "",
             rol:
                 usuarioEditando.rol?.nombre ??
                 usuarioEditando.nombreRol ??
@@ -95,7 +97,8 @@ const UsuarioForms = ({
     const seleccionarRol = (rol) => {
         setFormData((prev) => ({
             ...prev,
-            rol,
+            idRol: rol.idRol,
+            rol: rol.nombreRol,
         }));
 
         setMenuRolAbierto(false);
@@ -181,7 +184,7 @@ const UsuarioForms = ({
                             apellidos: formData.apellidos,
                             telefono: formData.telefono,
                             direccion: formData.direccion,
-                            rol: formData.rol,
+                            idRol: Number(formData.idRol),
                         }),
                     }
                 );
@@ -237,7 +240,7 @@ const UsuarioForms = ({
                     usuario: formData.usuario,
                     email: formData.email,
                     clave: formData.password,
-                    rol: formData.rol,
+                    idRol: Number(formData.idRol),
                     estado: formData.estado,
                 }),
             });
@@ -340,12 +343,12 @@ const UsuarioForms = ({
                         <div className="rol-dropdown-menu">
                             {roles.map((rol) => (
                                 <button
-                                    key={rol}
+                                    key={rol.idRol}
                                     type="button"
-                                    className={formData.rol === rol ? "active" : ""}
+                                    className={Number(formData.idRol) === rol.idRol ? "active" : ""}
                                     onClick={() => seleccionarRol(rol)}
                                 >
-                                    {rol}
+                                    {rol.nombreRol}
                                 </button>
                             ))}
                         </div>
