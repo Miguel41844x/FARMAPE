@@ -1,47 +1,51 @@
-import { useState } from "react";
-import UsuarioForms from "../../../components/private/mantenimiento/UsuarioForms";
-import UsuariosTable from "../../../components/private/mantenimiento/UsuariosTable.jsx";
+import { useEffect, useState } from "react";
+
+import UsuarioForms from "../../../components/private/mantenimiento/usuarios/UsuarioForms";
+import UsuariosTable from "../../../components/private/mantenimiento/usuarios/UsuariosTable.jsx";
 import "./usuarios.css";
 
 const Usuarios = () => {
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
     const [usuarioEditando, setUsuarioEditando] = useState(null);
 
-    const [usuarios, setUsuarios] = useState([
-        {
-            id: 1,
-            dni: "77777777",
-            nombres: "Renzo",
-            apellidos: "Pérez",
-            telefono: "956321654",
-            direccion: "Av. Brasil",
-            email: "renzo@farmape.com",
-            rol: "ADMIN",
-            estado: "Activo",
-        },
-        {
-            id: 2,
-            dni: "88888888",
-            nombres: "José",
-            apellidos: "Ramos",
-            telefono: "987654321",
-            direccion: "Av. Perú",
-            email: "jose@farmape.com",
-            rol: "VENDEDOR",
-            estado: "Activo",
-        },
-        {
-            id: 3,
-            dni: "99999999",
-            nombres: "María",
-            apellidos: "Gonzales",
-            telefono: "912345678",
-            direccion: "Av. Arequipa",
-            email: "maria@farmape.com",
-            rol: "VENDEDOR",
-            estado: "Inactivo",
-        },
-    ]);
+    const [usuarios, setUsuarios] = useState([]);
+    const [busqueda, setBusqueda] = useState("");
+    const [paginaActual, setPaginaActual] = useState(1);
+    const [loading, setLoading] = useState(false);
+
+    const usuariosPorPagina = 10;
+
+    useEffect(() => {
+        obtenerUsuarios();
+    }, []);
+
+    const obtenerUsuarios = async () => {
+        try {
+            setLoading(true);
+
+            const toker = localStorage.getItem("token");
+
+            const response = await fetch("http://localhost:8080/api/usuarios", {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok){
+                throw new Error("Error al obtener usuarios");
+            }
+
+            const data = await response.json();
+
+            setUsuarios(data);
+
+        } catch(error){
+            console.error(error);
+            alert(error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const abrirCrearUsuario = () => {
         setUsuarioEditando(null);
@@ -53,16 +57,72 @@ const Usuarios = () => {
         setMostrarFormulario(true);
     };
 
-    const eliminarUsuario = (id) => {
-        const confirmar = confirm("¿Seguro que deseas eliminar este usuario?");
-        if (!confirmar) return;
+    const eliminarUsuario = async (id) => {
+        const confirmar = confirm("¿Seguro que deseas eliminar este usuario?")
 
-        setUsuarios(usuarios.filter((usuario) => usuario.id !== id));
+        if(!confirmar) return;
+
+        try{
+            const token = localStorage.getItem("token");
+
+             const response = await fetch(`http://localhost:8080/api/usuarios/${id}`, {
+                method: "DELETE",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error("No se pudo eliminar el usuario");
+            }
+
+            setUsuarios(usuarios.filter((usuario) => usuario.id !== id));
+        } catch (error) {
+            console.error(error);
+            alert(error.message);
+        }
     };
 
     const cerrarFormulario = () => {
         setMostrarFormulario(false);
         setUsuarioEditando(null);
+    };
+
+    const usuariosFiltrados = usuarios.filter((usuario) => {
+        const texto = busqueda.toLowerCase();
+
+        return (
+            usuario.dni?.toLowerCase().includes(texto) ||
+            usuario.nombres?.toLowerCase().includes(texto) ||
+            usuario.apellidos?.toLowerCase().includes(texto) ||
+            usuario.usuario?.toLowerCase().includes(texto) ||
+            usuario.email?.toLowerCase().includes(texto) ||
+            usuario.rol?.toLowerCase().includes(texto)
+        );
+    });
+
+    const totalPaginas = Math.ceil(usuariosFiltrados.length / usuariosPorPagina);
+
+    const indiceInicial = (paginaActual - 1) * usuariosPorPagina;
+    const indiceFinal = indiceInicial + usuariosPorPagina;
+
+    const usuariosPaginados = usuariosFiltrados.slice(indiceInicial, indiceFinal);
+
+    const cambiarBusqueda = (valor) => {
+        setBusqueda(valor);
+        setPaginaActual(1);
+    };
+
+    const paginaAnterior = () => {
+        if (paginaActual > 1) {
+            setPaginaActual(paginaActual - 1);
+        }
+    };
+
+    const paginaSiguiente = () => {
+        if (paginaActual < totalPaginas) {
+            setPaginaActual(paginaActual + 1);
+        }
     };
 
     return (
@@ -93,13 +153,21 @@ const Usuarios = () => {
                         <UsuarioForms
                             usuarioEditando={usuarioEditando}
                             cerrarFormulario={cerrarFormulario}
+                            obtenerUsuarios={obtenerUsuarios}
                         />
                     </div>
                 </div>
             )}
 
             <UsuariosTable
-                usuarios={usuarios}
+                usuarios={usuariosPaginados}
+                totalUsuarios={usuariosFiltrados.length}
+                busqueda={busqueda}
+                setBusqueda={cambiarBusqueda}
+                loading={loading}
+                paginaActual={paginaActual}
+                paginaAnterior={paginaAnterior}
+                paginaSiguiente={paginaSiguiente}
                 onEdit={editarUsuario}
                 onDelete={eliminarUsuario}
             />
