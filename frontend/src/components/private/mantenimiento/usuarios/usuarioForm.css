@@ -5,6 +5,7 @@
     padding: 2rem;
     box-shadow: 0 18px 45px rgba(27, 127, 121, 0.18);
     border: 1px solid rgba(27, 127, 121, 0.08);
+    overflow: visible;
 }
 
 /* HEADER */
@@ -33,6 +34,7 @@
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.25rem 1.4rem;
+    overflow: visible;
 }
 
 .form-group {
@@ -49,8 +51,7 @@
 
 /* INPUTS */
 
-.form-group input,
-.form-group select {
+.form-group input {
     width: 100%;
     height: 46px;
     padding: 0 .95rem;
@@ -67,37 +68,106 @@
     color: #9aa5a4;
 }
 
-.form-group input:hover,
-.form-group select:hover {
+.form-group input:hover {
     border-color: rgba(27, 127, 121, 0.35);
     background: #fff;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.form-group input:focus {
     border-color: var(--primary);
     background: #fff;
     box-shadow: 0 0 0 4px rgba(27, 127, 121, 0.12);
 }
 
-/* SELECT */
+/* DROPDOWN ROL */
 
-.form-group select {
-    cursor: pointer;
-    appearance: none;
-    background-position:
-        calc(100% - 20px) 19px,
-        calc(100% - 14px) 19px;
-    background-size:
-        6px 6px,
-        6px 6px;
-    background-repeat: no-repeat;
-    padding-right: 2.5rem;
+.rol-dropdown-wrapper {
+    position: relative;
+    overflow: visible;
 }
 
-.form-group select option {
-    background: #fff;
+.rol-dropdown-btn {
+    width: 100%;
+    height: 46px;
+    padding: 0 .95rem;
+    border-radius: 14px;
+    border: 1px solid rgba(27, 127, 121, 0.18);
+    outline: none;
+    background: #f9fbfb;
     color: var(--text-primary);
+    cursor: pointer;
+    transition: all .2s ease;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: .95rem;
+}
+
+.rol-dropdown-btn:hover {
+    border-color: rgba(27, 127, 121, 0.35);
+    background: #fff;
+}
+
+.rol-dropdown-arrow {
+    color: var(--primary);
+    transition: .2s ease;
+}
+
+.rol-dropdown-arrow.open {
+    transform: rotate(180deg);
+}
+
+.rol-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    z-index: 9999;
+
+    background: #fff;
+    border: 1px solid rgba(27, 127, 121, 0.12);
+    border-radius: 14px;
+    padding: 8px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.12);
+
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.rol-dropdown-menu::-webkit-scrollbar {
+    width: 7px;
+}
+
+.rol-dropdown-menu::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.rol-dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(27, 127, 121, 0.35);
+    border-radius: 999px;
+}
+
+.rol-dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(27, 127, 121, 0.6);
+}
+
+.rol-dropdown-menu button {
+    width: 100%;
+    border: none;
+    border-radius: 11px;
+    padding: 11px 12px;
+    background: transparent;
+    color: var(--text-primary);
+    text-align: left;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.rol-dropdown-menu button:hover,
+.rol-dropdown-menu button.active {
+    background: rgba(27, 127, 121, 0.1);
+    color: var(--primary);
 }
 
 /* PASSWORD */
@@ -140,7 +210,7 @@
     height: 48px;
     border: none;
     border-radius: 15px;
-    background: linear-gradient(135deg, var(--primary), #25a69d);
+    background: var(--primary);
     color: #fff;
     font-size: 1rem;
     font-weight: 700;
@@ -173,4 +243,4 @@
     .usuario-submit-btn {
         grid-column: span 1;
     }
-}
+}   

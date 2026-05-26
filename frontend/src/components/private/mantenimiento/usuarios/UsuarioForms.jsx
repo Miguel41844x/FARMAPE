@@ -1,11 +1,32 @@
 import "./usuarioForm.css";
-import { useState } from "react";
+
+import { useEffect, useRef, useState } from "react";
+
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const UsuarioForms = ({ cerrarFormulario }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const [menuRolAbierto, setMenuRolAbierto] = useState(false);
+
+    const rolDropdownRef = useRef(null);
+
+    useEffect(() => {
+        const cerrarMenuRol = (e) => {
+            if (
+                rolDropdownRef.current &&
+                !rolDropdownRef.current.contains(e.target)
+            ) {
+                setMenuRolAbierto(false);
+            }
+        };
+
+        document.addEventListener("mousedown", cerrarMenuRol);
+
+        return () => {
+            document.removeEventListener("mousedown", cerrarMenuRol);
+        };
+    }, []);
 
     const roles = [
         "Administrador",
@@ -97,7 +118,7 @@ const UsuarioForms = ({ cerrarFormulario }) => {
             <form className="usuario-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>DNI</label>
-                    <input name="dni" value={formData.dni} placeholder="77777777" onChange={handleChange} />
+                    <input name="dni" value={formData.dni} placeholder="41306253" onChange={handleChange} />
                 </div>
 
                 <div className="form-group">
@@ -120,7 +141,7 @@ const UsuarioForms = ({ cerrarFormulario }) => {
                     <input name="direccion" value={formData.direccion} placeholder="Av. Brasil" onChange={handleChange} />
                 </div>
 
-                <div className="form-group rol-dropdown-wrapper">
+                <div className="form-group rol-dropdown-wrapper" ref={rolDropdownRef}>
                     <label>Rol</label>
 
                     <button
