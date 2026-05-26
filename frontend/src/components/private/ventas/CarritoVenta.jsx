@@ -6,7 +6,8 @@ const CarritoVenta = ({
     aumentarCantidad,
     disminuirCantidad,
     eliminarProducto,
-    abrirCliente,
+    generarTicket,
+    loadingTicket,
 }) => {
     return (
         <section className="venta-carrito">
@@ -62,10 +63,10 @@ const CarritoVenta = ({
                 </div>
 
                 <button
-                    onClick={abrirCliente}
-                    disabled={carrito.length === 0}
+                    onClick={generarTicket}
+                    disabled={carrito.length === 0 || loadingTicket}
                 >
-                    Datos del cliente
+                    {loadingTicket ? "Generando..." : "Generar ticket"}
                 </button>
             </div>
         </section>
