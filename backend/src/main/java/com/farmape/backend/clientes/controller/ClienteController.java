@@ -23,6 +23,11 @@ public class ClienteController {
         return clienteService.listar();
     }
 
+    @GetMapping("/documento/{dniRuc}")
+    public ClienteResponse obtenerPorDocumento(@PathVariable String dniRuc) {
+        return clienteService.obtenerPorDocumento(dniRuc);
+    }
+
     @GetMapping("/{id}")
     public ClienteResponse obtenerPorId(@PathVariable Integer id) {
         return clienteService.obtenerPorId(id);

@@ -79,4 +79,12 @@ public class ClienteService {
                 cliente.getTipoCliente()
         );
     }
+
+    public ClienteResponse obtenerPorDocumento(String dniRuc) {
+        Cliente cliente = clienteRepository.findByDniRuc(dniRuc)
+                .orElseThrow(() -> new RuntimeException("Cliente no encontrado"));
+
+        return toResponse(cliente);
+    }
+
 }

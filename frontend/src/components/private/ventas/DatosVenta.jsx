@@ -1,8 +1,7 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import "./datosVenta.css";
 
 function DatosVenta({
-    clientes,
     idCliente,
     setIdCliente,
     canalPedido,
@@ -15,8 +14,17 @@ function DatosVenta({
     loadingTicket,
     totalVenta,
 }) {
-    const [busquedaCliente, setBusquedaCliente] = useState("");
+    const [dniBusqueda, setDniBusqueda] = useState("");
+    const [buscandoCliente, setBuscandoCliente] = useState(false);
     const [mostrarRegistro, setMostrarRegistro] = useState(false);
+
+    const [clienteEncontrado, setClienteEncontrado] = useState({
+        dniRuc: "",
+        nombres: "",
+        apellidos: "",
+        telefono: "",
+        direccion: "",
+    });
 
     const [nuevoCliente, setNuevoCliente] = useState({
         dniRuc: "",
@@ -29,23 +37,84 @@ function DatosVenta({
         tipoCliente: "Natural",
     });
 
-    const clientesFiltrados = useMemo(() => {
-        const texto = busquedaCliente.toLowerCase().trim();
-
-        if (!texto) return clientes;
-
-        return clientes.filter((cliente) => {
-            const nombreCompleto = `${cliente.nombres ?? ""} ${cliente.apellidos ?? ""}`.toLowerCase();
-            const dniRuc = `${cliente.dniRuc ?? ""}`.toLowerCase();
-            const telefono = `${cliente.telefono ?? ""}`.toLowerCase();
-
-            return (
-                nombreCompleto.includes(texto) ||
-                dniRuc.includes(texto) ||
-                telefono.includes(texto)
-            );
+    const limpiarClienteEncontrado = () => {
+        setIdCliente("");
+        setClienteEncontrado({
+            dniRuc: "",
+            nombres: "",
+            apellidos: "",
+            telefono: "",
+            direccion: "",
         });
-    }, [clientes, busquedaCliente]);
+    };
+
+    const buscarClientePorDniRuc = async () => {
+        const documento = dniBusqueda.trim();
+
+        if (!documento) {
+            alert("Ingrese un DNI o RUC para buscar");
+            limpiarClienteEncontrado();
+            return;
+        }
+
+        try {
+            setBuscandoCliente(true);
+
+            const token = localStorage.getItem("token");
+
+            const response = await fetch(
+                `http://localhost:8080/api/clientes/documento/${documento}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            if (!response.ok) {
+                limpiarClienteEncontrado();
+                setClienteEncontrado((prev) => ({
+                    ...prev,
+                    dniRuc: documento,
+                }));
+
+                alert("Cliente no encontrado. Puedes registrarlo manualmente.");
+                return;
+            }
+
+            const data = await response.json();
+
+            setIdCliente(data.idCliente);
+
+            setClienteEncontrado({
+                dniRuc: data.dniRuc || documento,
+                nombres: data.nombres || "",
+                apellidos: data.apellidos || "",
+                telefono: data.telefono || "",
+                direccion: data.direccion || "",
+            });
+        } catch (error) {
+            console.error("Error al buscar cliente:", error);
+            alert("Error al buscar cliente");
+        } finally {
+            setBuscandoCliente(false);
+        }
+    };
+
+    const buscarConEnter = (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            buscarClientePorDniRuc();
+        }
+    };
+
+    const manejarCambioBusqueda = (e) => {
+        setDniBusqueda(e.target.value);
+
+        if (idCliente) {
+            limpiarClienteEncontrado();
+        }
+    };
 
     const manejarCambioCliente = (e) => {
         const { name, value } = e.target;
@@ -101,10 +170,21 @@ function DatosVenta({
 
             const clienteCreado = await response.json();
 
-            await cargarClientes();
+            if (cargarClientes) {
+                await cargarClientes();
+            }
 
             setIdCliente(clienteCreado.idCliente);
-            setBusquedaCliente("");
+            setDniBusqueda(clienteCreado.dniRuc || "");
+
+            setClienteEncontrado({
+                dniRuc: clienteCreado.dniRuc || "",
+                nombres: clienteCreado.nombres || "",
+                apellidos: clienteCreado.apellidos || "",
+                telefono: clienteCreado.telefono || "",
+                direccion: clienteCreado.direccion || "",
+            });
+
             setMostrarRegistro(false);
             limpiarFormularioCliente();
 
@@ -121,7 +201,7 @@ function DatosVenta({
                 <div className="datos-venta-header">
                     <div>
                         <h3>Datos de la venta</h3>
-                        <p>Selecciona el cliente, canal de pedido y agrega una observación.</p>
+                        <p>Busca el cliente por DNI/RUC, selecciona el canal y agrega una observación.</p>
                     </div>
 
                     <button
@@ -135,29 +215,55 @@ function DatosVenta({
 
                 <div className="datos-venta-grid">
                     <div className="datos-venta-field">
-                        <label>Buscar cliente</label>
+                        <label>DNI / RUC del cliente</label>
+
+                        <div className="cliente-search-inline">
+                            <input
+                                type="text"
+                                value={dniBusqueda}
+                                onChange={manejarCambioBusqueda}
+                                onKeyDown={buscarConEnter}
+                                placeholder="Ingrese DNI/RUC y presione Enter"
+                            />
+
+                            <button
+                                type="button"
+                                onClick={buscarClientePorDniRuc}
+                                disabled={buscandoCliente}
+                            >
+                                {buscandoCliente ? "..." : "Buscar"}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="datos-venta-field">
+                        <label>Nombres</label>
                         <input
                             type="text"
-                            value={busquedaCliente}
-                            onChange={(e) => setBusquedaCliente(e.target.value)}
-                            placeholder="Buscar por nombre, DNI/RUC o teléfono..."
+                            value={`${clienteEncontrado.nombres} ${clienteEncontrado.apellidos}`.trim()}
+                            placeholder="Se completará al buscar"
+                            readOnly
                         />
                     </div>
 
                     <div className="datos-venta-field">
-                        <label>Cliente</label>
-                        <select
-                            value={idCliente}
-                            onChange={(e) => setIdCliente(e.target.value)}
-                        >
-                            <option value="">Selecciona un cliente</option>
+                        <label>Teléfono</label>
+                        <input
+                            type="text"
+                            value={clienteEncontrado.telefono}
+                            placeholder="Teléfono del cliente"
+                            readOnly
+                        />
+                    </div>
 
-                            {clientesFiltrados.map((cliente) => (
-                                <option key={cliente.idCliente} value={cliente.idCliente}>
-                                    {cliente.nombres} {cliente.apellidos} - {cliente.dniRuc}
-                                </option>
-                            ))}
-                        </select>
+                    <div className="datos-venta-field">
+                        <label>Dirección</label>
+                        <input
+                            type="text"
+                            value={clienteEncontrado.direccion}
+                            placeholder="Dirección del cliente"
+                            readOnly
+                        />
                     </div>
 
                     <div className="datos-venta-field">

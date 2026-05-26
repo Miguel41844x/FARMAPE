@@ -114,6 +114,44 @@
     min-height: 88px;
 }
 
+/* BUSCADOR CLIENTE */
+
+.cliente-search-inline {
+    display: grid;
+    grid-template-columns: 1fr 90px;
+    gap: 10px;
+}
+
+.cliente-search-inline input {
+    width: 100%;
+}
+
+.cliente-search-inline button {
+    border: none;
+    border-radius: 14px;
+    background: var(--primary);
+    color: #fff;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.cliente-search-inline button:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+
+.cliente-search-inline button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.datos-venta-field input[readonly] {
+    background: #f1f5f9;
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
 /* TOTAL */
 
 .datos-venta-total {
@@ -305,6 +343,14 @@
     .datos-venta-card {
         padding: 22px;
         border-radius: 20px;
+    }
+
+    .cliente-search-inline {
+        grid-template-columns: 1fr;
+    }
+
+    .cliente-search-inline button {
+        height: 44px;
     }
 
     .registro-cliente-grid {
