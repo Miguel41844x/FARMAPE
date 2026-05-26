@@ -1,0 +1,107 @@
+.validar-card {
+    flex: 1;
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+}
+
+.caja-section-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: center;
+}
+
+.caja-section-header h2 {
+    font-size: 1.35rem;
+    color: #333;
+}
+
+.caja-section-header span {
+    color: #0b7a75;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.ventas-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.venta-item {
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    padding: 18px 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    align-items: center; 
+    background: #ffffff;
+    transition: all 0.2s ease;
+}
+
+.venta-item.activo {
+    border-color: #0b7a75;
+    background-color: #f4faf9;
+}
+
+.venta-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    text-align: left;
+}
+
+.venta-item-info h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111;
+}
+
+.venta-item-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.venta-item-precio {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #111;
+    display: flex;
+    justify-content: center;
+}
+
+.venta-item-estado {
+    display: flex;
+    justify-content: center;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    background-color: #eaf6f5;
+    color: #0b7a75;
+}
+
+.venta-item button {
+    background: #0b7a75;
+    color: white;
+    border: none;
+    padding: 10px 0;
+    width: 100%;
+    max-width: 140px; 
+    margin: 0 auto;  
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: background 0.2s ease;
+}
+
+.venta-item button.btn-validado {
+    background: #555;
+}

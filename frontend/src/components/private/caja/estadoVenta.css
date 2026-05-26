@@ -1,0 +1,135 @@
+.estado-card {
+    background: white;
+    border-radius: 24px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); 
+}
+
+.estado-card h2 {
+    color: #111;
+    font-size: 1.35rem;
+    margin-bottom: 20px;
+    font-weight: 700;
+}
+
+
+.placeholder-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    text-align: center;
+}
+
+.estado-placeholder {
+    color: #888;
+    font-size: 0.95rem;
+}
+
+.estado-productos-resumen h3 {
+    font-size: 0.95rem;
+    color: #555;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.caja-productos-lista {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 20px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; 
+}
+
+.caja-producto-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 14px;
+    background-color: #f8f9fa; 
+    border-radius: 10px;
+    border: 1px solid #eee;
+}
+
+.producto-nombre {
+    font-size: 0.95rem;
+    color: #333;
+    font-weight: 500;
+}
+
+.producto-cantidad {
+    color: #777;
+    font-size: 0.85rem;
+    margin-left: 6px;
+    font-weight: 600;
+}
+
+.producto-subtotal {
+    font-size: 0.95rem;
+    color: #111;
+    font-weight: 700;
+}
+
+.estado-form-caja {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    border-top: 1px dashed #ddd; 
+    padding-top: 18px;
+}
+
+.estado-form-caja label {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #444;
+}
+
+.estado-form-caja select {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    background-color: #f5f5f5; 
+    color: #666;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.estado-form-caja select:disabled {
+    cursor: not-allowed;
+    background-color: #f5f5f5;
+    color: #666;
+}
+
+.estado-form-caja select:enabled {
+    cursor: pointer;
+    background-color: #ffffff;
+    color: #111;
+    border-color: #0b7a75; 
+}
+
+.btn-emitir-comprobante {
+    background: #0b7a75;
+    color: white;
+    border: none;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    width: 100%;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    cursor: pointer;
+}
+
+.btn-emitir-comprobante:hover {
+    background: #085d59;
+}
+
+.btn-emitir-comprobante:disabled:hover {
+    background-color: #0b7a75;
+    opacity: 0.40;
+    cursor: not-allowed;
+}
