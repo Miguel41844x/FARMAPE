@@ -1,21 +1,7 @@
 import { createContext, useContext, useState } from "react";
 import { FaAppleAlt } from "react-icons/fa";
 
-/**
- * AuthContext
- *
- * Contexto global para manejar la información
- * del usuario autenticado en toda la aplicación.
- */
-
 const AuthContext = createContext();
-
-/**
- * AuthProvider
- *
- * Envuelve la aplicación y permite compartir
- * el estado del usuario entre componentes.
- */
 
 export const AuthProvider = ({ children }) => {
     
