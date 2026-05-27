@@ -14,16 +14,6 @@ import Reporte from "../pages/private/Reportes";
 import Mantenimiento from "../pages/private/mantenimiento/Mantenimiento";
 import Usuarios from "../pages/private/mantenimiento/Usuarios";
 
-/**
- * AppRouter
- *
- * Maneja todas las rutas principales de la aplicación.
- *
- * Estructura:
- * - Rutas públicas
- * - Rutas privadas dentro de PrivateLayout
- */
-
 function AppRouter (){
     return(
         <Routes>
