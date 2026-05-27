@@ -8,7 +8,6 @@ import com.farmape.backend.auth.dto.LoginResponse;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.*;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.stereotype.Service;
