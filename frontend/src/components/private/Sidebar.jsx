@@ -2,6 +2,7 @@ import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+
 import { CiShoppingCart, CiHome, CiFileOn } from "react-icons/ci";
 import { FiLogOut } from "react-icons/fi";
 import { PiListBold } from "react-icons/pi";
@@ -11,6 +12,58 @@ import { CiCoinInsert } from "react-icons/ci";
 import Logo from "./Logo";
 import "./sidebar.css";
 
+import { ROLES } from "../../constants/roles";
+
+const menuItems = [
+    {
+        label: "Inicio",
+        path: "/homePrivate",
+        icon: <CiHome />,
+        roles: [
+            ROLES.EMPLEADO,
+            ROLES.CAJERO,
+            ROLES.ENCARGADO_DESPACHO,
+            ROLES.ENCARGADO_ALMACEN,
+            ROLES.ADMINISTRADOR,
+            ROLES.QUIMICO_FARMACEUTICO,
+            ROLES.GERENTE,
+        ],
+    },
+    {
+        label: "Ventas",
+        path: "/ventas",
+        icon: <CiShoppingCart />,
+        roles: [
+            ROLES.EMPLEADO,
+            ROLES.ADMINISTRADOR,
+        ],
+    },
+    {
+        label: "Caja",
+        path: "/caja",
+        icon: <CiCoinInsert />,
+        roles: [
+            ROLES.CAJERO,
+        ],
+    },
+    {
+        label: "Mantenimiento",
+        path: "/mantenimiento",
+        icon: <CiSettings />,
+        roles: [
+            ROLES.ADMINISTRADOR,
+        ],
+    },
+    {
+        label: "Reportes",
+        path: "/reportes",
+        icon: <CiFileOn />,
+        roles: [
+            ROLES.GERENTE,
+        ],
+    },
+];
+
 const Sidebar = () => {
 
     const navigate = useNavigate();
@@ -18,54 +71,48 @@ const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
 
+    const rolUsuario = user?.rol;
+
+    const visibleMenuItems = menuItems.filter((item) =>
+        item.roles.includes(rolUsuario)
+    );
+
     const handleLogout = () => {
         logout();
-        navigate("/", {replace: true});
+        navigate("/", { replace: true });
     };
 
     const initial = user?.nombres?.charAt(0).toUpperCase();
 
     return (
         <aside className={`sidebar ${isOpen ? "open" : "closed"}`}>
-            
+
             <div className="sidebar-header">
-                <PiListBold 
-                    className="menu-toggle" 
+                <PiListBold
+                    className="menu-toggle"
                     onClick={() => setIsOpen(!isOpen)}
                 />
                 {isOpen && <Logo to="/homePrivate" />}
             </div>
 
             <nav className="sidebar-menu">
-                <NavLink to="/homePrivate" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-                    <CiHome />
-                    {isOpen && <span>Inicio</span>}
-                </NavLink>
-
-                <NavLink to="/ventas" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-                    <CiShoppingCart />
-                    {isOpen && <span>Ventas</span>}
-                </NavLink>
-
-                <NavLink to="/caja" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-                    <CiCoinInsert />
-                    {isOpen && <span>Caja</span>}
-                </NavLink>
-
-                <NavLink to="/reportes" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-                    <CiFileOn />
-                    {isOpen && <span>Reportes</span>}
-                </NavLink>
-
-                <NavLink to="/mantenimiento" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-                    <CiSettings />
-                    {isOpen && <span>Mantenimiento</span>}
-                </NavLink>
+                {visibleMenuItems.map((item) => (
+                    <NavLink
+                        key={item.path}
+                        to={item.path}
+                        className={({ isActive }) =>
+                            isActive ? "menu-item active" : "menu-item"
+                        }
+                    >
+                        {item.icon}
+                        {isOpen && <span>{item.label}</span>}
+                    </NavLink>
+                ))}
             </nav>
 
             {isOpen && (
                 <div className="sidebar-footer">
-                    <div 
+                    <div
                         className="user-box"
                         onClick={() => setMenuOpen(!menuOpen)}
                     >
