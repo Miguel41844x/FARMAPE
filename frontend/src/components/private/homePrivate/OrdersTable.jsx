@@ -15,7 +15,7 @@ export default function OrdersTable() {
 
             const token = localStorage.getItem("token");
 
-            const response = await fetch("http://localhost:8080/api/ventas", {
+            const response = await fetch("http://localhost:8080/api/ventas/ultimas", {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -27,12 +27,8 @@ export default function OrdersTable() {
             }
 
             const data = await response.json();
-
-            const ultimasOrdenes = data
-                .sort((a, b) => b.idOrdenVenta - a.idOrdenVenta)
-                .slice(0, 4);
-
-            setOrders(ultimasOrdenes);
+            setOrders(data);
+            
         } catch (error) {
             console.error("Error al cargar últimas órdenes:", error);
         } finally {

@@ -28,6 +28,11 @@ public class VentaController {
         return ventaService.listar();
     }
 
+    @GetMapping("/ultimas")
+    public List<OrdenVentaResponse> listarUltimas() {
+        return ventaService.listarUltimas();
+    }
+
     @GetMapping("/pendientes")
     public List<OrdenVentaResponse> listarPendientes() {
         return ventaService.listarPendientes();

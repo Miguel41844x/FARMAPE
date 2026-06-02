@@ -106,6 +106,13 @@ public class VentaService {
                 .toList();
     }
 
+    public List<OrdenVentaResponse> listarUltimas() {
+        return ordenVentaRepository.findTop4ByOrderByIdOrdenVentaDesc()
+                .stream()
+                .map(this::toResponse)
+                .toList();
+        }
+
     public List<OrdenVentaResponse> listarPendientes() {
         return ordenVentaRepository.findByEstado(EstadoOrdenVenta.Pendiente)
                 .stream()
