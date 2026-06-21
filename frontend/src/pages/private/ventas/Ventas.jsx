@@ -5,6 +5,10 @@ import CarritoVenta from "../../../components/private/ventas/CarritoVenta";
 import ProductosVenta from "../../../components/private/ventas/ProductosVenta";
 import DatosVenta from "../../../components/private/ventas/DatosVenta";
 
+import { obtenerProductos } from "../../../services/ventas/productoService";
+import { obtenerClientes } from "../../../services/ventas/clienteService";
+import { registrarVenta } from "../../../services/ventas/ventaService";
+
 const Ventas = () => {
     const [productos, setProductos] = useState([]);
     const [clientes, setClientes] = useState([]);
@@ -20,26 +24,16 @@ const Ventas = () => {
     const [loadingTicket, setLoadingTicket] = useState(false);
 
     useEffect(() => {
-        obtenerProductos();
-        cargarClientes();
+        cargarDatosIniciales();
     }, []);
 
-    const obtenerProductos = async () => {
+    const cargarDatosIniciales = async () => {
         try {
-            const token = localStorage.getItem("token");
+            const productosData = await obtenerProductos();
+            const clientesData = await obtenerClientes();
 
-            const response = await fetch("http://localhost:8080/api/productos", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Error al obtener productos");
-            }
-
-            const data = await response.json();
-            setProductos(data);
+            setProductos(productosData);
+            setClientes(clientesData);
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -48,20 +42,8 @@ const Ventas = () => {
 
     const cargarClientes = async () => {
         try {
-            const token = localStorage.getItem("token");
-
-            const response = await fetch("http://localhost:8080/api/clientes", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("Error al obtener clientes");
-            }
-
-            const data = await response.json();
-            setClientes(data);
+            const clientesData = await obtenerClientes();
+            setClientes(clientesData);
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -135,25 +117,10 @@ const Ventas = () => {
         0
     );
 
-    const descargarPdf = (blob, nombreArchivo) => {
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
-
-        link.href = url;
-        link.download = nombreArchivo;
-
-        document.body.appendChild(link);
-        link.click();
-
-        link.remove();
-        window.URL.revokeObjectURL(url);
-    };
-
     const generarTicket = async () => {
         try {
             setLoadingTicket(true);
 
-            const token = localStorage.getItem("token");
             const idTrabajador = localStorage.getItem("idTrabajador");
 
             if (!idCliente) {
@@ -170,6 +137,7 @@ const Ventas = () => {
                 alert("Agrega productos al carrito");
                 return;
             }
+
             const hayProductoSinId = carrito.some((item) => !item.idProducto);
 
             if (hayProductoSinId) {
@@ -189,21 +157,7 @@ const Ventas = () => {
                 })),
             };
 
-            const response = await fetch("http://localhost:8080/api/ventas", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(ventaRequest),
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "No se pudo generar el ticket");
-            }
-
-            const ventaCreada = await response.json();
+            const ventaCreada = await registrarVenta(ventaRequest);
 
             alert(`Ticket generado correctamente. Orden N° ${ventaCreada.idOrdenVenta}`);
 
@@ -211,6 +165,9 @@ const Ventas = () => {
             setIdCliente("");
             setCanalPedido("Presencial");
             setObservacion("");
+            setPanelDerecho("productos");
+
+            await cargarDatosIniciales();
         } catch (error) {
             console.error("Error:", error);
             alert("Error: " + error.message);

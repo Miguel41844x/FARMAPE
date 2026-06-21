@@ -4,6 +4,11 @@ import UsuarioForms from "../../../components/private/mantenimiento/usuarios/Usu
 import UsuariosTable from "../../../components/private/mantenimiento/usuarios/UsuariosTable.jsx";
 import "./usuarios.css";
 
+import {
+    obtenerUsuarios as obtenerUsuariosService,
+    actualizarEstadoTrabajador,
+} from "../../../services/mantenimiento/usuarioService";
+
 const Usuarios = () => {
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
     const [usuarioEditando, setUsuarioEditando] = useState(null);
@@ -16,30 +21,17 @@ const Usuarios = () => {
     const usuariosPorPagina = 10;
 
     useEffect(() => {
-        obtenerUsuarios();
+        cargarUsuarios();
     }, []);
 
-    const obtenerUsuarios = async () => {
+    const cargarUsuarios = async () => {
         try {
             setLoading(true);
 
-            const token = localStorage.getItem("token");
-
-            const response = await fetch("http://localhost:8080/api/trabajadores", {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok){
-                throw new Error("Error al obtener usuarios");
-            }
-
-            const data = await response.json();
+            const data = await obtenerUsuariosService();
 
             setUsuarios(data);
-
-        } catch(error){
+        } catch (error) {
             console.error(error);
             alert(error.message);
         } finally {
@@ -62,24 +54,10 @@ const Usuarios = () => {
         if (!confirmar) return;
 
         try {
-            const token = localStorage.getItem("token");
-
-            const response = await fetch(`http://localhost:8080/api/trabajadores/${id}/estado`, {
-                method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    estado: "INACTIVO",
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error("No se pudo desactivar el trabajador");
-            }
-
-            const trabajadorActualizado = await response.json();
+            const trabajadorActualizado = await actualizarEstadoTrabajador(
+                id,
+                "INACTIVO"
+            );
 
             setUsuarios(
                 usuarios.map((usuario) =>
@@ -171,7 +149,7 @@ const Usuarios = () => {
                         <UsuarioForms
                             usuarioEditando={usuarioEditando}
                             cerrarFormulario={cerrarFormulario}
-                            obtenerUsuarios={obtenerUsuarios}
+                            obtenerUsuarios={cargarUsuarios}
                         />
                     </div>
                 </div>
