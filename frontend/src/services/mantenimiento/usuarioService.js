@@ -3,17 +3,33 @@ import { API_URL } from "../../config/api";
 export const obtenerUsuarios = async () => {
     const token = localStorage.getItem("token");
 
-    const response = await fetch(`${API_URL}/trabajadores`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+    const headers = {
+        Authorization: `Bearer ${token}`,
+    };
 
-    if (!response.ok) {
+    const [trabajadoresResponse, cuentasResponse] = await Promise.all([
+        fetch(`${API_URL}/trabajadores`, { headers }),
+        fetch(`${API_URL}/usuarios`, { headers }),
+    ]);
+
+    if (!trabajadoresResponse.ok || !cuentasResponse.ok) {
         throw new Error("Error al obtener usuarios");
     }
 
-    return await response.json();
+    const [trabajadores, cuentas] = await Promise.all([
+        trabajadoresResponse.json(),
+        cuentasResponse.json(),
+    ]);
+
+    const cuentasPorTrabajador = new Map(
+        cuentas.map((cuenta) => [cuenta.idTrabajador, cuenta])
+    );
+
+    return trabajadores.map((trabajador) => ({
+        ...trabajador,
+        ...cuentasPorTrabajador.get(trabajador.idTrabajador),
+        estado: trabajador.estado,
+    }));
 };
 
 export const crearUsuario = async (usuarioRequest) => {
