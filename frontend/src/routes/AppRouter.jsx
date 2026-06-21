@@ -16,6 +16,12 @@ import Caja from "../pages/private/caja/Caja";
 import Reporte from "../pages/private/Reportes";
 import Mantenimiento from "../pages/private/mantenimiento/Mantenimiento";
 import Usuarios from "../pages/private/mantenimiento/Usuarios";
+import DespachoAlmacen from "../pages/private/despacho/DespachoAlmacen";
+import EntregaTienda from "../pages/private/despacho/EntregaTienda";
+import RepartoDomicilio from "../pages/private/despacho/RepartoDomicilio";
+import RegistrarIngreso from "../pages/private/despacho/RegistrarIngreso";
+import VerificarProductos from "../pages/private/despacho/VerificarProductos";
+import InformeAlmacen from "../pages/private/despacho/InformeAlmacen";
 
 function AppRouter() {
     return (
@@ -49,6 +55,7 @@ function AppRouter() {
                             <RoleRoute
                                 allowedRoles={[
                                     ROLES.CAJERO,
+                                    ROLES.ADMINISTRADOR,
                                 ]}
                             />
                         }
@@ -79,6 +86,23 @@ function AppRouter() {
                         }
                     >
                         <Route path="/reportes" element={<Reporte />} />
+                    </Route>
+
+                    <Route
+                        element={
+                            <RoleRoute
+                                allowedRoles={[
+                                    ROLES.ADMINISTRADOR,
+                                ]}
+                            />
+                        }
+                    >
+                        <Route path="/despacho-almacen" element={<DespachoAlmacen/>}/>
+                        <Route path="/despacho-almacen/entrega" element={<EntregaTienda />} />
+                        <Route path="/despacho-almacen/reparto" element={<RepartoDomicilio />} />
+                        <Route path="/despacho-almacen/ingreso" element={<RegistrarIngreso />} />
+                        <Route path="/despacho-almacen/verificacion" element={<VerificarProductos />} />
+                        <Route path="/despacho-almacen/informes" element={<InformeAlmacen />} />
                     </Route>
 
                 </Route>
