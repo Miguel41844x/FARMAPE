@@ -16,12 +16,19 @@ import Caja from "../pages/private/caja/Caja";
 import Reporte from "../pages/private/Reportes";
 import Mantenimiento from "../pages/private/mantenimiento/Mantenimiento";
 import Usuarios from "../pages/private/mantenimiento/Usuarios";
+import Productos from "../pages/private/mantenimiento/Productos";
 import DespachoAlmacen from "../pages/private/despacho/DespachoAlmacen";
 import EntregaTienda from "../pages/private/despacho/EntregaTienda";
 import RepartoDomicilio from "../pages/private/despacho/RepartoDomicilio";
 import RegistrarIngreso from "../pages/private/despacho/RegistrarIngreso";
 import VerificarProductos from "../pages/private/despacho/VerificarProductos";
 import InformeAlmacen from "../pages/private/despacho/InformeAlmacen";
+import ComprasProveedores from "../pages/private/compras/ComprasProveedores";
+import PedidosCompra from "../pages/private/compras/PedidosCompra";
+import FacturasProveedor from "../pages/private/compras/FacturasProveedor";
+import NotasCredito from "../pages/private/compras/NotasCredito";
+import PagosCredito from "../pages/private/compras/PagosCredito";
+import ProveedoresCompras from "../pages/private/compras/ProveedoresCompras";
 
 function AppRouter() {
     return (
@@ -74,6 +81,7 @@ function AppRouter() {
                     >
                         <Route path="/mantenimiento" element={<Mantenimiento />} />
                         <Route path="/mantenimiento/usuarios" element={<Usuarios />} />
+                        <Route path="/mantenimiento/productos" element={<Productos/>} />
                     </Route>
 
                     <Route
@@ -81,11 +89,29 @@ function AppRouter() {
                             <RoleRoute
                                 allowedRoles={[
                                     ROLES.GERENTE,
+                                    ROLES.ADMINISTRADOR,
                                 ]}
                             />
                         }
                     >
                         <Route path="/reportes" element={<Reporte />} />
+                    </Route>
+
+                    <Route
+                        element={
+                            <RoleRoute
+                                allowedRoles={[
+                                    ROLES.ADMINISTRADOR,
+                                ]}
+                            />
+                        }
+                    >
+                        <Route path="/compras-proveedores" element={<ComprasProveedores />} />
+                        <Route path="/compras-proveedores/pedidos" element={<PedidosCompra />} />
+                        <Route path="/compras-proveedores/facturas" element={<FacturasProveedor />} />
+                        <Route path="/compras-proveedores/notas-credito" element={<NotasCredito />} />
+                        <Route path="/compras-proveedores/pagos" element={<PagosCredito />} />
+                        <Route path="/compras-proveedores/proveedores" element={<ProveedoresCompras />} />
                     </Route>
 
                     <Route
