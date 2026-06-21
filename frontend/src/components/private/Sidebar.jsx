@@ -46,7 +46,6 @@ const menuItems = [
         icon: <CiCoinInsert />,
         roles: [
             ROLES.CAJERO,
-            ROLES.ADMINISTRADOR,
         ],
     },
     {
