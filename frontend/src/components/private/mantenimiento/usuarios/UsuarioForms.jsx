@@ -1,7 +1,7 @@
 import "./usuarioForm.css";
 
 import { useEffect, useRef, useState } from "react";
-import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
 
 import {
     crearUsuario,
@@ -9,12 +9,29 @@ import {
     actualizarEstadoTrabajador,
 } from "../../../../services/mantenimiento/usuarioService";
 
+const crearEstadoInicial = (usuario = null) => ({
+    idCuenta: usuario?.idCuenta ?? null,
+    idTrabajador: usuario?.idTrabajador ?? null,
+    dni: usuario?.dni ?? "",
+    nombres: usuario?.nombres ?? "",
+    apellidos: usuario?.apellidos ?? "",
+    telefono: usuario?.telefono ?? "",
+    direccion: usuario?.direccion ?? "",
+    usuario: usuario?.usuario ?? usuario?.cuenta?.usuario ?? "",
+    email: usuario?.email ?? usuario?.correo ?? usuario?.cuenta?.email ?? "",
+    password: "",
+    idRol: usuario?.idRol ?? usuario?.rol?.idRol ?? "",
+    rol: usuario?.rol?.nombre ?? usuario?.nombreRol ?? usuario?.rol ?? "",
+    estado: String(usuario?.estado ?? "ACTIVO").toUpperCase(),
+});
+
 const UsuarioForms = ({
     cerrarFormulario,
     obtenerUsuarios,
     usuarioEditando = null,
 }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [guardando, setGuardando] = useState(false);
 
     const [menuRolAbierto, setMenuRolAbierto] = useState(false);
     const rolDropdownRef = useRef(null);
@@ -34,23 +51,11 @@ const UsuarioForms = ({
         { idRol: 7, nombreRol: "Gerente" },
     ];
 
-    const estados = ["Activo", "Bloqueado", "Inactivo"];
+    const estados = ["ACTIVO", "BLOQUEADO", "INACTIVO"];
 
-    const [formData, setFormData] = useState({
-        idCuenta: null,
-        idTrabajador: null,
-        dni: "",
-        nombres: "",
-        apellidos: "",
-        telefono: "",
-        direccion: "",
-        usuario: "",
-        email: "",
-        password: "",
-        idRol: "",
-        rol: "",
-        estado: "ACTIVO",
-    });
+    const [formData, setFormData] = useState(() =>
+        crearEstadoInicial(usuarioEditando)
+    );
 
     useEffect(() => {
         const cerrarMenus = (e) => {
@@ -75,30 +80,6 @@ const UsuarioForms = ({
             document.removeEventListener("mousedown", cerrarMenus);
         };
     }, []);
-
-    useEffect(() => {
-        if (!usuarioEditando) return;
-
-        setFormData({
-            idCuenta: usuarioEditando.idCuenta ?? null,
-            idTrabajador: usuarioEditando.idTrabajador ?? null,
-            dni: usuarioEditando.dni ?? "",
-            nombres: usuarioEditando.nombres ?? "",
-            apellidos: usuarioEditando.apellidos ?? "",
-            telefono: usuarioEditando.telefono ?? "",
-            direccion: usuarioEditando.direccion ?? "",
-            usuario: usuarioEditando.usuario ?? usuarioEditando.cuenta?.usuario ?? "",
-            email: usuarioEditando.email ?? usuarioEditando.correo ?? "",
-            password: "",
-            idRol: usuarioEditando.idRol ?? "",
-            rol:
-                usuarioEditando.rol?.nombre ??
-                usuarioEditando.nombreRol ??
-                usuarioEditando.rol ??
-                "",
-            estado: usuarioEditando.estado ?? "ACTIVO",
-        });
-    }, [usuarioEditando]);
 
     const seleccionarRol = (rol) => {
         setFormData((prev) => ({
@@ -129,8 +110,8 @@ const UsuarioForms = ({
     };
 
     const validarFormulario = () => {
-        if (!formData.dni.trim()) {
-            alert("Ingrese el DNI");
+        if (!/^\d{8}$/.test(formData.dni.trim())) {
+            alert("El DNI debe contener 8 dígitos");
             return false;
         }
 
@@ -159,6 +140,11 @@ const UsuarioForms = ({
             return false;
         }
 
+        if (!esEdicion && !/^\S+@\S+\.\S+$/.test(formData.email.trim())) {
+            alert("Ingrese un email válido");
+            return false;
+        }
+
         if (!esEdicion && !formData.password.trim()) {
             alert("Ingrese una contraseña");
             return false;
@@ -173,13 +159,15 @@ const UsuarioForms = ({
         if (!validarFormulario()) return;
 
         try {
+            setGuardando(true);
+
             if (esEdicion) {
                 await actualizarTrabajador(formData.idTrabajador, {
-                    dni: formData.dni,
-                    nombres: formData.nombres,
-                    apellidos: formData.apellidos,
-                    telefono: formData.telefono,
-                    direccion: formData.direccion,
+                    dni: formData.dni.trim(),
+                    nombres: formData.nombres.trim(),
+                    apellidos: formData.apellidos.trim(),
+                    telefono: formData.telefono.trim(),
+                    direccion: formData.direccion.trim(),
                     idRol: Number(formData.idRol),
                 });
 
@@ -193,7 +181,7 @@ const UsuarioForms = ({
                 alert("Trabajador actualizado correctamente");
 
                 if (obtenerUsuarios) {
-                    obtenerUsuarios();
+                    await obtenerUsuarios();
                 }
 
                 cerrarFormulario();
@@ -201,13 +189,13 @@ const UsuarioForms = ({
             }
 
             await crearUsuario({
-                dni: formData.dni,
-                nombres: formData.nombres,
-                apellidos: formData.apellidos,
-                telefono: formData.telefono,
-                direccion: formData.direccion,
-                usuario: formData.usuario,
-                email: formData.email,
+                dni: formData.dni.trim(),
+                nombres: formData.nombres.trim(),
+                apellidos: formData.apellidos.trim(),
+                telefono: formData.telefono.trim(),
+                direccion: formData.direccion.trim(),
+                usuario: formData.usuario.trim(),
+                email: formData.email.trim(),
                 clave: formData.password,
                 idRol: Number(formData.idRol),
                 estado: formData.estado,
@@ -216,25 +204,37 @@ const UsuarioForms = ({
             alert("Usuario registrado correctamente");
 
             if (obtenerUsuarios) {
-                obtenerUsuarios();
+                await obtenerUsuarios();
             }
 
             cerrarFormulario();
         } catch (error) {
             console.error(error);
             alert(error.message);
+        } finally {
+            setGuardando(false);
         }
     };
 
     return (
         <div className="usuario-form-container">
             <div className="usuario-form-header">
-                <h2>{esEdicion ? "Editar usuario" : "Registrar usuario"}</h2>
-                <p>
-                    {esEdicion
-                        ? "Actualiza los datos del usuario seleccionado"
-                        : "Completa los datos del nuevo usuario"}
-                </p>
+                <div>
+                    <h2>{esEdicion ? "Editar usuario" : "Registrar usuario"}</h2>
+                    <p>
+                        {esEdicion
+                            ? "Actualiza los datos del usuario seleccionado"
+                            : "Completa los datos del nuevo usuario"}
+                    </p>
+                </div>
+                <button
+                    type="button"
+                    className="usuario-form-close"
+                    onClick={cerrarFormulario}
+                    aria-label="Cerrar formulario"
+                >
+                    <FaTimes />
+                </button>
             </div>
 
             <form className="usuario-form" onSubmit={handleSubmit}>
@@ -245,6 +245,10 @@ const UsuarioForms = ({
                         value={formData.dni}
                         placeholder="Ingrese DNI"
                         onChange={handleChange}
+                        inputMode="numeric"
+                        maxLength="8"
+                        autoFocus
+                        required
                     />
                 </div>
 
@@ -255,6 +259,7 @@ const UsuarioForms = ({
                         value={formData.nombres}
                         placeholder="Ingrese nombres"
                         onChange={handleChange}
+                        required
                     />
                 </div>
 
@@ -265,6 +270,7 @@ const UsuarioForms = ({
                         value={formData.apellidos}
                         placeholder="Ingrese apellidos"
                         onChange={handleChange}
+                        required
                     />
                 </div>
 
@@ -388,18 +394,22 @@ const UsuarioForms = ({
                                 onChange={handleChange}
                             />
 
-                            <span
+                            <button
+                                type="button"
                                 className="password-toggle"
                                 onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                             >
                                 {showPassword ? <FaEyeSlash /> : <FaEye />}
-                            </span>
+                            </button>
                         </div>
                     </div>
                 )}
 
-                <button type="submit" className="usuario-submit-btn">
-                    {esEdicion ? "Guardar cambios" : "Registrar usuario"}
+                <button type="submit" className="usuario-submit-btn" disabled={guardando}>
+                    {guardando
+                        ? "Guardando..."
+                        : esEdicion ? "Guardar cambios" : "Registrar usuario"}
                 </button>
             </form>
         </div>

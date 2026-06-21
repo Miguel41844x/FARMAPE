@@ -7,13 +7,12 @@ const UsuariosTable = ({
     setBusqueda,
     loading,
     paginaActual,
+    totalPaginas,
     paginaAnterior,
     paginaSiguiente,
     onEdit,
     onDelete,
 }) => {
-
-    const totalPaginas = 10;
 
     return (
         <div className="usuarios-table-section">
@@ -27,9 +26,10 @@ const UsuariosTable = ({
                 <input
                     className="usuarios-search"
                     type="text"
-                    placeholder="Buscar por DNI, nombre, email o rol..."
+                    placeholder="Buscar por DNI, nombre, correo o rol..."
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
+                    aria-label="Buscar usuarios"
                 />
             </div>
 
@@ -61,34 +61,42 @@ const UsuariosTable = ({
                                 </td>
                             </tr>
                         ) : (
-                            usuarios.map((usuario) => (
+                            usuarios.map((usuario) => {
+                                const email = usuario.email || usuario.correo || usuario.cuenta?.email;
+                                const estado = String(usuario.estado || "").toUpperCase();
+                                const estaInactivo = estado === "INACTIVO";
+
+                                return (
                                 <tr key={usuario.idTrabajador}>
                                     <td>{usuario.dni}</td>
                                     <td>{usuario.nombres} {usuario.apellidos}</td>
+                                    <td>{email || "-"}</td>
                                     <td>{usuario.telefono || "-"}</td>
-                                    <td>{usuario.direccion || "-"}</td>
                                     <td>{usuario.rol?.nombre || usuario.nombreRol || usuario.rol || "-"}</td>
                                     <td>
-                                        <span className="usuarios-status">
-                                            {usuario.estado}
+                                        <span className={`usuarios-status status-${estado.toLowerCase()}`}>
+                                            {estado || "SIN ESTADO"}
                                         </span>
                                     </td>
                                     <td>
                                         <div className="usuarios-actions">
-                                            <button className="editar" onClick={() => onEdit(usuario)}>
+                                            <button type="button" className="editar" onClick={() => onEdit(usuario)}>
                                                 Editar
                                             </button>
 
                                             <button
+                                                type="button"
                                                 className="delete"
                                                 onClick={() => onDelete(usuario.idTrabajador)}
+                                                disabled={estaInactivo}
                                             >
-                                                Desactivar
+                                                {estaInactivo ? "Inactivo" : "Desactivar"}
                                             </button>
                                         </div>
                                     </td>
                                 </tr>
-                            ))
+                                );
+                            })
                         )}
                     </tbody>
                 </table>
@@ -108,7 +116,7 @@ const UsuariosTable = ({
 
                 <button
                     onClick={paginaSiguiente}
-                    disabled={paginaActual === totalPaginas || totalPaginas === 0}
+                    disabled={paginaActual >= totalPaginas || totalPaginas === 0}
                 >
                     →
                 </button>

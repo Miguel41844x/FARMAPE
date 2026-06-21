@@ -13,18 +13,6 @@ const modules = [
         estado: "Activo",
         ultimaActualizacion: "Hoy",
     },
-    {
-        modulo: "Categorías",
-        registros: 8,
-        estado: "Activo",
-        ultimaActualizacion: "Ayer",
-    },
-    {
-        modulo: "Proveedores",
-        registros: 24,
-        estado: "Activo",
-        ultimaActualizacion: "Hace 2 días",
-    },
 ];
 
 const MaintenanceTable = () => {

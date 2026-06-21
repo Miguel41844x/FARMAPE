@@ -11,9 +11,31 @@
 /* HEADER */
 
 .usuario-form-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
     margin-bottom: 2rem;
     padding-bottom: 1.2rem;
     border-bottom: 1px solid rgba(27, 127, 121, 0.12);
+}
+
+.usuario-form-close {
+    display: grid;
+    flex: 0 0 auto;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    border-radius: 10px;
+    background: #f0f5f4;
+    color: var(--text-soft);
+    cursor: pointer;
+}
+
+.usuario-form-close:hover {
+    background: #e4efed;
+    color: var(--primary);
 }
 
 .usuario-form-header h2 {
@@ -37,12 +59,12 @@
     overflow: visible;
 }
 
-.form-group {
+.usuario-form .form-group {
     display: flex;
     flex-direction: column;
 }
 
-.form-group label {
+.usuario-form .form-group label {
     margin-bottom: .45rem;
     font-size: .88rem;
     font-weight: 700;
@@ -51,7 +73,7 @@
 
 /* INPUTS */
 
-.form-group input {
+.usuario-form .form-group input {
     width: 100%;
     height: 46px;
     padding: 0 .95rem;
@@ -64,16 +86,16 @@
     transition: all .2s ease;
 }
 
-.form-group input::placeholder {
+.usuario-form .form-group input::placeholder {
     color: #9aa5a4;
 }
 
-.form-group input:hover {
+.usuario-form .form-group input:hover {
     border-color: rgba(27, 127, 121, 0.35);
     background: #fff;
 }
 
-.form-group input:focus {
+.usuario-form .form-group input:focus {
     border-color: var(--primary);
     background: #fff;
     box-shadow: 0 0 0 4px rgba(27, 127, 121, 0.12);
@@ -187,6 +209,11 @@
     right: 14px;
     top: 50%;
     transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: 0;
+    background: transparent;
     cursor: pointer;
     color: #7c8987;
     font-size: 16px;
@@ -228,6 +255,12 @@
     transform: translateY(0);
 }
 
+.usuario-submit-btn:disabled {
+    opacity: 0.65;
+    cursor: wait;
+    transform: none;
+}
+
 /* RESPONSIVE */
 
 @media (max-width: 768px) {
@@ -243,4 +276,4 @@
     .usuario-submit-btn {
         grid-column: span 1;
     }
-}   
+}
