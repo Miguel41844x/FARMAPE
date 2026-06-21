@@ -5,6 +5,9 @@ import ValidarVenta from "../../../components/private/caja/ValidarVenta";
 import PagoComprobante from "../../../components/private/caja/PagoComprobante";
 import EstadoVenta from "../../../components/private/caja/EstadoVenta";
 
+import { listarOrdenesPendientesCaja, obtenerOrdenCaja,
+    registrarPagoCaja, } from "../../../services/caja/cajaService";
+
 const Caja = () => {
     const [ordenes, setOrdenes] = useState([]);
     const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
@@ -20,20 +23,7 @@ const Caja = () => {
         try {
             setLoadingOrdenes(true);
 
-            const token = localStorage.getItem("token");
-
-            const response = await fetch("http://localhost:8080/api/caja/ordenes-pendientes", {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("No se pudieron obtener las órdenes pendientes");
-            }
-
-            const data = await response.json();
+            const data = await listarOrdenesPendientesCaja();
             setOrdenes(data);
         } catch (error) {
             console.error("Error al cargar órdenes pendientes:", error);
@@ -51,20 +41,7 @@ const Caja = () => {
                 return;
             }
 
-            const token = localStorage.getItem("token");
-
-            const response = await fetch(`http://localhost:8080/api/caja/ordenes/${orden.idOrdenVenta}`, {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                throw new Error("No se pudo obtener el detalle de la orden");
-            }
-
-            const data = await response.json();
+            const data = await obtenerOrdenCaja(orden.idOrdenVenta);
 
             setOrdenSeleccionada(data);
             setResultadoPago(null);
@@ -83,7 +60,6 @@ const Caja = () => {
         try {
             setLoadingPago(true);
 
-            const token = localStorage.getItem("token");
             const idCajero = localStorage.getItem("idTrabajador");
 
             if (!idCajero) {
@@ -98,24 +74,10 @@ const Caja = () => {
                 tipoComprobante: datosPago.tipoComprobante,
             };
 
-            const response = await fetch(
-                `http://localhost:8080/api/caja/ordenes/${ordenSeleccionada.idOrdenVenta}/pagar`,
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify(request),
-                }
+            const data = await registrarPagoCaja(
+                ordenSeleccionada.idOrdenVenta,
+                request
             );
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "No se pudo registrar el pago");
-            }
-
-            const data = await response.json();
 
             setResultadoPago(data);
             setOrdenSeleccionada(data.ordenVenta);
