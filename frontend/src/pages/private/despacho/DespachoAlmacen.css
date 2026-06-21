@@ -10,7 +10,7 @@
 
 .despacho-header h1 {
   margin: 0 0 10px;
-  color: var(--primary);
+  color: var(--primary) !important;
   font-size: 2rem;
   font-weight: 700;
 }
