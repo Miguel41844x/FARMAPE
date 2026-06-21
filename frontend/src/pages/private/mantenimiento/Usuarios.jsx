@@ -20,9 +20,10 @@ const Usuarios = () => {
 
     const usuariosPorPagina = 10;
 
-    useEffect(() => {
-        cargarUsuarios();
-    }, []);
+    const cerrarFormulario = () => {
+        setMostrarFormulario(false);
+        setUsuarioEditando(null);
+    };
 
     const cargarUsuarios = async () => {
         try {
@@ -30,7 +31,7 @@ const Usuarios = () => {
 
             const data = await obtenerUsuariosService();
 
-            setUsuarios(data);
+            setUsuarios(Array.isArray(data) ? data : []);
         } catch (error) {
             console.error(error);
             alert(error.message);
@@ -38,6 +39,22 @@ const Usuarios = () => {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        cargarUsuarios();
+    }, []);
+
+    useEffect(() => {
+        const cerrarConEscape = (event) => {
+            if (event.key === "Escape") cerrarFormulario();
+        };
+
+        if (mostrarFormulario) {
+            document.addEventListener("keydown", cerrarConEscape);
+        }
+
+        return () => document.removeEventListener("keydown", cerrarConEscape);
+    }, [mostrarFormulario]);
 
     const abrirCrearUsuario = () => {
         setUsuarioEditando(null);
@@ -59,9 +76,11 @@ const Usuarios = () => {
                 "INACTIVO"
             );
 
-            setUsuarios(
-                usuarios.map((usuario) =>
-                    usuario.idTrabajador === id ? trabajadorActualizado : usuario
+            setUsuarios((usuariosActuales) =>
+                usuariosActuales.map((usuario) =>
+                    usuario.idTrabajador === id
+                        ? { ...usuario, ...trabajadorActualizado }
+                        : usuario
                 )
             );
         } catch (error) {
@@ -70,36 +89,29 @@ const Usuarios = () => {
         }
     };
 
-    const cerrarFormulario = () => {
-        setMostrarFormulario(false);
-        setUsuarioEditando(null);
-    };
-
     const usuariosFiltrados = usuarios.filter((usuario) => {
-        const texto = busqueda.toLowerCase();
+        const texto = busqueda.trim().toLocaleLowerCase("es");
+        const rol = usuario.rol?.nombre || usuario.nombreRol || usuario.rol;
+        const email = usuario.email || usuario.correo || usuario.cuenta?.email;
 
-        const dni = usuario.dni || "";
-        const nombres = usuario.nombres || "";
-        const apellidos = usuario.apellidos || "";
-        const telefono = usuario.telefono || "";
-        const direccion = usuario.direccion || "";
-        const estado = usuario.estado || "";
-        const rol = usuario.rol?.nombre || usuario.nombreRol || "";
-
-        return (
-            dni.toLowerCase().includes(texto) ||
-            nombres.toLowerCase().includes(texto) ||
-            apellidos.toLowerCase().includes(texto) ||
-            telefono.toLowerCase().includes(texto) ||
-            direccion.toLowerCase().includes(texto) ||
-            estado.toLowerCase().includes(texto) ||
-            rol.toLowerCase().includes(texto)
+        return [
+            usuario.dni,
+            usuario.nombres,
+            usuario.apellidos,
+            usuario.telefono,
+            usuario.direccion,
+            usuario.usuario,
+            email,
+            usuario.estado,
+            rol,
+        ].some((valor) =>
+            String(valor ?? "").toLocaleLowerCase("es").includes(texto)
         );
     });
 
     const totalPaginas = Math.ceil(usuariosFiltrados.length / usuariosPorPagina);
-
-    const indiceInicial = (paginaActual - 1) * usuariosPorPagina;
+    const paginaSegura = Math.min(paginaActual, totalPaginas || 1);
+    const indiceInicial = (paginaSegura - 1) * usuariosPorPagina;
     const indiceFinal = indiceInicial + usuariosPorPagina;
 
     const usuariosPaginados = usuariosFiltrados.slice(indiceInicial, indiceFinal);
@@ -110,14 +122,14 @@ const Usuarios = () => {
     };
 
     const paginaAnterior = () => {
-        if (paginaActual > 1) {
-            setPaginaActual(paginaActual - 1);
+        if (paginaSegura > 1) {
+            setPaginaActual(paginaSegura - 1);
         }
     };
 
     const paginaSiguiente = () => {
-        if (paginaActual < totalPaginas) {
-            setPaginaActual(paginaActual + 1);
+        if (paginaSegura < totalPaginas) {
+            setPaginaActual(paginaSegura + 1);
         }
     };
 
@@ -161,7 +173,8 @@ const Usuarios = () => {
                 busqueda={busqueda}
                 setBusqueda={cambiarBusqueda}
                 loading={loading}
-                paginaActual={paginaActual}
+                paginaActual={paginaSegura}
+                totalPaginas={totalPaginas}
                 paginaAnterior={paginaAnterior}
                 paginaSiguiente={paginaSiguiente}
                 onEdit={editarUsuario}

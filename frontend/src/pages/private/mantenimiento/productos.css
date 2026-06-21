@@ -1,0 +1,95 @@
+.productos-container {
+  width: 100%;
+  min-height: 100vh;
+  padding: 30px;
+  background: var(--background-light);
+}
+
+/* HEADER */
+
+.productos-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.productos-header h1 {
+  margin-bottom: 10px;
+  color: var(--primary);
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.productos-header p {
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+/* BOTÓN CREAR */
+
+.productos-create-btn {
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.productos-create-btn:hover {
+  opacity: 0.92;
+}
+
+/* MODAL */
+
+.productos-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 25px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.productos-modal-content {
+  width: 100%;
+  max-width: 850px;
+  animation: productosModalShow 0.25s ease;
+}
+
+/* ANIMACIÓN */
+
+@keyframes productosModalShow {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .productos-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .productos-create-btn {
+    width: 100%;
+  }
+
+  .productos-modal-content {
+    max-width: 100%;
+  }
+}

@@ -13,16 +13,7 @@ const maintenanceOptions = [
         title: "Productos",
         description: "Mantén actualizado el inventario",
         buttonText: "Administrar productos",
-    },
-    {
-        title: "Categorías",
-        description: "Organiza productos por categorías",
-        buttonText: "Administrar categorías",
-    },
-    {
-        title: "Proveedores",
-        description: "Gestiona proveedores registrados",
-        buttonText: "Administrar proveedores",
+        route: "/mantenimiento/productos",
     },
 ];
 
