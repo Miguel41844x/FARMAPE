@@ -7,6 +7,7 @@ function DespachoAlmacen() {
     const opciones = [
         {
             id: 1,
+            codigo: "DES-01",
             titulo: "Entregar productos en tienda",
             descripcion: "Gestionar la entrega de pedidos pagados.",
             icono: <MdStore />,
@@ -14,6 +15,7 @@ function DespachoAlmacen() {
         },
         {
             id: 2,
+            codigo: "DES-02",
             titulo: "Reparto a domicilio",
             descripcion: "Administrar envíos y entregas.",
             icono: <FaTruck />,
@@ -21,6 +23,7 @@ function DespachoAlmacen() {
         },
         {
             id: 3,
+            codigo: "ALM-01",
             titulo: "Registrar ingreso de productos",
             descripcion: "Ingresar productos al almacén.",
             icono: <FaBoxes />,
@@ -28,6 +31,7 @@ function DespachoAlmacen() {
         },
         {
             id: 4,
+            codigo: "ALM-02",
             titulo: "Verificar productos recibidos",
             descripcion: "Comparar pedidos con productos entregados.",
             icono: <FaClipboardCheck />,
@@ -35,6 +39,7 @@ function DespachoAlmacen() {
         },
         {
             id: 5,
+            codigo: "ALM-03",
             titulo: "Generar informe de almacén",
             descripcion: "Consultar reportes y movimientos.",
             icono: <FaFileAlt />,
@@ -44,21 +49,25 @@ function DespachoAlmacen() {
 
     return (
         <div className="despacho-page">
-            <h1>Despacho y Almacén</h1>
+            <div className="despacho-header">
+                <h1>Despacho y almacén</h1>
+                <p>Selecciona una opción para gestionar entregas y movimientos de almacén.</p>
+            </div>
 
-            <div className="cards-container">
+            <div className="despacho-cards">
                 {opciones.map((opcion) => (
                     <NavLink
                         key={opcion.id}
                         to={opcion.path}
-                        className="menu-card-link"
+                        className="despacho-card-link"
                     >
-                        <div className="menu-card">
-                            <div className="menu-icon">{opcion.icono}</div>
-                            <h3>{opcion.titulo}</h3>
+                        <article className="despacho-card">
+                            <div className="despacho-card-icon">{opcion.icono}</div>
+                            <span className="despacho-card-code">{opcion.codigo}</span>
+                            <h2>{opcion.titulo}</h2>
                             <p>{opcion.descripcion}</p>
-                            <span className="menu-card-button">Ingresar</span>
-                        </div>
+                            <span className="despacho-card-button">Ingresar</span>
+                        </article>
                     </NavLink>
                 ))}
             </div>
