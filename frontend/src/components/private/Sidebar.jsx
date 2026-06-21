@@ -8,7 +8,7 @@ import { FiLogOut } from "react-icons/fi";
 import { PiListBold } from "react-icons/pi";
 import { CiSettings } from "react-icons/ci";
 import { CiCoinInsert } from "react-icons/ci";
-import { PiStorefrontLight } from "react-icons/pi";
+import { PiStorefrontLight, PiTruckLight } from "react-icons/pi";
 
 import Logo from "./Logo";
 import "./sidebar.css";
@@ -52,6 +52,14 @@ const menuItems = [
         label: "Mantenimiento",
         path: "/mantenimiento",
         icon: <CiSettings />,
+        roles: [
+            ROLES.ADMINISTRADOR,
+        ],
+    },
+    {
+        label: "Compras y proveedores",
+        path: "/compras-proveedores",
+        icon: <PiTruckLight />,
         roles: [
             ROLES.ADMINISTRADOR,
         ],
