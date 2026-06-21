@@ -3,6 +3,12 @@ import "./usuarioForm.css";
 import { useEffect, useRef, useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+import {
+    crearUsuario,
+    actualizarTrabajador,
+    actualizarEstadoTrabajador,
+} from "../../../../services/mantenimiento/usuarioService";
+
 const UsuarioForms = ({
     cerrarFormulario,
     obtenerUsuarios,
@@ -167,52 +173,21 @@ const UsuarioForms = ({
         if (!validarFormulario()) return;
 
         try {
-            const token = localStorage.getItem("token");
-
             if (esEdicion) {
-                const responseTrabajador = await fetch(
-                    `http://localhost:8080/api/trabajadores/${formData.idTrabajador}`,
-                    {
-                        method: "PUT",
-                        headers: {
-                            "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
-                        },
-                        body: JSON.stringify({
-                            dni: formData.dni,
-                            nombres: formData.nombres,
-                            apellidos: formData.apellidos,
-                            telefono: formData.telefono,
-                            direccion: formData.direccion,
-                            idRol: Number(formData.idRol),
-                        }),
-                    }
-                );
-
-                if (!responseTrabajador.ok) {
-                    const errorText = await responseTrabajador.text();
-                    throw new Error(errorText || "No se pudo actualizar el trabajador");
-                }
+                await actualizarTrabajador(formData.idTrabajador, {
+                    dni: formData.dni,
+                    nombres: formData.nombres,
+                    apellidos: formData.apellidos,
+                    telefono: formData.telefono,
+                    direccion: formData.direccion,
+                    idRol: Number(formData.idRol),
+                });
 
                 if (formData.estado) {
-                    const responseEstado = await fetch(
-                        `http://localhost:8080/api/trabajadores/${formData.idTrabajador}/estado`,
-                        {
-                            method: "PATCH",
-                            headers: {
-                                "Content-Type": "application/json",
-                                Authorization: `Bearer ${token}`,
-                            },
-                            body: JSON.stringify({
-                                estado: formData.estado,
-                            }),
-                        }
+                    await actualizarEstadoTrabajador(
+                        formData.idTrabajador,
+                        formData.estado
                     );
-
-                    if (!responseEstado.ok) {
-                        const errorText = await responseEstado.text();
-                        throw new Error(errorText || "No se pudo actualizar el estado");
-                    }
                 }
 
                 alert("Trabajador actualizado correctamente");
@@ -225,30 +200,18 @@ const UsuarioForms = ({
                 return;
             }
 
-            const response = await fetch("http://localhost:8080/api/usuarios", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    dni: formData.dni,
-                    nombres: formData.nombres,
-                    apellidos: formData.apellidos,
-                    telefono: formData.telefono,
-                    direccion: formData.direccion,
-                    usuario: formData.usuario,
-                    email: formData.email,
-                    clave: formData.password,
-                    idRol: Number(formData.idRol),
-                    estado: formData.estado,
-                }),
+            await crearUsuario({
+                dni: formData.dni,
+                nombres: formData.nombres,
+                apellidos: formData.apellidos,
+                telefono: formData.telefono,
+                direccion: formData.direccion,
+                usuario: formData.usuario,
+                email: formData.email,
+                clave: formData.password,
+                idRol: Number(formData.idRol),
+                estado: formData.estado,
             });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "No se pudo registrar el usuario");
-            }
 
             alert("Usuario registrado correctamente");
 

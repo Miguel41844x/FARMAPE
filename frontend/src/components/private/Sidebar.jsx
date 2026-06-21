@@ -8,6 +8,7 @@ import { FiLogOut } from "react-icons/fi";
 import { PiListBold } from "react-icons/pi";
 import { CiSettings } from "react-icons/ci";
 import { CiCoinInsert } from "react-icons/ci";
+import { PiStorefrontLight } from "react-icons/pi";
 
 import Logo from "./Logo";
 import "./sidebar.css";
@@ -27,6 +28,7 @@ const menuItems = [
             ROLES.ADMINISTRADOR,
             ROLES.QUIMICO_FARMACEUTICO,
             ROLES.GERENTE,
+            ROLES.ADMINISTRADOR,
         ],
     },
     {
@@ -44,6 +46,7 @@ const menuItems = [
         icon: <CiCoinInsert />,
         roles: [
             ROLES.CAJERO,
+            ROLES.ADMINISTRADOR,
         ],
     },
     {
@@ -55,11 +58,20 @@ const menuItems = [
         ],
     },
     {
+        label: "Despacho y almacén",
+        path: "/despacho-almacen",
+        icon: <PiStorefrontLight />,
+        roles: [
+            ROLES.ADMINISTRADOR,
+        ],
+    },
+    {
         label: "Reportes",
         path: "/reportes",
         icon: <CiFileOn />,
         roles: [
             ROLES.GERENTE,
+            ROLES.ADMINISTRADOR
         ],
     },
 ];

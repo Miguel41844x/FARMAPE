@@ -1,6 +1,11 @@
 import { useState } from "react";
 import "./datosVenta.css";
 
+import {
+    buscarClientePorDocumento,
+    registrarCliente,
+} from "../../../services/ventas/clienteService";
+
 function DatosVenta({
     idCliente,
     setIdCliente,
@@ -60,29 +65,7 @@ function DatosVenta({
         try {
             setBuscandoCliente(true);
 
-            const token = localStorage.getItem("token");
-
-            const response = await fetch(
-                `http://localhost:8080/api/clientes/documento/${documento}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (!response.ok) {
-                limpiarClienteEncontrado();
-                setClienteEncontrado((prev) => ({
-                    ...prev,
-                    dniRuc: documento,
-                }));
-
-                alert("Cliente no encontrado. Puedes registrarlo manualmente.");
-                return;
-            }
-
-            const data = await response.json();
+            const data = await buscarClientePorDocumento(documento);
 
             setIdCliente(data.idCliente);
 
@@ -94,8 +77,15 @@ function DatosVenta({
                 direccion: data.direccion || "",
             });
         } catch (error) {
+            limpiarClienteEncontrado();
+
+            setClienteEncontrado((prev) => ({
+                ...prev,
+                dniRuc: documento,
+            }));
+
             console.error("Error al buscar cliente:", error);
-            alert("Error al buscar cliente");
+            alert("Cliente no encontrado. Puedes registrarlo manualmente.");
         } finally {
             setBuscandoCliente(false);
         }
@@ -138,12 +128,10 @@ function DatosVenta({
         });
     };
 
-    const registrarCliente = async (e) => {
+    const guardarCliente = async (e) => {
         e.preventDefault();
 
         try {
-            const token = localStorage.getItem("token");
-
             if (!nuevoCliente.dniRuc.trim()) {
                 alert("Ingresa DNI o RUC del cliente");
                 return;
@@ -154,21 +142,7 @@ function DatosVenta({
                 return;
             }
 
-            const response = await fetch("http://localhost:8080/api/clientes", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(nuevoCliente),
-            });
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "No se pudo registrar el cliente");
-            }
-
-            const clienteCreado = await response.json();
+            const clienteCreado = await registrarCliente(nuevoCliente);
 
             if (cargarClientes) {
                 await cargarClientes();
@@ -332,7 +306,7 @@ function DatosVenta({
                             </button>
                         </div>
 
-                        <form onSubmit={registrarCliente}>
+                        <form onSubmit={guardarCliente}>
                             <div className="registro-cliente-grid">
                                 <div className="datos-venta-field">
                                     <label>DNI / RUC</label>

@@ -105,9 +105,12 @@
   padding: 8px 12px;
   border-radius: 9px;
   background: var(--primary);
-  color: var(--white);
   cursor: pointer;
   transition: 0.2s ease;
+}
+
+.editar{
+  color: white;
 }
 
 .usuarios-actions button:hover {

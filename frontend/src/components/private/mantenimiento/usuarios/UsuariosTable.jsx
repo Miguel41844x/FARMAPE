@@ -75,7 +75,7 @@ const UsuariosTable = ({
                                     </td>
                                     <td>
                                         <div className="usuarios-actions">
-                                            <button onClick={() => onEdit(usuario)}>
+                                            <button className="editar" onClick={() => onEdit(usuario)}>
                                                 Editar
                                             </button>
 
