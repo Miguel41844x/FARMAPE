@@ -1,0 +1,342 @@
+.compra-process-page {
+  width: 100%;
+  min-height: 100%;
+  padding: 30px;
+}
+
+.compra-process-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 25px;
+}
+
+.compra-process-header h1 {
+  margin: 0 0 10px;
+  color: var(--primary);
+  font-size: 2rem;
+}
+
+.compra-process-header > button {
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.compra-error {
+  margin-bottom: 18px;
+  padding: 12px 15px;
+  border: 1px solid #efb5b5;
+  border-radius: 10px;
+  background: #fff1f1;
+  color: #a42f2f;
+  font-size: 0.88rem;
+}
+
+.compra-process-header p {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.compra-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+  margin-bottom: 25px;
+}
+
+.compra-summary-cards article {
+  padding: 20px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.compra-summary-cards h3 {
+  margin: 0 0 10px;
+  color: #333;
+  font-size: 1rem;
+}
+
+.compra-summary-cards strong {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--primary);
+  font-size: 1.5rem;
+}
+
+.compra-summary-cards p {
+  margin: 0;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.compra-table-section {
+  padding: 22px;
+  border: 1px solid rgba(27, 127, 121, 0.08);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 12px 32px rgba(27, 127, 121, 0.1);
+}
+
+.compra-table-section > header {
+  margin-bottom: 18px;
+}
+
+.compra-table-section h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.compra-table-section header span {
+  display: block;
+  margin-top: 4px;
+  color: var(--primary);
+  font-size: 0.9rem;
+}
+
+.compra-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.compra-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.compra-table th,
+.compra-table td {
+  padding: 14px;
+  border-bottom: 1px solid #e1e5e8;
+  text-align: left;
+}
+
+.compra-table th {
+  background: #f6f8fb;
+  color: #333;
+  font-size: 0.88rem;
+}
+
+.compra-table td {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.compra-table td strong {
+  color: #333;
+}
+
+.compra-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(27, 127, 121, 0.12);
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.compra-empty {
+  padding: 30px !important;
+  text-align: center !important;
+}
+
+.compra-empty strong,
+.compra-empty span {
+  display: block;
+}
+
+.compra-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 25px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.compra-modal-content {
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.compra-form {
+  padding: 2rem;
+  border-radius: 20px;
+  background: #fff;
+}
+
+.compra-form > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e1e5e8;
+}
+
+.compra-form > header h2 {
+  margin: 0 0 7px;
+  color: var(--primary);
+}
+
+.compra-form > header p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.compra-form > header button {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 9px;
+  font-size: 1.25rem;
+  cursor: pointer;
+}
+
+.compra-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.compra-form-grid label {
+  display: grid;
+  gap: 7px;
+  color: #333;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.compra-form-grid label.wide {
+  grid-column: span 2;
+}
+
+.compra-form-grid input,
+.compra-form-grid select,
+.compra-form-grid textarea,
+.pedido-detail-row input,
+.pedido-detail-row select {
+  width: 100%;
+  padding: 11px;
+  border: 1px solid #d9e4ec;
+  border-radius: 10px;
+  outline: none;
+  font: inherit;
+}
+
+.compra-form-grid textarea {
+  min-height: 75px;
+  resize: vertical;
+}
+
+.pedido-details {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #e1e5e8;
+}
+
+.pedido-details-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.pedido-details-header h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.pedido-details-header button {
+  border: 0;
+  background: transparent;
+  color: var(--primary);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pedido-detail-row {
+  display: grid;
+  grid-template-columns: 1fr 110px 130px 38px;
+  gap: 9px;
+  margin-bottom: 9px;
+}
+
+.pedido-detail-row button {
+  border: 0;
+  border-radius: 9px;
+  background: #fdeaea;
+  color: #b13b3b;
+  cursor: pointer;
+}
+
+.pedido-detail-row button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pedido-total {
+  margin: 12px 0 0;
+  text-align: right;
+}
+
+.compra-form > footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.compra-form > footer button {
+  padding: 11px 16px;
+  border-radius: 9px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.compra-form > footer .secondary {
+  border: 1px solid #d9e4ec;
+  background: #fff;
+  color: #555;
+}
+
+.compra-form > footer .primary {
+  border: 1px solid var(--primary);
+  background: var(--primary);
+  color: #fff;
+}
+
+.compra-form > footer button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.compra-empty span {
+  margin-top: 5px;
+  color: #777;
+}
+
+@media (max-width: 768px) {
+  .compra-process-page { padding: 20px; }
+  .compra-process-header h1 { font-size: 1.6rem; }
+  .compra-summary-cards { grid-template-columns: 1fr; }
+  .compra-process-header { align-items: stretch; flex-direction: column; }
+  .compra-form-grid { grid-template-columns: 1fr; }
+  .compra-form-grid label.wide { grid-column: auto; }
+  .pedido-detail-row { grid-template-columns: 1fr 1fr; }
+}
