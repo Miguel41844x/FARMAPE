@@ -204,3 +204,12 @@
   background: #ffe5e5;
   color: #d32f2f;
 }
+.user-dropdown button:hover {
+  background: #f5f5f5;
+  color: var(--primary-dark);
+}
+
+.user-dropdown button.logout-option:hover {
+  background: #ffe5e5;
+  color: #d32f2f;
+}

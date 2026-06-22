@@ -4,13 +4,14 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 import { CiShoppingCart, CiHome, CiFileOn } from "react-icons/ci";
-import { FiLogOut } from "react-icons/fi";
+import { FiLogOut, FiUser } from "react-icons/fi";
 import { PiListBold } from "react-icons/pi";
 import { CiSettings } from "react-icons/ci";
 import { CiCoinInsert } from "react-icons/ci";
 import { PiStorefrontLight, PiTruckLight } from "react-icons/pi";
 
 import Logo from "./Logo";
+import UserProfileModal from "./perfil/UserProfileModal";
 import "./sidebar.css";
 
 import { PERMISSIONS } from "../../constants/permissions";
@@ -72,6 +73,7 @@ const Sidebar = () => {
     const { user, logout, hasPermission } = useAuth();
     const [isOpen, setIsOpen] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
+    const [profileOpen, setProfileOpen] = useState(false);
 
     const visibleMenuItems = menuItems.filter((item) =>
         item.permissions.some(hasPermission)
@@ -80,6 +82,11 @@ const Sidebar = () => {
     const handleLogout = () => {
         logout();
         navigate("/", { replace: true });
+    };
+
+    const handleOpenProfile = () => {
+        setMenuOpen(false);
+        setProfileOpen(true);
     };
 
     const initial = user?.nombres?.charAt(0).toUpperCase();
@@ -128,7 +135,11 @@ const Sidebar = () => {
 
                     {menuOpen && (
                         <div className="user-dropdown">
-                            <button onClick={handleLogout}>
+                            <button onClick={handleOpenProfile}>
+                                <FiUser />
+                                Mi perfil
+                            </button>
+                            <button className="logout-option" onClick={handleLogout}>
                                 <FiLogOut />
                                 Cerrar sesión
                             </button>
@@ -137,6 +148,10 @@ const Sidebar = () => {
                 </div>
             )}
 
+            <UserProfileModal
+                open={profileOpen}
+                onClose={() => setProfileOpen(false)}
+            />
         </aside>
     );
 };

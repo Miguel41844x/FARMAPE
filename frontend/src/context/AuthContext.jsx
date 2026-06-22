@@ -52,10 +52,24 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
     };
 
+    const updateUserProfile = (perfilActualizado) => {
+        localStorage.setItem("nombres", perfilActualizado.nombres || "");
+        localStorage.setItem("apellidos", perfilActualizado.apellidos || "");
+
+        setUser((current) => {
+            if (!current) return current;
+            return {
+                ...current,
+                nombres: perfilActualizado.nombres,
+                apellidos: perfilActualizado.apellidos,
+            };
+        });
+    };
+
     const hasPermission = (permission) => user?.permisos?.includes(permission) ?? false;
 
     return (
-        <AuthContext.Provider value={{ user, setUser, logout, hasPermission }}>
+        <AuthContext.Provider value={{ user, setUser, logout, hasPermission, updateUserProfile }}>
             {children}
         </AuthContext.Provider>
     );

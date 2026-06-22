@@ -43,6 +43,8 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
+                        .requestMatchers("/api/perfil/**")
+                        .authenticated()
                         .requestMatchers("/api/usuarios/**", "/api/trabajadores/**")
                         .hasAuthority("USER_MANAGE")
                         .requestMatchers(HttpMethod.GET, "/api/roles/**")
