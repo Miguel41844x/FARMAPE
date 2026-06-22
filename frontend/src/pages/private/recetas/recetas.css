@@ -1,0 +1,153 @@
+.receta-form-container {
+    background: var(--white, #ffffff);
+    border-radius: 18px;
+    padding: 24px;
+    box-shadow: 0 12px 32px rgba(27, 127, 121, 0.1);
+    border: 1px solid rgba(27, 127, 121, 0.08);
+}
+
+.receta-form-header {
+    margin-bottom: 22px;
+}
+
+.receta-form-header h2 {
+    color: var(--text-primary, #2d3748);
+    font-size: 1.35rem;
+    margin: 0;
+}
+
+.receta-form-header span {
+    display: block;
+    margin-top: 4px;
+    color: var(--primary, #1b7f79);
+    font-size: 0.92rem;
+}
+
+/* Sistema de Alertas de Riesgo de la HU-19 */
+.receta-status-alert {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-size: 0.92rem;
+    transition: all 0.25s ease;
+}
+
+.receta-status-alert.alert-ninguno {
+    background: rgba(40, 167, 69, 0.08);
+    border: 1px solid rgba(40, 167, 69, 0.2);
+    color: #1e7e34;
+}
+
+.receta-status-alert.alert-moderado {
+    background: rgba(255, 193, 7, 0.1);
+    border: 1px solid rgba(255, 193, 7, 0.3);
+    color: #856404;
+}
+
+.receta-status-alert.alert-critico {
+    background: rgba(220, 53, 69, 0.08);
+    border: 1px solid rgba(220, 53, 69, 0.25);
+    color: var(--danger, #dc3545);
+    animation: pulseAlert 2s infinite;
+}
+
+@keyframes pulseAlert {
+    0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.2); }
+    70% { box-shadow: 0 0 0 6px rgba(220, 53, 69, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+.receta-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 20px;
+}
+
+.form-group-section h3, .form-full-section h3 {
+    color: var(--text-primary, #2d3748);
+    font-size: 1.05rem;
+    border-left: 3px solid var(--primary, #1b7f79);
+    padding-left: 8px;
+    margin-bottom: 14px;
+}
+
+.input-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.input-field label {
+    color: var(--text-secondary, #4a5568);
+    font-size: 0.88rem;
+    font-weight: 600;
+}
+
+.input-field input, .input-field textarea {
+    height: 42px;
+    padding: 0 14px;
+    border-radius: 11px;
+    border: 1px solid rgba(27, 127, 121, 0.18);
+    background: #f9fbfb;
+    color: var(--text-primary);
+    font-size: 0.92rem;
+    outline: none;
+    transition: 0.2s ease;
+}
+
+.input-field textarea {
+    height: 90px;
+    padding: 10px 14px;
+    resize: none;
+    font-family: inherit;
+}
+
+.input-field input:focus, .input-field textarea:focus {
+    border-color: var(--primary, #1b7f79);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(27, 127, 121, 0.12);
+}
+
+.receta-form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e1e5e8;
+    padding-top: 18px;
+    margin-top: 24px;
+}
+
+.analisis-indicator {
+    font-size: 0.88rem;
+    color: var(--text-secondary, #718096);
+    font-style: italic;
+}
+
+.receta-submit-btn {
+    border: none;
+    padding: 12px 24px;
+    border-radius: 11px;
+    background: var(--primary, #1b7f79);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.receta-submit-btn:hover:not(:disabled) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+
+.receta-submit-btn:disabled {
+    background: #cbd5e0;
+    color: #718096;
+    cursor: not-allowed;
+    transform: none;
+}

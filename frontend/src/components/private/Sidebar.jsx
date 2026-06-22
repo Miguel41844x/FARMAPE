@@ -3,7 +3,7 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-import { CiShoppingCart, CiHome, CiFileOn } from "react-icons/ci";
+import { CiShoppingCart, CiHome, CiFileOn, CiMedicalCase } from "react-icons/ci";
 import { FiLogOut, FiUser } from "react-icons/fi";
 import { PiListBold } from "react-icons/pi";
 import { CiSettings } from "react-icons/ci";
@@ -60,6 +60,12 @@ const menuItems = [
         permissions: [PERMISSIONS.DISPATCH_MANAGE, PERMISSIONS.INVENTORY_MANAGE],
     },
     {
+        label: "Recetas Magistrales",
+        path: "/recetas",
+        icon: <CiMedicalCase />,
+        permissions: [PERMISSIONS.FORMULA_MANAGE],
+    },
+    {
         label: "Reportes",
         path: "/reportes",
         icon: <CiFileOn />,
@@ -68,7 +74,6 @@ const menuItems = [
 ];
 
 const Sidebar = () => {
-
     const navigate = useNavigate();
     const { user, logout, hasPermission } = useAuth();
     const [isOpen, setIsOpen] = useState(true);
@@ -93,7 +98,6 @@ const Sidebar = () => {
 
     return (
         <aside className={`sidebar ${isOpen ? "open" : "closed"}`}>
-
             <div className="sidebar-header">
                 <PiListBold
                     className="menu-toggle"

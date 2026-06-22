@@ -29,44 +29,35 @@ import FacturasProveedor from "../pages/private/compras/FacturasProveedor";
 import NotasCredito from "../pages/private/compras/NotasCredito";
 import PagosCredito from "../pages/private/compras/PagosCredito";
 import ProveedoresCompras from "../pages/private/compras/ProveedoresCompras";
+import Recetas from "../pages/private/recetas/Recetas";
 
 function AppRouter() {
     return (
         <Routes>
-
-            {/* Públicas */}
             <Route path="/" element={<HomePublic />} />
             <Route path="/login" element={<Login />} />
 
-            {/* Privadas */}
             <Route element={<PrivateRoute />}>
                 <Route element={<PrivateLayout />}>
-
                     <Route path="/homePrivate" element={<HomePrivate />} />
 
-                    <Route
-                        element={
-                            <PermissionRoute permissions={[PERMISSIONS.SALE_CREATE]} />
-                        }
-                    >
+                    <Route element={<PermissionRoute permissions={[PERMISSIONS.SALE_CREATE]} />}>
                         <Route path="/ventas" element={<Ventas />} />
                     </Route>
 
-                    <Route
-                        element={
-                            <PermissionRoute permissions={[PERMISSIONS.PAYMENT_READ]} />
-                        }
-                    >
+                    <Route element={<PermissionRoute permissions={[PERMISSIONS.PAYMENT_READ]} />}>
                         <Route path="/caja" element={<Caja />} />
                     </Route>
 
                     <Route
                         element={
-                            <PermissionRoute permissions={[
-                                PERMISSIONS.USER_MANAGE,
-                                PERMISSIONS.ROLE_MANAGE,
-                                PERMISSIONS.ROLE_ASSIGN,
-                            ]} />
+                            <PermissionRoute
+                                permissions={[
+                                    PERMISSIONS.USER_MANAGE,
+                                    PERMISSIONS.ROLE_MANAGE,
+                                    PERMISSIONS.ROLE_ASSIGN,
+                                ]}
+                            />
                         }
                     >
                         <Route path="/mantenimiento" element={<Mantenimiento />} />
@@ -81,22 +72,10 @@ function AppRouter() {
                     </Route>
 
                     <Route element={<PermissionRoute permissions={[PERMISSIONS.PRODUCT_MANAGE]} />}>
-                        <Route path="/productos" element={<Productos/>} />
+                        <Route path="/productos" element={<Productos />} />
                     </Route>
 
-                    <Route
-                        element={
-                            <PermissionRoute permissions={[PERMISSIONS.REPORT_VIEW]} />
-                        }
-                    >
-                        <Route path="/reportes" element={<Reporte />} />
-                    </Route>
-
-                    <Route
-                        element={
-                            <PermissionRoute permissions={[PERMISSIONS.PURCHASE_MANAGE]} />
-                        }
-                    >
+                    <Route element={<PermissionRoute permissions={[PERMISSIONS.PURCHASE_MANAGE]} />}>
                         <Route path="/compras-proveedores" element={<ComprasProveedores />} />
                         <Route path="/compras-proveedores/pedidos" element={<PedidosCompra />} />
                         <Route path="/compras-proveedores/facturas" element={<FacturasProveedor />} />
@@ -107,13 +86,15 @@ function AppRouter() {
 
                     <Route
                         element={
-                            <PermissionRoute permissions={[
-                                PERMISSIONS.DISPATCH_MANAGE,
-                                PERMISSIONS.INVENTORY_MANAGE,
-                            ]} />
+                            <PermissionRoute
+                                permissions={[
+                                    PERMISSIONS.DISPATCH_MANAGE,
+                                    PERMISSIONS.INVENTORY_MANAGE,
+                                ]}
+                            />
                         }
                     >
-                        <Route path="/despacho-almacen" element={<DespachoAlmacen/>}/>
+                        <Route path="/despacho-almacen" element={<DespachoAlmacen />} />
                     </Route>
 
                     <Route element={<PermissionRoute permissions={[PERMISSIONS.DISPATCH_MANAGE]} />}>
@@ -127,9 +108,15 @@ function AppRouter() {
                         <Route path="/despacho-almacen/informes" element={<InformeAlmacen />} />
                     </Route>
 
+                    <Route element={<PermissionRoute permissions={[PERMISSIONS.FORMULA_MANAGE]} />}>
+                        <Route path="/recetas" element={<Recetas />} />
+                    </Route>
+
+                    <Route element={<PermissionRoute permissions={[PERMISSIONS.REPORT_VIEW]} />}>
+                        <Route path="/reportes" element={<Reporte />} />
+                    </Route>
                 </Route>
             </Route>
-
         </Routes>
     );
 }
