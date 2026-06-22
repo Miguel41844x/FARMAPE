@@ -35,6 +35,7 @@ function RegistrarIngreso() {
                 lote: ingreso.lote,
                 fechaVencimiento: ingreso.fechaVencimiento,
                 idProveedor: ingreso.idProveedor,
+                referenciaId: ingreso.idIngreso,
             });
 
             await cargarIngresos();
@@ -102,6 +103,7 @@ function RegistrarIngreso() {
                                 <th>Lote</th>
                                 <th>Vencimiento</th>
                                 <th>Proveedor</th>
+                                <th>Estado</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -109,13 +111,13 @@ function RegistrarIngreso() {
                         <tbody>
                             {loading ? (
                                 <tr>
-                                    <td colSpan="6" className="usuarios-empty">
+                                    <td colSpan="7" className="usuarios-empty">
                                         Cargando ingresos...
                                     </td>
                                 </tr>
                             ) : ingresosFiltrados.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="usuarios-empty">
+                                    <td colSpan="7" className="usuarios-empty">
                                         No se encontraron ingresos
                                     </td>
                                 </tr>
@@ -132,9 +134,17 @@ function RegistrarIngreso() {
                                         </td>
                                         <td>{ingreso.proveedor}</td>
                                         <td>
+                                            <span className={ingreso.estado === "REGISTRADO" ? "estado conforme" : "estado pendiente"}>
+                                                {ingreso.estado || "PENDIENTE"}
+                                            </span>
+                                        </td>
+                                        <td>
                                             <div className="despacho-actions">
-                                                <button onClick={() => registrarIngreso(ingreso)}>
-                                                    Registrar
+                                                <button
+                                                    disabled={ingreso.estado === "REGISTRADO"}
+                                                    onClick={() => registrarIngreso(ingreso)}
+                                                >
+                                                    {ingreso.estado === "REGISTRADO" ? "Registrado" : "Registrar"}
                                                 </button>
                                             </div>
                                         </td>
