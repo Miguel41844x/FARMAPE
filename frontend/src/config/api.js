@@ -1,1 +1,5 @@
-export const API_URL = "http://localhost:8080/api";
+const limpiarBaseUrl = (value) => value?.replace(/\/$/, "");
+
+export const API_URL = limpiarBaseUrl(
+    import.meta.env.VITE_API_URL || "http://localhost:8080/api"
+);

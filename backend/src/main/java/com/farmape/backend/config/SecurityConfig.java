@@ -23,6 +23,7 @@ import org.springframework.web.cors.*;
 import org.springframework.http.HttpMethod;
 
 import java.util.Collection;
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -91,6 +92,11 @@ public class SecurityConfig {
                         .hasAnyAuthority("INVENTORY_MANAGE", "DISPATCH_MANAGE")
                         .requestMatchers("/api/almacen/**")
                         .hasAuthority("INVENTORY_MANAGE")
+
+                        .requestMatchers(HttpMethod.GET, "/api/proveedores/**", "/api/ordenes-compra/**", "/api/facturas-proveedor/**", "/api/notas-credito-proveedor/**", "/api/pagos-proveedor/**")
+                        .hasAuthority("PURCHASE_MANAGE")
+                        .requestMatchers("/api/proveedores/**", "/api/ordenes-compra/**", "/api/facturas-proveedor/**", "/api/notas-credito-proveedor/**", "/api/pagos-proveedor/**")
+                        .hasAuthority("PURCHASE_MANAGE")
                         .requestMatchers("/api/formulas/**")
                         .hasAuthority("FORMULA_MANAGE")
                         .requestMatchers(HttpMethod.GET, "/api/auditoria/**")
@@ -143,7 +149,11 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        String allowedOrigins = System.getenv().getOrDefault("CORS_ALLOWED_ORIGINS", "http://localhost:5173");
+        config.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
+                .map(String::trim)
+                .filter(origin -> !origin.isBlank())
+                .toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowCredentials(true);
