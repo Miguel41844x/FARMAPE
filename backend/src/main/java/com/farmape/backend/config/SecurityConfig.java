@@ -93,6 +93,10 @@ public class SecurityConfig {
                         .hasAuthority("INVENTORY_MANAGE")
                         .requestMatchers("/api/formulas/**")
                         .hasAuthority("FORMULA_MANAGE")
+                        .requestMatchers(HttpMethod.GET, "/api/auditoria/**")
+                        .hasAuthority("AUDIT_VIEW")
+                        .requestMatchers(HttpMethod.POST, "/api/auditoria/**")
+                        .hasAuthority("AUDIT_MANAGE")
                         .requestMatchers("/api/reportes/**")
                         .hasAuthority("REPORT_VIEW")
 
