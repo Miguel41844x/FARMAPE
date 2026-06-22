@@ -11,6 +11,7 @@ public record RegistrarAuditoriaRequest(
         @NotBlank String descripcion,
         String valorAnterior,
         String valorNuevo,
-        @Size(max = 20) String severidad
+        @Size(max = 20) String severidad,
+        @Size(max = 30) String tipoEvento
 ) {
 }

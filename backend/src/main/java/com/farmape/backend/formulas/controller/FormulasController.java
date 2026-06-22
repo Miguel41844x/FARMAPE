@@ -1,6 +1,11 @@
 package com.farmape.backend.formulas.controller;
 
-import com.farmape.backend.formulas.dto.*;
+import com.farmape.backend.formulas.dto.CambiarEstadoRecetaRequest;
+import com.farmape.backend.formulas.dto.InsumoFormulaResponse;
+import com.farmape.backend.formulas.dto.PresupuestarFormulaRequest;
+import com.farmape.backend.formulas.dto.PresupuestoFormulaResponse;
+import com.farmape.backend.formulas.dto.RecetaMagistralResponse;
+import com.farmape.backend.formulas.dto.RegistrarRecetaRequest;
 import com.farmape.backend.formulas.service.FormulasService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -35,5 +40,11 @@ public class FormulasController {
     @PostMapping("/presupuestar")
     public PresupuestoFormulaResponse presupuestar(@Valid @RequestBody PresupuestarFormulaRequest request) {
         return formulasService.presupuestarFormula(request);
+    }
+
+    @PatchMapping("/recetas/{idReceta}/estado")
+    public RecetaMagistralResponse cambiarEstado(@PathVariable Integer idReceta,
+                                                 @Valid @RequestBody CambiarEstadoRecetaRequest request) {
+        return formulasService.cambiarEstado(idReceta, request);
     }
 }

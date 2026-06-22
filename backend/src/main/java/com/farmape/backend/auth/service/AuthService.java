@@ -1,16 +1,24 @@
 package com.farmape.backend.auth.service;
 
-import com.farmape.backend.usuarios.model.CuentaUsuario;
-import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
-
 import com.farmape.backend.auth.dto.LoginRequest;
 import com.farmape.backend.auth.dto.LoginResponse;
-
+import com.farmape.backend.auth.dto.SolicitarRestablecimientoRequest;
+import com.farmape.backend.auth.dto.SolicitarRestablecimientoResponse;
+import com.farmape.backend.auth.dto.SolicitudRestablecimientoResponse;
+import com.farmape.backend.auth.model.SolicitudRestablecimientoClave;
+import com.farmape.backend.auth.repository.SolicitudRestablecimientoClaveRepository;
+import com.farmape.backend.usuarios.model.CuentaUsuario;
+import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.*;
-import org.springframework.security.oauth2.jwt.*;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
+import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -22,16 +30,19 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtEncoder jwtEncoder;
     private final CuentaUsuarioRepository cuentaUsuarioRepository;
+    private final SolicitudRestablecimientoClaveRepository solicitudRestablecimientoClaveRepository;
 
     @Value("${app.jwt.expiration-minutes}")
     private Long expirationMinutes;
 
     public AuthService(AuthenticationManager authenticationManager,
                        JwtEncoder jwtEncoder,
-                       CuentaUsuarioRepository cuentaUsuarioRepository) {
+                       CuentaUsuarioRepository cuentaUsuarioRepository,
+                       SolicitudRestablecimientoClaveRepository solicitudRestablecimientoClaveRepository) {
         this.authenticationManager = authenticationManager;
         this.jwtEncoder = jwtEncoder;
         this.cuentaUsuarioRepository = cuentaUsuarioRepository;
+        this.solicitudRestablecimientoClaveRepository = solicitudRestablecimientoClaveRepository;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -87,5 +98,58 @@ public class AuthService {
                 cuenta.getTrabajador().getIdTrabajador(),
                 permisos
         );
+    }
+
+    @Transactional
+    public SolicitarRestablecimientoResponse solicitarRestablecimiento(SolicitarRestablecimientoRequest request) {
+        String usuarioOCorreo = request.usuarioOCorreo().trim();
+        CuentaUsuario cuenta = cuentaUsuarioRepository
+                .findByUsuarioOrEmail(usuarioOCorreo, usuarioOCorreo)
+                .orElse(null);
+
+        SolicitudRestablecimientoClave solicitud = SolicitudRestablecimientoClave.builder()
+                .usuarioOCorreo(usuarioOCorreo)
+                .cuentaUsuario(cuenta)
+                .mensaje(limpiar(request.mensaje()))
+                .estado("Pendiente")
+                .fechaSolicitud(LocalDateTime.now())
+                .build();
+
+        solicitud = solicitudRestablecimientoClaveRepository.save(solicitud);
+
+        return new SolicitarRestablecimientoResponse(
+                true,
+                solicitud.getIdSolicitud(),
+                solicitud.getEstado(),
+                solicitud.getFechaSolicitud(),
+                "Solicitud registrada. Comunícate con el administrador para validar tu identidad y restablecer el acceso."
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitudRestablecimientoResponse> listarSolicitudesRestablecimiento() {
+        return solicitudRestablecimientoClaveRepository.findTop50ByOrderByFechaSolicitudDesc().stream()
+                .map(solicitud -> {
+                    CuentaUsuario cuenta = solicitud.getCuentaUsuario();
+                    return new SolicitudRestablecimientoResponse(
+                            solicitud.getIdSolicitud(),
+                            solicitud.getUsuarioOCorreo(),
+                            cuenta != null ? cuenta.getIdCuenta() : null,
+                            cuenta != null ? cuenta.getUsuario() : null,
+                            cuenta != null ? cuenta.getEmail() : null,
+                            solicitud.getMensaje(),
+                            solicitud.getEstado(),
+                            solicitud.getFechaSolicitud()
+                    );
+                })
+                .toList();
+    }
+
+    private String limpiar(String valor) {
+        if (valor == null) {
+            return null;
+        }
+        String limpio = valor.trim();
+        return limpio.isBlank() ? null : limpio;
     }
 }

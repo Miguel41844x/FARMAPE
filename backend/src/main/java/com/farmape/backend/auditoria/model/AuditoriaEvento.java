@@ -58,8 +58,14 @@ public class AuditoriaEvento {
     @Column(name = "origen", nullable = false, length = 30)
     private String origen;
 
+    @Column(name = "tipo_evento", nullable = false, length = 30)
+    private String tipoEvento;
+
     @Column(name = "ip", length = 45)
     private String ip;
+
+    @Column(name = "editable", nullable = false)
+    private Boolean editable;
 
     @PrePersist
     public void prePersist() {
@@ -71,6 +77,12 @@ public class AuditoriaEvento {
         }
         if (origen == null || origen.isBlank()) {
             origen = "APP";
+        }
+        if (tipoEvento == null || tipoEvento.isBlank()) {
+            tipoEvento = "AUTOMATICO";
+        }
+        if (editable == null) {
+            editable = false;
         }
     }
 }

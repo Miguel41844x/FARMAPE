@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +45,8 @@ public class AuditoriaService {
                                                         String busqueda,
                                                         LocalDate desde,
                                                         LocalDate hasta,
-                                                        Integer limite) {
+                                                        Integer limite,
+                                                        String tipoEvento) {
         int limit = normalizarLimite(limite);
         LocalDateTime fechaDesde = desde == null ? null : desde.atStartOfDay();
         LocalDateTime fechaHasta = hasta == null ? null : hasta.plusDays(1).atStartOfDay();
@@ -56,6 +58,7 @@ public class AuditoriaService {
         stream = filtrarIgual(stream, modulo, AuditoriaEvento::getModulo);
         stream = filtrarIgual(stream, accion, AuditoriaEvento::getAccion);
         stream = filtrarIgual(stream, severidad, AuditoriaEvento::getSeveridad);
+        stream = filtrarIgual(stream, tipoEvento, AuditoriaEvento::getTipoEvento);
         stream = filtrarContiene(stream, usuario, AuditoriaEvento::getUsuario);
 
         if (fechaDesde != null) {
@@ -133,21 +136,52 @@ public class AuditoriaService {
         AuditoriaEvento evento = AuditoriaEvento.builder()
                 .fechaEvento(LocalDateTime.now())
                 .modulo(normalizarTexto(request.modulo(), "General"))
-                .entidad(normalizarTexto(request.entidad(), "Evento"))
+                .entidad(normalizarTexto(request.entidad(), "Observación manual"))
                 .entidadId(limpiar(request.entidadId()))
-                .accion(normalizarTexto(request.accion(), "REGISTRO_MANUAL").toUpperCase(Locale.ROOT))
-                .descripcion(normalizarTexto(request.descripcion(), "Evento registrado manualmente"))
+                .accion(normalizarTexto(request.accion(), "OBSERVACION").toUpperCase(Locale.ROOT))
+                .descripcion(normalizarTexto(request.descripcion(), "Observación registrada manualmente"))
                 .valorAnterior(limpiar(request.valorAnterior()))
                 .valorNuevo(limpiar(request.valorNuevo()))
                 .idUsuario(cuenta.getIdCuenta())
                 .idTrabajador(trabajador != null ? trabajador.getIdTrabajador() : null)
                 .usuario(cuenta.getUsuario())
                 .severidad(normalizarSeveridad(request.severidad()))
-                .origen("APP")
+                .origen("OBSERVACION")
+                .tipoEvento("OBSERVACION")
+                .editable(false)
                 .ip(ip)
                 .build();
 
         return toResponse(auditoriaEventoRepository.save(evento));
+    }
+
+    @Transactional(readOnly = true)
+    public String exportarCsv(String modulo,
+                              String accion,
+                              String severidad,
+                              String usuario,
+                              String busqueda,
+                              LocalDate desde,
+                              LocalDate hasta,
+                              Integer limite,
+                              String tipoEvento) {
+        List<AuditoriaEventoResponse> eventos = listarEventos(modulo, accion, severidad, usuario, busqueda, desde, hasta, limite, tipoEvento);
+        StringBuilder csv = new StringBuilder("fecha,modulo,accion,entidad,entidad_id,usuario,severidad,tipo_evento,origen,descripcion\n");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        eventos.forEach(evento -> csv.append(escape(evento.fechaEvento() != null ? evento.fechaEvento().format(formatter) : ""))
+                .append(',').append(escape(evento.modulo()))
+                .append(',').append(escape(evento.accion()))
+                .append(',').append(escape(evento.entidad()))
+                .append(',').append(escape(evento.entidadId()))
+                .append(',').append(escape(evento.usuario()))
+                .append(',').append(escape(evento.severidad()))
+                .append(',').append(escape(evento.tipoEvento()))
+                .append(',').append(escape(evento.origen()))
+                .append(',').append(escape(evento.descripcion()))
+                .append('\n'));
+
+        return csv.toString();
     }
 
     private Stream<AuditoriaEvento> filtrarIgual(Stream<AuditoriaEvento> stream,
@@ -222,6 +256,13 @@ public class AuditoriaService {
         return limpio.isEmpty() ? null : limpio;
     }
 
+    private String escape(String valor) {
+        if (valor == null) {
+            return "\"\"";
+        }
+        return "\"" + valor.replace("\"", "\"\"").replace("\n", " ").replace("\r", " ") + "\"";
+    }
+
     private AuditoriaEventoResponse toResponse(AuditoriaEvento evento) {
         return new AuditoriaEventoResponse(
                 evento.getIdAuditoria(),
@@ -238,6 +279,8 @@ public class AuditoriaService {
                 evento.getUsuario(),
                 evento.getSeveridad(),
                 evento.getOrigen(),
+                evento.getTipoEvento(),
+                evento.getEditable(),
                 evento.getIp()
         );
     }

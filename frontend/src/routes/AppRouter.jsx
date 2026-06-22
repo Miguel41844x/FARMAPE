@@ -7,6 +7,7 @@ import { PERMISSIONS } from "../constants/permissions";
 // Páginas públicas
 import HomePublic from "../pages/public/HomePublic";
 import Login from "../pages/auth/Login";
+import ForgotPassword from "../pages/auth/ForgotPassword";
 
 // Páginas privadas
 import HomePrivate from "../pages/private/HomePrivate";
@@ -37,6 +38,7 @@ function AppRouter() {
         <Routes>
             <Route path="/" element={<HomePublic />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/recuperar-acceso" element={<ForgotPassword />} />
 
             <Route element={<PrivateRoute />}>
                 <Route element={<PrivateLayout />}>
@@ -55,7 +57,6 @@ function AppRouter() {
                             <PermissionRoute
                                 permissions={[
                                     PERMISSIONS.USER_MANAGE,
-                                    PERMISSIONS.ROLE_READ,
                                     PERMISSIONS.ROLE_MANAGE,
                                     PERMISSIONS.ROLE_ASSIGN,
                                 ]}

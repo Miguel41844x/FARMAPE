@@ -1,143 +1,92 @@
 import { API_URL } from "../../config/api";
 
-export const obtenerRoles = async (incluirInactivos = false) => {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${API_URL}/roles?incluirInactivos=${incluirInactivos}`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+const getAuthHeaders = () => ({
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+    "Content-Type": "application/json",
+});
 
-    if (!response.ok) {
-        throw new Error("No se pudieron obtener los roles");
+const parseError = async (response, mensajeDefault) => {
+    const text = await response.text();
+    if (!text) return mensajeDefault;
+    try {
+        const json = JSON.parse(text);
+        return json.message || json.error || text;
+    } catch {
+        return text;
     }
-
-    return response.json();
 };
 
-const roleRequest = async (path, options = {}) => {
+const request = async (path, options = {}, mensajeDefault = "No se pudo completar la operación") => {
     const response = await fetch(`${API_URL}${path}`, {
         ...options,
         headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-            "Content-Type": "application/json",
+            ...getAuthHeaders(),
             ...options.headers,
         },
     });
+
     if (!response.ok) {
-        const body = await response.json().catch(() => null);
-        throw new Error(body?.message || "No se pudo completar la operación");
+        throw new Error(await parseError(response, mensajeDefault));
     }
+
     return response.status === 204 ? null : response.json();
 };
 
-export const obtenerPermisos = () => roleRequest("/permisos");
-export const crearRol = (rol) => roleRequest("/roles", {
+export const obtenerRoles = async (incluirInactivos = false) =>
+    request(`/roles?incluirInactivos=${incluirInactivos}`, { method: "GET" }, "No se pudieron obtener los roles");
+
+export const obtenerPermisos = () => request("/permisos", { method: "GET" }, "No se pudieron obtener los permisos");
+
+export const crearRol = (rol) => request("/roles", {
     method: "POST",
     body: JSON.stringify(rol),
 });
-export const actualizarRol = (idRol, rol) => roleRequest(`/roles/${idRol}`, {
+
+export const actualizarRol = (idRol, rol) => request(`/roles/${idRol}`, {
     method: "PUT",
     body: JSON.stringify(rol),
 });
-export const asignarPermisosRol = (idRol, idPermisos) => roleRequest(`/roles/${idRol}/permisos`, {
+
+export const asignarPermisosRol = (idRol, idPermisos) => request(`/roles/${idRol}/permisos`, {
     method: "PUT",
     body: JSON.stringify({ idPermisos }),
 });
-export const cambiarEstadoRol = (idRol, activo) => roleRequest(`/roles/${idRol}/estado`, {
+
+export const cambiarEstadoRol = (idRol, activo) => request(`/roles/${idRol}/estado`, {
     method: "PATCH",
     body: JSON.stringify({ activo }),
 });
-export const eliminarRol = (idRol) => roleRequest(`/roles/${idRol}`, { method: "DELETE" });
 
-export const obtenerUsuarios = async () => {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${API_URL}/usuarios`, {
-        headers: { Authorization: `Bearer ${token}` },
-    });
+export const eliminarRol = (idRol) => request(`/roles/${idRol}`, { method: "DELETE" });
 
-    if (!response.ok) {
-        throw new Error("Error al obtener usuarios");
-    }
+export const obtenerUsuarios = async () => request("/usuarios", { method: "GET" }, "Error al obtener usuarios");
 
-    return response.json();
-};
+export const crearUsuario = async (usuarioRequest) => request("/usuarios", {
+    method: "POST",
+    body: JSON.stringify(usuarioRequest),
+}, "No se pudo registrar el usuario");
 
-export const crearUsuario = async (usuarioRequest) => {
-    const token = localStorage.getItem("token");
+export const actualizarUsuarioCompleto = async (idCuenta, usuarioRequest) => request(`/usuarios/${idCuenta}`, {
+    method: "PUT",
+    body: JSON.stringify(usuarioRequest),
+}, "No se pudo actualizar el usuario");
 
-    const response = await fetch(`${API_URL}/usuarios`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(usuarioRequest),
-    });
+export const cambiarClaveUsuario = async (idCuenta, nuevaClave) => request(`/usuarios/${idCuenta}/clave`, {
+    method: "PATCH",
+    body: JSON.stringify({ nuevaClave }),
+}, "No se pudo cambiar la contraseña");
 
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "No se pudo registrar el usuario");
-    }
+export const actualizarTrabajador = async (idTrabajador, trabajadorRequest) => request(`/trabajadores/${idTrabajador}`, {
+    method: "PUT",
+    body: JSON.stringify(trabajadorRequest),
+}, "No se pudo actualizar el trabajador");
 
-    return await response.json();
-};
+export const actualizarEstadoTrabajador = async (idTrabajador, estado) => request(`/trabajadores/${idTrabajador}/estado`, {
+    method: "PATCH",
+    body: JSON.stringify({ estado }),
+}, "No se pudo actualizar el estado del trabajador");
 
-export const actualizarTrabajador = async (idTrabajador, trabajadorRequest) => {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(`${API_URL}/trabajadores/${idTrabajador}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(trabajadorRequest),
-    });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "No se pudo actualizar el trabajador");
-    }
-
-    return await response.json();
-};
-
-export const actualizarEstadoTrabajador = async (idTrabajador, estado) => {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(`${API_URL}/trabajadores/${idTrabajador}/estado`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-            estado,
-        }),
-    });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "No se pudo actualizar el estado del trabajador");
-    }
-
-    return await response.json();
-};
-
-export const actualizarEstadoCuenta = async (idCuenta, estado) => {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${API_URL}/usuarios/${idCuenta}/estado`, {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ estado }),
-    });
-
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "No se pudo actualizar el estado de la cuenta");
-    }
-
-    return response.json();
-};
+export const actualizarEstadoCuenta = async (idCuenta, estado) => request(`/usuarios/${idCuenta}/estado`, {
+    method: "PATCH",
+    body: JSON.stringify({ estado }),
+}, "No se pudo actualizar el estado de la cuenta");

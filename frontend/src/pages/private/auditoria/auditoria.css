@@ -358,3 +358,18 @@
         grid-column: span 1;
     }
 }
+
+.audit-note {
+    margin: -6px 0 16px;
+    color: #64748b;
+    line-height: 1.5;
+}
+.audit-type {
+    display: inline-flex;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 0.78rem;
+    font-weight: 800;
+}

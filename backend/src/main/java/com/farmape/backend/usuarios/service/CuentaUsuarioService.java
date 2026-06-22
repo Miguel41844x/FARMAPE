@@ -5,17 +5,17 @@ import com.farmape.backend.roles.repository.RolRepository;
 import com.farmape.backend.trabajadores.enums.EstadoTrabajador;
 import com.farmape.backend.trabajadores.model.Trabajador;
 import com.farmape.backend.trabajadores.repository.TrabajadorRepository;
+import com.farmape.backend.usuarios.dto.ActualizarUsuarioRequest;
+import com.farmape.backend.usuarios.dto.CambiarClaveUsuarioRequest;
 import com.farmape.backend.usuarios.dto.CambiarEstadoCuentaRequest;
 import com.farmape.backend.usuarios.dto.CrearUsuarioRequest;
 import com.farmape.backend.usuarios.dto.CuentaUsuarioResponse;
 import com.farmape.backend.usuarios.enums.EstadoCuentaUsuario;
 import com.farmape.backend.usuarios.model.CuentaUsuario;
 import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
-
+import jakarta.transaction.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import jakarta.transaction.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -61,11 +61,7 @@ public class CuentaUsuarioService {
 
         cuenta.setEstado(request.estado());
 
-        if (request.estado() == EstadoCuentaUsuario.Inactivo) {
-            cuenta.getTrabajador().setEstado(EstadoTrabajador.Inactivo);
-        } else if (request.estado() == EstadoCuentaUsuario.Activo) {
-            cuenta.getTrabajador().setEstado(EstadoTrabajador.Activo);
-        }
+        sincronizarEstadoTrabajador(cuenta);
         trabajadorRepository.save(cuenta.getTrabajador());
 
         CuentaUsuario cuentaActualizada = cuentaUsuarioRepository.save(cuenta);
@@ -87,36 +83,98 @@ public class CuentaUsuarioService {
             throw new RuntimeException("Ya existe una cuenta con ese email");
         }
 
-        Rol rol = rolRepository.findById(request.idRol())
-                    .filter(item -> Boolean.TRUE.equals(item.getActivo()))
-                    .orElseThrow(() -> new RuntimeException("Rol activo no encontrado"));
+        Rol rol = obtenerRolActivo(request.idRol());
 
-            Trabajador trabajador = Trabajador.builder()
-                    .dni(request.dni())
-                    .nombres(request.nombres())
-                    .apellidos(request.apellidos())
-                    .telefono(request.telefono())
-                    .direccion(request.direccion())
-                    .rol(rol)
-                    .estado(EstadoTrabajador.Activo)
-                    .fechaRegistro(LocalDateTime.now())
-                    .build();
+        Trabajador trabajador = Trabajador.builder()
+                .dni(limpiar(request.dni()))
+                .nombres(limpiar(request.nombres()))
+                .apellidos(limpiar(request.apellidos()))
+                .telefono(limpiar(request.telefono()))
+                .direccion(limpiar(request.direccion()))
+                .rol(rol)
+                .estado(EstadoTrabajador.Activo)
+                .fechaRegistro(LocalDateTime.now())
+                .build();
 
-            trabajador = trabajadorRepository.save(trabajador);
+        trabajador = trabajadorRepository.save(trabajador);
 
-            CuentaUsuario cuenta = CuentaUsuario.builder()
-                    .trabajador(trabajador)
-                    .usuario(request.usuario())
-                    .email(request.email())
-                    .clave(passwordEncoder.encode(request.clave()))
-                    .estado(request.estado() != null ? request.estado() : EstadoCuentaUsuario.Activo)
-                    .fechaCreacion(LocalDateTime.now())
-                    .build();
+        CuentaUsuario cuenta = CuentaUsuario.builder()
+                .trabajador(trabajador)
+                .usuario(limpiar(request.usuario()))
+                .email(limpiar(request.email()))
+                .clave(passwordEncoder.encode(request.clave()))
+                .estado(request.estado() != null ? request.estado() : EstadoCuentaUsuario.Activo)
+                .fechaCreacion(LocalDateTime.now())
+                .build();
 
-            cuenta = cuentaUsuarioRepository.save(cuenta);
+        cuenta = cuentaUsuarioRepository.save(cuenta);
 
-            return toResponse(cuenta);
+        return toResponse(cuenta);
+    }
+
+    @Transactional
+    public CuentaUsuarioResponse actualizar(Integer id, ActualizarUsuarioRequest request) {
+        CuentaUsuario cuenta = cuentaUsuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cuenta de usuario no encontrada"));
+
+        if (trabajadorRepository.existsByDniAndIdTrabajadorNot(request.dni(), cuenta.getTrabajador().getIdTrabajador())) {
+            throw new RuntimeException("Ya existe otro trabajador con ese DNI");
         }
+
+        if (cuentaUsuarioRepository.existsByUsuarioAndIdCuentaNot(request.usuario(), id)) {
+            throw new RuntimeException("Ya existe otra cuenta con ese usuario");
+        }
+
+        if (cuentaUsuarioRepository.existsByEmailAndIdCuentaNot(request.email(), id)) {
+            throw new RuntimeException("Ya existe otra cuenta con ese email");
+        }
+
+        Rol rol = obtenerRolActivo(request.idRol());
+        Trabajador trabajador = cuenta.getTrabajador();
+
+        trabajador.setDni(limpiar(request.dni()));
+        trabajador.setNombres(limpiar(request.nombres()));
+        trabajador.setApellidos(limpiar(request.apellidos()));
+        trabajador.setTelefono(limpiar(request.telefono()));
+        trabajador.setDireccion(limpiar(request.direccion()));
+        trabajador.setRol(rol);
+
+        cuenta.setUsuario(limpiar(request.usuario()));
+        cuenta.setEmail(limpiar(request.email()));
+        cuenta.setEstado(request.estado() != null ? request.estado() : cuenta.getEstado());
+
+        if (request.nuevaClave() != null && !request.nuevaClave().isBlank()) {
+            cuenta.setClave(passwordEncoder.encode(request.nuevaClave()));
+        }
+
+        sincronizarEstadoTrabajador(cuenta);
+        trabajadorRepository.save(trabajador);
+
+        return toResponse(cuentaUsuarioRepository.save(cuenta));
+    }
+
+    @Transactional
+    public CuentaUsuarioResponse cambiarClaveAdministrativa(Integer id, CambiarClaveUsuarioRequest request) {
+        CuentaUsuario cuenta = cuentaUsuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cuenta de usuario no encontrada"));
+
+        cuenta.setClave(passwordEncoder.encode(request.nuevaClave()));
+        return toResponse(cuentaUsuarioRepository.save(cuenta));
+    }
+
+    private Rol obtenerRolActivo(Integer idRol) {
+        return rolRepository.findById(idRol)
+                .filter(item -> Boolean.TRUE.equals(item.getActivo()))
+                .orElseThrow(() -> new RuntimeException("Rol activo no encontrado"));
+    }
+
+    private void sincronizarEstadoTrabajador(CuentaUsuario cuenta) {
+        if (cuenta.getEstado() == EstadoCuentaUsuario.Inactivo) {
+            cuenta.getTrabajador().setEstado(EstadoTrabajador.Inactivo);
+        } else if (cuenta.getEstado() == EstadoCuentaUsuario.Activo) {
+            cuenta.getTrabajador().setEstado(EstadoTrabajador.Activo);
+        }
+    }
 
     private CuentaUsuarioResponse toResponse(CuentaUsuario cuenta) {
         return new CuentaUsuarioResponse(
@@ -136,5 +194,13 @@ public class CuentaUsuarioService {
                 cuenta.getTrabajador().getRol().getIdRol(),
                 cuenta.getTrabajador().getRol().getNombreRol()
         );
+    }
+
+    private String limpiar(String valor) {
+        if (valor == null) {
+            return null;
+        }
+        String limpio = valor.trim();
+        return limpio.isBlank() ? null : limpio;
     }
 }

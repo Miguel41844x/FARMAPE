@@ -11,5 +11,7 @@ public interface TrabajadorRepository extends JpaRepository<Trabajador, Integer>
 
     boolean existsByDni(String dni);
 
+    boolean existsByDniAndIdTrabajadorNot(String dni, Integer idTrabajador);
+
     long countByRol_IdRol(Integer idRol);
 }

@@ -1,0 +1,83 @@
+.feedback-message {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin: 12px 0;
+    border: 1px solid #dbeafe;
+    background: #eff6ff;
+    color: #1e3a8a;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+}
+.feedback-message strong { display: block; margin-bottom: 2px; }
+.feedback-message p { margin: 0; }
+.feedback-message button {
+    border: 0;
+    background: transparent;
+    font-size: 1.35rem;
+    cursor: pointer;
+    color: inherit;
+}
+.feedback-success { background: #ecfdf5; border-color: #bbf7d0; color: #166534; }
+.feedback-error { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+.feedback-warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 4000;
+    padding: 18px;
+}
+.confirm-card {
+    width: min(430px, 100%);
+    border-radius: 20px;
+    background: #fff;
+    padding: 24px;
+    box-shadow: 0 25px 50px rgba(15, 23, 42, 0.22);
+}
+.confirm-card h3 { margin: 0 0 8px; color: #111827; }
+.confirm-card p { color: #4b5563; margin: 0; }
+.confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+.confirm-actions button, .empty-state-box button {
+    border: 0;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-weight: 700;
+    cursor: pointer;
+}
+.confirm-cancel { background: #e5e7eb; color: #374151; }
+.confirm-primary { background: #2563eb; color: white; }
+.loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 24px;
+    color: #475569;
+}
+.loading-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 999px;
+    border: 3px solid #bfdbfe;
+    border-top-color: #2563eb;
+    animation: farmape-spin 0.8s linear infinite;
+}
+@keyframes farmape-spin { to { transform: rotate(360deg); } }
+.empty-state-box {
+    border: 1px dashed #cbd5e1;
+    border-radius: 18px;
+    padding: 28px;
+    text-align: center;
+    background: #f8fafc;
+    color: #475569;
+}
+.empty-state-box h3 { margin: 8px 0 6px; color: #1f2937; }
+.empty-state-box p { margin: 0 auto 16px; max-width: 520px; }
+.empty-state-icon { font-size: 2rem; }
+.empty-state-box button { background: #2563eb; color: white; }

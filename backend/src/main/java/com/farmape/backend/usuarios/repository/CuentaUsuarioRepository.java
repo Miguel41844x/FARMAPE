@@ -1,8 +1,7 @@
 package com.farmape.backend.usuarios.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.farmape.backend.usuarios.model.CuentaUsuario;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
@@ -19,4 +18,8 @@ public interface CuentaUsuarioRepository extends JpaRepository<CuentaUsuario, In
     boolean existsByUsuario(String usuario);
 
     boolean existsByEmail(String email);
+
+    boolean existsByUsuarioAndIdCuentaNot(String usuario, Integer idCuenta);
+
+    boolean existsByEmailAndIdCuentaNot(String email, Integer idCuenta);
 }

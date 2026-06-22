@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-
 import UsuarioForms from "../../../components/private/mantenimiento/usuarios/UsuarioForms";
 import UsuariosTable from "../../../components/private/mantenimiento/usuarios/UsuariosTable.jsx";
+import FeedbackMessage from "../../../components/common/FeedbackMessage";
+import ConfirmDialog from "../../../components/common/ConfirmDialog";
 import "./usuarios.css";
-
 import {
     obtenerUsuarios as obtenerUsuariosService,
     actualizarEstadoCuenta,
@@ -12,11 +12,12 @@ import {
 const Usuarios = () => {
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
     const [usuarioEditando, setUsuarioEditando] = useState(null);
-
     const [usuarios, setUsuarios] = useState([]);
     const [busqueda, setBusqueda] = useState("");
     const [paginaActual, setPaginaActual] = useState(1);
     const [loading, setLoading] = useState(true);
+    const [feedback, setFeedback] = useState(null);
+    const [confirmacion, setConfirmacion] = useState(null);
 
     const usuariosPorPagina = 10;
 
@@ -28,45 +29,24 @@ const Usuarios = () => {
     const cargarUsuarios = async () => {
         try {
             setLoading(true);
-
             const data = await obtenerUsuariosService();
-
             setUsuarios(Array.isArray(data) ? data : []);
         } catch (error) {
-            console.error(error);
-            alert(error.message);
+            setFeedback({ type: "error", message: error.message });
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        let activo = true;
-        obtenerUsuariosService()
-            .then((data) => {
-                if (activo) setUsuarios(Array.isArray(data) ? data : []);
-            })
-            .catch((error) => {
-                if (activo) alert(error.message);
-            })
-            .finally(() => {
-                if (activo) setLoading(false);
-            });
-
-        return () => {
-            activo = false;
-        };
+        cargarUsuarios();
     }, []);
 
     useEffect(() => {
         const cerrarConEscape = (event) => {
             if (event.key === "Escape") cerrarFormulario();
         };
-
-        if (mostrarFormulario) {
-            document.addEventListener("keydown", cerrarConEscape);
-        }
-
+        if (mostrarFormulario) document.addEventListener("keydown", cerrarConEscape);
         return () => document.removeEventListener("keydown", cerrarConEscape);
     }, [mostrarFormulario]);
 
@@ -80,26 +60,23 @@ const Usuarios = () => {
         setMostrarFormulario(true);
     };
 
-    const eliminarUsuario = async (id) => {
-        const confirmar = confirm("¿Seguro que deseas desactivar este trabajador?");
-        if (!confirmar) return;
+    const solicitarDesactivar = (usuario) => {
+        setConfirmacion({
+            idCuenta: usuario.idCuenta,
+            nombre: `${usuario.nombres} ${usuario.apellidos}`,
+        });
+    };
 
+    const desactivarUsuario = async () => {
+        if (!confirmacion) return;
         try {
-            const usuarioActualizado = await actualizarEstadoCuenta(
-                id,
-                "Inactivo"
-            );
-
-            setUsuarios((usuariosActuales) =>
-                usuariosActuales.map((usuario) =>
-                    usuario.idCuenta === id
-                        ? { ...usuario, ...usuarioActualizado }
-                        : usuario
-                )
-            );
+            const usuarioActualizado = await actualizarEstadoCuenta(confirmacion.idCuenta, "Inactivo");
+            setUsuarios((actuales) => actuales.map((usuario) => usuario.idCuenta === confirmacion.idCuenta ? { ...usuario, ...usuarioActualizado } : usuario));
+            setFeedback({ type: "success", message: "Usuario desactivado correctamente." });
         } catch (error) {
-            console.error(error);
-            alert(error.message);
+            setFeedback({ type: "error", message: error.message });
+        } finally {
+            setConfirmacion(null);
         }
     };
 
@@ -107,44 +84,18 @@ const Usuarios = () => {
         const texto = busqueda.trim().toLocaleLowerCase("es");
         const rol = usuario.rol?.nombre || usuario.nombreRol || usuario.rol;
         const email = usuario.email || usuario.correo || usuario.cuenta?.email;
-
-        return [
-            usuario.dni,
-            usuario.nombres,
-            usuario.apellidos,
-            usuario.telefono,
-            usuario.direccion,
-            usuario.usuario,
-            email,
-            usuario.estado,
-            rol,
-        ].some((valor) =>
-            String(valor ?? "").toLocaleLowerCase("es").includes(texto)
-        );
+        return [usuario.dni, usuario.nombres, usuario.apellidos, usuario.telefono, usuario.direccion, usuario.usuario, email, usuario.estado, rol]
+            .some((valor) => String(valor ?? "").toLocaleLowerCase("es").includes(texto));
     });
 
     const totalPaginas = Math.ceil(usuariosFiltrados.length / usuariosPorPagina);
     const paginaSegura = Math.min(paginaActual, totalPaginas || 1);
     const indiceInicial = (paginaSegura - 1) * usuariosPorPagina;
-    const indiceFinal = indiceInicial + usuariosPorPagina;
-
-    const usuariosPaginados = usuariosFiltrados.slice(indiceInicial, indiceFinal);
+    const usuariosPaginados = usuariosFiltrados.slice(indiceInicial, indiceInicial + usuariosPorPagina);
 
     const cambiarBusqueda = (valor) => {
         setBusqueda(valor);
         setPaginaActual(1);
-    };
-
-    const paginaAnterior = () => {
-        if (paginaSegura > 1) {
-            setPaginaActual(paginaSegura - 1);
-        }
-    };
-
-    const paginaSiguiente = () => {
-        if (paginaSegura < totalPaginas) {
-            setPaginaActual(paginaSegura + 1);
-        }
     };
 
     return (
@@ -152,31 +103,17 @@ const Usuarios = () => {
             <div className="usuarios-header">
                 <div>
                     <h1>Gestión de usuarios</h1>
-                    <p>Crea, edita y administra usuarios del sistema.</p>
+                    <p>Crea, edita datos personales, credenciales, roles y estado de acceso.</p>
                 </div>
-
-                <button
-                    className="usuarios-create-btn"
-                    onClick={abrirCrearUsuario}
-                >
-                    Crear usuario
-                </button>
+                <button className="usuarios-create-btn" onClick={abrirCrearUsuario}>Crear usuario</button>
             </div>
 
+            {feedback && <FeedbackMessage type={feedback.type} message={feedback.message} onClose={() => setFeedback(null)} />}
+
             {mostrarFormulario && (
-                <div
-                    className="usuarios-modal-overlay"
-                    onClick={cerrarFormulario}
-                >
-                    <div
-                        className="usuarios-modal-content"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <UsuarioForms
-                            usuarioEditando={usuarioEditando}
-                            cerrarFormulario={cerrarFormulario}
-                            obtenerUsuarios={cargarUsuarios}
-                        />
+                <div className="usuarios-modal-overlay" onClick={cerrarFormulario}>
+                    <div className="usuarios-modal-content" onClick={(e) => e.stopPropagation()}>
+                        <UsuarioForms usuarioEditando={usuarioEditando} cerrarFormulario={cerrarFormulario} obtenerUsuarios={cargarUsuarios} />
                     </div>
                 </div>
             )}
@@ -189,10 +126,19 @@ const Usuarios = () => {
                 loading={loading}
                 paginaActual={paginaSegura}
                 totalPaginas={totalPaginas}
-                paginaAnterior={paginaAnterior}
-                paginaSiguiente={paginaSiguiente}
+                paginaAnterior={() => setPaginaActual((pagina) => Math.max(pagina - 1, 1))}
+                paginaSiguiente={() => setPaginaActual((pagina) => Math.min(pagina + 1, totalPaginas || 1))}
                 onEdit={editarUsuario}
-                onDelete={eliminarUsuario}
+                onDelete={solicitarDesactivar}
+            />
+
+            <ConfirmDialog
+                open={Boolean(confirmacion)}
+                title="Desactivar usuario"
+                message={`¿Deseas desactivar a ${confirmacion?.nombre || "este usuario"}? Podrás reactivarlo editando su estado.`}
+                confirmText="Desactivar"
+                onConfirm={desactivarUsuario}
+                onCancel={() => setConfirmacion(null)}
             />
         </div>
     );

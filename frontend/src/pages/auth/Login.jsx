@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Iconos
 import { IoIosLogIn } from "react-icons/io";
@@ -122,8 +122,7 @@ const Login = () => {
                     </div>
 
                     <p className="login-help">
-                        ¿Olvidaste tu contraseña?
-                        <span> Comunícate con un administrador</span>
+                        ¿Olvidaste tu contraseña? <Link to="/recuperar-acceso">Solicitar ayuda</Link>
                     </p>
 
                     <div className="login-button">

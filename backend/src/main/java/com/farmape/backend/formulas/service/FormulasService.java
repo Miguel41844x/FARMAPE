@@ -1,5 +1,7 @@
 package com.farmape.backend.formulas.service;
 
+import com.farmape.backend.almacen.model.LoteProducto;
+import com.farmape.backend.almacen.repository.LoteProductoRepository;
 import com.farmape.backend.clientes.model.Cliente;
 import com.farmape.backend.clientes.repository.ClienteRepository;
 import com.farmape.backend.formulas.dto.*;
@@ -26,17 +28,25 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class FormulasService {
+
+    private static final Set<String> ESTADOS_RECETA = Set.of(
+            "Registrada", "Validada", "Presupuestada", "Aprobada", "En Elaboracion", "Preparada", "Lista", "Entregada", "Anulada"
+    );
 
     private final RecetaMagistralRepository recetaMagistralRepository;
     private final FormulaMagistralRepository formulaMagistralRepository;
     private final DetalleFormulaMagistralRepository detalleFormulaMagistralRepository;
     private final ClienteRepository clienteRepository;
     private final ProductoRepository productoRepository;
+    private final LoteProductoRepository loteProductoRepository;
     private final OrdenVentaRepository ordenVentaRepository;
     private final HistorialOrdenVentaRepository historialOrdenVentaRepository;
     private final AuthenticatedUserService authenticatedUserService;
@@ -47,6 +57,7 @@ public class FormulasService {
             DetalleFormulaMagistralRepository detalleFormulaMagistralRepository,
             ClienteRepository clienteRepository,
             ProductoRepository productoRepository,
+            LoteProductoRepository loteProductoRepository,
             OrdenVentaRepository ordenVentaRepository,
             HistorialOrdenVentaRepository historialOrdenVentaRepository,
             AuthenticatedUserService authenticatedUserService
@@ -56,6 +67,7 @@ public class FormulasService {
         this.detalleFormulaMagistralRepository = detalleFormulaMagistralRepository;
         this.clienteRepository = clienteRepository;
         this.productoRepository = productoRepository;
+        this.loteProductoRepository = loteProductoRepository;
         this.ordenVentaRepository = ordenVentaRepository;
         this.historialOrdenVentaRepository = historialOrdenVentaRepository;
         this.authenticatedUserService = authenticatedUserService;
@@ -91,17 +103,17 @@ public class FormulasService {
         RecetaMagistral receta = RecetaMagistral.builder()
                 .cliente(cliente)
                 .quimicoFarmaceutico(quimico)
-                .medicoPrescriptor(request.medicoPrescriptor())
-                .numeroColegiatura(request.numeroColegiatura())
+                .medicoPrescriptor(limpiar(request.medicoPrescriptor()))
+                .numeroColegiatura(limpiar(request.numeroColegiatura()))
                 .descripcionReceta(construirDescripcionReceta(
                         request.tipoFormula(),
                         request.diagnostico(),
                         request.componentes()
                 ))
-                .contraindicaciones(request.contraindicaciones())
+                .contraindicaciones(limpiar(request.contraindicaciones()))
                 .presupuesto(null)
                 .fechaReceta(LocalDateTime.now())
-                .estado("Presupuestada")
+                .estado("Registrada")
                 .build();
 
         return toResponse(recetaMagistralRepository.save(receta));
@@ -117,17 +129,17 @@ public class FormulasService {
         RecetaMagistral receta = RecetaMagistral.builder()
                 .cliente(cliente)
                 .quimicoFarmaceutico(quimico)
-                .medicoPrescriptor(request.medicoPrescriptor())
-                .numeroColegiatura(request.numeroColegiatura())
+                .medicoPrescriptor(limpiar(request.medicoPrescriptor()))
+                .numeroColegiatura(limpiar(request.numeroColegiatura()))
                 .descripcionReceta(construirDescripcionReceta(
                         request.tipoFormula(),
                         request.diagnostico(),
                         request.componentes()
                 ))
-                .contraindicaciones(request.contraindicaciones())
+                .contraindicaciones(limpiar(request.contraindicaciones()))
                 .presupuesto(request.presupuesto())
                 .fechaReceta(LocalDateTime.now())
-                .estado("Aceptada")
+                .estado("Aprobada")
                 .build();
         receta = recetaMagistralRepository.save(receta);
 
@@ -168,7 +180,7 @@ public class FormulasService {
             DetalleFormulaMagistral detalle = DetalleFormulaMagistral.builder()
                     .formula(formula)
                     .producto(producto)
-                    .idLote(null)
+                    .idLote(seleccionarLoteFefo(producto, insumoRequest.cantidad()).map(LoteProducto::getIdLote).orElse(null))
                     .cantidadUsada(insumoRequest.cantidad())
                     .unidadMedida(valorO(insumoRequest.unidadMedida(), "unidad"))
                     .build();
@@ -182,8 +194,39 @@ public class FormulasService {
                 orden.getIdOrdenVenta(),
                 receta.getPresupuesto(),
                 receta.getEstado(),
-                "Fórmula magistral presupuestada y orden enviada a caja."
+                "Fórmula magistral aprobada y orden enviada a caja."
         );
+    }
+
+    @Transactional
+    public RecetaMagistralResponse cambiarEstado(Integer idReceta, CambiarEstadoRecetaRequest request) {
+        RecetaMagistral receta = recetaMagistralRepository.findById(idReceta)
+                .orElseThrow(() -> new RuntimeException("Receta magistral no encontrada"));
+
+        String estadoNuevo = normalizarEstado(request.estado());
+        receta.setEstado(estadoNuevo);
+
+        Optional<FormulaMagistral> formulaOpt = formulaMagistralRepository.findByReceta(receta);
+        formulaOpt.ifPresent(formula -> {
+            if ("En Elaboracion".equals(estadoNuevo)) {
+                formula.setEstado("Pendiente");
+            } else if ("Preparada".equals(estadoNuevo) || "Lista".equals(estadoNuevo)) {
+                formula.setEstado("Preparada");
+                if (formula.getFechaElaboracion() == null) {
+                    formula.setFechaElaboracion(LocalDateTime.now());
+                }
+            } else if ("Entregada".equals(estadoNuevo)) {
+                formula.setEstado("Entregada");
+                if (formula.getFechaElaboracion() == null) {
+                    formula.setFechaElaboracion(LocalDateTime.now());
+                }
+            } else if ("Anulada".equals(estadoNuevo)) {
+                formula.setEstado("Anulada");
+            }
+            formulaMagistralRepository.save(formula);
+        });
+
+        return toResponse(recetaMagistralRepository.save(receta));
     }
 
     private Cliente obtenerCliente(String dniPaciente) {
@@ -206,6 +249,13 @@ public class FormulasService {
         }
     }
 
+    private Optional<LoteProducto> seleccionarLoteFefo(Producto producto, BigDecimal cantidad) {
+        return loteProductoRepository.findDisponiblesForUpdateByProductoFefo(producto).stream()
+                .filter(lote -> lote.getStockDisponible() != null
+                        && BigDecimal.valueOf(lote.getStockDisponible()).compareTo(cantidad) >= 0)
+                .findFirst();
+    }
+
     private String construirDescripcionReceta(
             String tipoFormula,
             String diagnostico,
@@ -214,9 +264,9 @@ public class FormulasService {
         String detalleComponentes = componentes == null || componentes.isEmpty()
                 ? "Sin componentes declarados"
                 : componentes.stream()
-                        .filter(Objects::nonNull)
-                        .map(c -> c.nombre_insumo() + " (" + c.cantidad_usada() + " " + c.unidad_medida() + ")")
-                        .collect(Collectors.joining(", "));
+                .filter(Objects::nonNull)
+                .map(c -> c.nombre_insumo() + " (" + c.cantidad_usada() + " " + c.unidad_medida() + ")")
+                .collect(Collectors.joining(", "));
 
         return valorO(tipoFormula, "Fórmula magistral")
                 + " | Diagnóstico: " + valorO(diagnostico, "No especificado")
@@ -224,9 +274,12 @@ public class FormulasService {
     }
 
     private RecetaMagistralResponse toResponse(RecetaMagistral receta) {
-        Integer idOrdenVenta = formulaMagistralRepository.findByReceta(receta)
+        Optional<FormulaMagistral> formulaOpt = formulaMagistralRepository.findByReceta(receta);
+        Integer idOrdenVenta = formulaOpt
                 .map(formula -> formula.getOrdenVenta() != null ? formula.getOrdenVenta().getIdOrdenVenta() : null)
                 .orElse(null);
+        Integer idFormula = formulaOpt.map(FormulaMagistral::getIdFormula).orElse(null);
+        String estadoFormula = formulaOpt.map(FormulaMagistral::getEstado).orElse(null);
 
         return new RecetaMagistralResponse(
                 receta.getIdReceta(),
@@ -242,11 +295,42 @@ public class FormulasService {
                 receta.getPresupuesto(),
                 receta.getFechaReceta(),
                 receta.getEstado(),
-                idOrdenVenta
+                idOrdenVenta,
+                idFormula,
+                estadoFormula
         );
+    }
+
+    private String normalizarEstado(String estado) {
+        String valor = valorO(estado, "Registrada").trim();
+        String normalizado = switch (valor.toUpperCase(Locale.ROOT).replace("_", " ")) {
+            case "REGISTRADA" -> "Registrada";
+            case "VALIDADA" -> "Validada";
+            case "PRESUPUESTADA" -> "Presupuestada";
+            case "APROBADA" -> "Aprobada";
+            case "EN ELABORACION", "EN ELABORACIÓN" -> "En Elaboracion";
+            case "PREPARADA" -> "Preparada";
+            case "LISTA" -> "Lista";
+            case "ENTREGADA" -> "Entregada";
+            case "ANULADA" -> "Anulada";
+            default -> valor;
+        };
+
+        if (!ESTADOS_RECETA.contains(normalizado)) {
+            throw new RuntimeException("Estado de receta no permitido: " + estado);
+        }
+        return normalizado;
     }
 
     private String valorO(String valor, String fallback) {
         return valor == null || valor.isBlank() ? fallback : valor;
+    }
+
+    private String limpiar(String valor) {
+        if (valor == null) {
+            return null;
+        }
+        String limpio = valor.trim();
+        return limpio.isBlank() ? null : limpio;
     }
 }

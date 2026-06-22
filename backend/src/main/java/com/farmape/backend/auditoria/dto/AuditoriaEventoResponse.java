@@ -17,6 +17,8 @@ public record AuditoriaEventoResponse(
         String usuario,
         String severidad,
         String origen,
+        String tipoEvento,
+        Boolean editable,
         String ip
 ) {
 }

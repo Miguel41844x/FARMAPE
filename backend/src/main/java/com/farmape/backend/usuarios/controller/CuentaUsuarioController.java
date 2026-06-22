@@ -1,9 +1,11 @@
 package com.farmape.backend.usuarios.controller;
 
+import com.farmape.backend.usuarios.dto.ActualizarUsuarioRequest;
+import com.farmape.backend.usuarios.dto.CambiarClaveUsuarioRequest;
 import com.farmape.backend.usuarios.dto.CambiarEstadoCuentaRequest;
+import com.farmape.backend.usuarios.dto.CrearUsuarioRequest;
 import com.farmape.backend.usuarios.dto.CuentaUsuarioResponse;
 import com.farmape.backend.usuarios.service.CuentaUsuarioService;
-import com.farmape.backend.usuarios.dto.CrearUsuarioRequest;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +34,18 @@ public class CuentaUsuarioController {
     @PostMapping
     public CuentaUsuarioResponse crear(@Valid @RequestBody CrearUsuarioRequest request) {
         return cuentaUsuarioService.crear(request);
+    }
+
+    @PutMapping("/{id}")
+    public CuentaUsuarioResponse actualizar(@PathVariable Integer id,
+                                            @Valid @RequestBody ActualizarUsuarioRequest request) {
+        return cuentaUsuarioService.actualizar(id, request);
+    }
+
+    @PatchMapping("/{id}/clave")
+    public CuentaUsuarioResponse cambiarClave(@PathVariable Integer id,
+                                              @Valid @RequestBody CambiarClaveUsuarioRequest request) {
+        return cuentaUsuarioService.cambiarClaveAdministrativa(id, request);
     }
 
     @PatchMapping("/{id}/estado")

@@ -17,6 +17,8 @@ public record RecetaMagistralResponse(
         BigDecimal presupuesto,
         LocalDateTime fechaReceta,
         String estado,
-        Integer idOrdenVenta
+        Integer idOrdenVenta,
+        Integer idFormula,
+        String estadoFormula
 ) {
 }
