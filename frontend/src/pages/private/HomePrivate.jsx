@@ -1,19 +1,30 @@
 import "./homePrivate.css";
-import { useAuth } from "../../context/AuthContext";
 import { NavLink } from "react-router-dom";
+import {
+    FiArrowUpRight,
+    FiBox,
+    FiClipboard,
+    FiCreditCard,
+    FiFileText,
+    FiPackage,
+    FiShoppingCart,
+    FiTruck,
+    FiUsers,
+} from "react-icons/fi";
+import { useAuth } from "../../context/AuthContext";
 import { PERMISSIONS } from "../../constants/permissions";
 import OrdersTable from "../../components/private/homePrivate/OrdersTable";
 import CashSummary from "../../components/private/homePrivate/CashSummary";
 
 const accesos = [
-    { permiso: PERMISSIONS.SALE_CREATE, titulo: "Ventas", descripcion: "Registrar una nueva orden", ruta: "/ventas" },
-    { permiso: PERMISSIONS.PAYMENT_READ, titulo: "Caja", descripcion: "Consultar órdenes por cobrar", ruta: "/caja" },
-    { permiso: PERMISSIONS.USER_MANAGE, titulo: "Usuarios", descripcion: "Administrar cuentas y roles", ruta: "/mantenimiento" },
-    { permiso: PERMISSIONS.PRODUCT_MANAGE, titulo: "Productos", descripcion: "Administrar el catálogo", ruta: "/productos" },
-    { permiso: PERMISSIONS.PURCHASE_MANAGE, titulo: "Compras", descripcion: "Gestionar proveedores y compras", ruta: "/compras-proveedores" },
-    { permiso: PERMISSIONS.INVENTORY_MANAGE, titulo: "Almacén", descripcion: "Controlar ingresos e inventario", ruta: "/despacho-almacen" },
-    { permiso: PERMISSIONS.DISPATCH_MANAGE, titulo: "Despacho", descripcion: "Gestionar entregas", ruta: "/despacho-almacen" },
-    { permiso: PERMISSIONS.REPORT_VIEW, titulo: "Reportes", descripcion: "Consultar indicadores", ruta: "/reportes" },
+    { permiso: PERMISSIONS.SALE_CREATE, titulo: "Ventas", descripcion: "Registrar una nueva orden", ruta: "/ventas", icono: <FiShoppingCart /> },
+    { permiso: PERMISSIONS.PAYMENT_READ, titulo: "Caja", descripcion: "Consultar órdenes por cobrar", ruta: "/caja", icono: <FiCreditCard /> },
+    { permiso: PERMISSIONS.USER_MANAGE, titulo: "Usuarios", descripcion: "Administrar cuentas y roles", ruta: "/mantenimiento", icono: <FiUsers /> },
+    { permiso: PERMISSIONS.PRODUCT_MANAGE, titulo: "Productos", descripcion: "Administrar el catálogo", ruta: "/productos", icono: <FiPackage /> },
+    { permiso: PERMISSIONS.PURCHASE_MANAGE, titulo: "Compras", descripcion: "Gestionar proveedores y compras", ruta: "/compras-proveedores", icono: <FiClipboard /> },
+    { permiso: PERMISSIONS.INVENTORY_MANAGE, titulo: "Almacén", descripcion: "Controlar ingresos e inventario", ruta: "/despacho-almacen", icono: <FiBox /> },
+    { permiso: PERMISSIONS.DISPATCH_MANAGE, titulo: "Despacho", descripcion: "Gestionar entregas", ruta: "/despacho-almacen", icono: <FiTruck /> },
+    { permiso: PERMISSIONS.REPORT_VIEW, titulo: "Reportes", descripcion: "Consultar indicadores", ruta: "/reportes", icono: <FiFileText /> },
 ];
 
 const contextos = [
@@ -29,36 +40,48 @@ const contextos = [
 ];
 
 const HomePrivate = () => {
-	const { user, hasPermission } = useAuth();
-	const accesosVisibles = accesos.filter((acceso) => hasPermission(acceso.permiso));
-	const contexto = contextos.find((item) => hasPermission(item.permiso));
-	const fecha = new Intl.DateTimeFormat("es-PE", { dateStyle: "full" }).format(new Date());
+    const { user, hasPermission } = useAuth();
+    const accesosVisibles = accesos.filter((acceso) => hasPermission(acceso.permiso));
+    const contexto = contextos.find((item) => hasPermission(item.permiso));
+    const fecha = new Intl.DateTimeFormat("es-PE", { dateStyle: "full" }).format(new Date());
 
-	return (
-		<div className="home-container">
-			<h1 className="home-title">{contexto?.titulo || `Bienvenido, ${user?.nombres}`}</h1>
+    return (
+        <div className="home-container">
+            <header className="home-hero">
+                <div>
+                    <span className="home-eyebrow">Espacio de trabajo · {fecha}</span>
+                    <h1 className="home-title">{contexto?.titulo || `Bienvenido, ${user?.nombres}`}</h1>
+                    <p className="home-subtitle">{contexto?.descripcion || "Bienvenido al sistema"}</p>
+                </div>
+                <div className="home-user-chip">
+                    <span>{user?.nombres?.charAt(0)}{user?.apellidos?.charAt(0)}</span>
+                    <div><strong>{user?.nombres} {user?.apellidos}</strong><small>{user?.rol}</small></div>
+                </div>
+            </header>
 
-			<p className="home-subtitle">
-				{contexto?.descripcion || "Bienvenido al sistema"} {fecha}. Sesión: {user?.rol}.
-			</p>
+            <div className="home-section-heading">
+                <div><span>Accesos rápidos</span><h2>Tus herramientas</h2></div>
+                <small>{accesosVisibles.length} módulos disponibles</small>
+            </div>
 
-			<div className="home-cards">
-				{accesosVisibles.map((acceso) => (
-					<NavLink className="home-card" to={acceso.ruta} key={acceso.permiso}>
-						<h3>{acceso.titulo}</h3>
-						<p>{acceso.descripcion}</p>
-					</NavLink>
-				))}
-			</div>
+            <div className="home-cards">
+                {accesosVisibles.map((acceso) => (
+                    <NavLink className="home-card" to={acceso.ruta} key={acceso.permiso}>
+                        <span className="home-card-icon">{acceso.icono}</span>
+                        <div><h3>{acceso.titulo}</h3><p>{acceso.descripcion}</p></div>
+                        <FiArrowUpRight className="home-card-arrow" />
+                    </NavLink>
+                ))}
+            </div>
 
-			{accesosVisibles.length === 0 && (
-				<p className="home-subtitle">Tu cuenta no tiene módulos operativos asignados. Contacta al administrador.</p>
-			)}
+            {accesosVisibles.length === 0 && (
+                <div className="home-empty">Tu cuenta no tiene módulos operativos asignados. Contacta al administrador.</div>
+            )}
 
-			{contexto?.contenido === "ventas" && <OrdersTable />}
-			{contexto?.contenido === "caja" && <CashSummary />}
-		</div>
-	);
+            {contexto?.contenido === "ventas" && <OrdersTable />}
+            {contexto?.contenido === "caja" && <CashSummary />}
+        </div>
+    );
 };
 
 export default HomePrivate;

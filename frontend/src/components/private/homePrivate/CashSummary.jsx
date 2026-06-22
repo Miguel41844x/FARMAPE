@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import { FiArrowRight, FiClock, FiDollarSign } from "react-icons/fi";
 import { listarOrdenesPendientesCaja } from "../../../services/caja/cajaService";
 import "./ordersTable.css";
 
@@ -20,9 +22,14 @@ export default function CashSummary() {
     return (
         <section className="orders-container">
             <div className="orders-header">
-                <div><h2>Órdenes por cobrar</h2><p>{loading ? "Consultando caja..." : `${ordenes.length} órdenes · S/ ${totalPendiente.toFixed(2)}`}</p></div>
+                <div><span className="orders-eyebrow">Resumen operativo</span><h2>Órdenes por cobrar</h2><p>Estado actual de la cola de caja</p></div>
+                <NavLink className="orders-action" to="/caja">Ir a caja <FiArrowRight /></NavLink>
             </div>
-            {!loading && ordenes.length === 0 && <p>No hay órdenes pendientes en este momento.</p>}
+            <div className="cash-summary-grid">
+                <article><FiClock /><div><span>Órdenes pendientes</span><strong>{loading ? "—" : ordenes.length}</strong></div></article>
+                <article><FiDollarSign /><div><span>Monto por cobrar</span><strong>{loading ? "—" : `S/ ${totalPendiente.toFixed(2)}`}</strong></div></article>
+            </div>
+            {!loading && ordenes.length === 0 && <p className="orders-empty">La caja está al día. No hay órdenes pendientes en este momento.</p>}
         </section>
     );
 }

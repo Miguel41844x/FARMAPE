@@ -1,13 +1,26 @@
-/* layout.css */
 .layout {
   display: flex;
-  height: 100vh;
+  min-width: 0;
+  height: 100dvh;
   overflow: hidden;
+  background: var(--background);
 }
 
 .main-content {
+  min-width: 0;
   flex: 1;
-  padding: 20px;
+  padding: 30px clamp(20px, 3vw, 44px) 44px;
   overflow-y: auto;
-  background: #f9fafb;
+  background:
+    radial-gradient(circle at 100% 0, rgba(55, 174, 149, .09), transparent 28rem),
+    linear-gradient(180deg, #f7faf9 0%, #f1f6f4 100%);
+}
+
+.main-content > * {
+  width: min(100%, 1560px);
+  margin-inline: auto;
+}
+
+@media (max-width: 760px) {
+  .main-content { padding: 20px 16px 32px; }
 }

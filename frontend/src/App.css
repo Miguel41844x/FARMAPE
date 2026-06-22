@@ -1,4 +1,237 @@
-*{
+/* Capa de coherencia visual para todas las pantallas operativas. */
+
+.main-content :is(
+  .home-container, .ventas-container, .caja-container, .usuarios-container,
+  .productos-container, .maintenance-container, .compras-page, .compra-process-page,
+  .despacho-module, .despacho-page, .recetas-page, .recetas-container,
+  .report-page, .audit-page, .proveedores-container, .roles-page
+) {
+  min-height: auto !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.main-content :is(
+  .ventas-header, .caja-header, .usuarios-header, .productos-header,
+  .maintenance-header, .compras-header, .compra-process-header,
+  .despacho-header, .recetas-header, .report-header, .audit-header,
+  .proveedores-header, .roles-header
+) {
+  margin-bottom: 22px;
+}
+
+.main-content :is(
+  .ventas-header h1, .caja-header h1, .usuarios-header h1, .productos-header h1,
+  .maintenance-header h1, .compras-header h1, .compra-process-header h1,
+  .despacho-header h1, .recetas-header h1, .report-header h1, .audit-header h1,
+  .proveedores-header h1, .roles-header h1
+) {
+  margin: 0 0 6px;
+  color: var(--text-primary) !important;
+  font-size: clamp(26px, 2.5vw, 34px) !important;
+  font-weight: 780 !important;
+  line-height: 1.18;
+  letter-spacing: -.035em;
+}
+
+.main-content :is(
+  .ventas-header p, .caja-header p, .usuarios-header p, .productos-header p,
+  .maintenance-header p, .compras-header p, .compra-process-header p,
+  .despacho-header p, .recetas-header p, .report-header p, .audit-header p,
+  .proveedores-header p, .roles-header p
+) {
   margin: 0;
-  padding: 0;
+  color: var(--text-secondary) !important;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Superficies */
+.main-content :is(
+  .usuarios-table-section, .productos-table-section, .despacho-table-section,
+  .proveedores-table-section, .compra-table-section, .receta-form-container,
+  .recetas-lista-container, .pago-card, .estado-card, .validar-card,
+  .report-card, .report-kpi, .audit-panel, .audit-kpis article,
+  .roles-table-card, .maintenance-card, .compra-process-header,
+  .venta-carrito, .venta-productos, .datos-venta-card
+) {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--surface) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.main-content :is(
+  .usuarios-table-section, .productos-table-section, .despacho-table-section,
+  .proveedores-table-section, .compra-table-section, .receta-form-container,
+  .recetas-lista-container, .audit-panel
+) { padding: 20px !important; }
+
+/* Controles */
+.main-content :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  min-height: 42px;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+}
+.main-content textarea { min-height: 86px; padding-block: 10px !important; }
+.main-content :is(input, select, textarea)::placeholder { color: #98a8a2; }
+.main-content :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea):focus {
+  border-color: var(--primary) !important;
+  outline: none;
+  box-shadow: var(--focus-ring) !important;
+}
+.main-content label { color: #40534d; }
+
+.main-content button { font-weight: 680; }
+.main-content :is(
+  .usuarios-create-btn, .productos-create-btn, .proveedores-create-btn,
+  .primary-action, .report-refresh, .report-form button,
+  .audit-btn:not(.ghost), .receta-submit-btn, .btn-generar-ticket,
+  .btn-emitir-comprobante, .compra-process-header > button,
+  .roles-header > button, .roles-form footer button:last-child
+) {
+  min-height: 42px;
+  padding: 10px 16px !important;
+  border: 1px solid transparent !important;
+  border-radius: 10px !important;
+  background: var(--primary) !important;
+  color: #fff !important;
+  box-shadow: 0 7px 16px rgba(8, 127, 107, .16);
+}
+.main-content :is(
+  .usuarios-create-btn, .productos-create-btn, .proveedores-create-btn,
+  .primary-action, .report-refresh, .report-form button,
+  .audit-btn:not(.ghost), .receta-submit-btn, .btn-generar-ticket,
+  .btn-emitir-comprobante, .compra-process-header > button,
+  .roles-header > button, .roles-form footer button:last-child
+):hover:not(:disabled) {
+  background: var(--primary-dark) !important;
+  box-shadow: 0 10px 22px rgba(8, 127, 107, .22);
+  transform: translateY(-1px);
+}
+
+/* Tablas: más densas y escaneables para trabajo diario */
+.main-content :is(
+  .usuarios-table, .productos-table, .despacho-table, .proveedores-table,
+  .compra-table, .recetas-lista-table, .report-table, .audit-table, .roles-table
+) { border-collapse: separate !important; border-spacing: 0; }
+
+.main-content :is(
+  .usuarios-table, .productos-table, .despacho-table, .proveedores-table,
+  .compra-table, .recetas-lista-table, .report-table, .audit-table, .roles-table
+) th {
+  padding: 11px 13px !important;
+  border-bottom: 1px solid var(--border) !important;
+  background: var(--surface-muted) !important;
+  color: #667771 !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.main-content :is(
+  .usuarios-table, .productos-table, .despacho-table, .proveedores-table,
+  .compra-table, .recetas-lista-table, .report-table, .audit-table, .roles-table
+) td {
+  padding: 12px 13px !important;
+  border-bottom: 1px solid #eaf0ed !important;
+  color: var(--text-secondary) !important;
+  font-size: 12.5px !important;
+  vertical-align: middle !important;
+}
+
+.main-content :is(
+  .usuarios-table, .productos-table, .despacho-table, .proveedores-table,
+  .compra-table, .recetas-lista-table, .report-table, .audit-table, .roles-table
+) tbody tr:hover { background: var(--primary-soft) !important; }
+
+.main-content :is(
+  .usuarios-table-wrapper, .productos-table-wrapper, .despacho-table-wrapper,
+  .proveedores-table-wrapper, .compra-table-wrapper, .report-table-wrapper,
+  .audit-table-wrap, .roles-table-card
+) { border: 1px solid var(--border); border-radius: 13px; }
+
+/* Estados y alertas */
+.main-content :is(.usuarios-status, .estado, .report-status, .audit-badge, .roles-status) {
+  border-radius: 999px !important;
+  font-size: 10.5px !important;
+  font-weight: 800 !important;
+}
+.main-content :is(.report-alert.success, .audit-alert.success, .compra-success) { color: var(--success) !important; background: var(--success-soft) !important; }
+.main-content :is(.report-alert.error, .audit-alert.error, .compra-error, .roles-error) { color: var(--danger) !important; background: var(--danger-soft) !important; }
+
+/* Reportes y auditoría ahora pertenecen a la misma identidad visual */
+.report-bar-track, .audit-bar-track { background: #e5efeb !important; }
+.report-bar-fill, .audit-bar-fill { background: linear-gradient(90deg, var(--primary), #45baa1) !important; }
+.audit-eyebrow { color: var(--primary) !important; }
+.audit-btn.secondary { background: var(--primary-dark) !important; }
+.audit-btn.ghost { color: var(--text-secondary) !important; background: #edf3f1 !important; }
+.audit-chip { color: var(--primary-dark) !important; background: var(--primary-light) !important; }
+.audit-action { color: var(--info) !important; background: var(--info-soft) !important; }
+
+/* Modales */
+.main-content :is(
+  .usuarios-modal-overlay, .productos-modal-overlay, .proveedores-modal-overlay,
+  .compra-modal-overlay, .roles-modal
+) { background: rgba(4, 29, 25, .55) !important; backdrop-filter: blur(4px); }
+
+.main-content :is(
+  .usuario-form-container, .producto-form-container, .proveedor-form-container,
+  .compra-modal-content, .roles-form
+) { border: 1px solid rgba(255,255,255,.7) !important; box-shadow: var(--shadow-lg) !important; }
+
+/* Ventas y caja: lectura rápida durante la atención */
+.main-content :is(.venta-carrito-item, .venta-producto-card, .venta-item, .caja-producto-item) {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--surface-muted) !important;
+  box-shadow: none !important;
+}
+
+.main-content :is(.venta-carrito-item, .venta-producto-card, .venta-item):hover {
+  border-color: #b7d8cf !important;
+  background: var(--primary-soft) !important;
+}
+
+.main-content :is(.venta-total-card, .datos-venta-total, .pago-resumen-orden, .detalle-total-caja) {
+  border: 1px solid #bce0d6 !important;
+  border-radius: var(--radius-md) !important;
+  background: linear-gradient(135deg, var(--primary-light), #f7fcfa) !important;
+  color: var(--primary-deep) !important;
+}
+
+.main-content :is(.pago-card, .estado-card, .validar-card) {
+  padding: 20px !important;
+}
+
+.main-content :is(.venta-vacio, .carrito-vacio, .sin-resultados, .caja-vacia) {
+  color: var(--text-muted) !important;
+  background: var(--surface-muted) !important;
+  border: 1px dashed var(--border-strong) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+.main-content :is(.btn-validar, .btn-pagar, .btn-confirmar-venta) {
+  min-height: 44px;
+  border-radius: 10px !important;
+  background: var(--primary) !important;
+  box-shadow: 0 7px 16px rgba(8, 127, 107, .16) !important;
+}
+
+.main-content :is(.btn-validar, .btn-pagar, .btn-confirmar-venta):hover:not(:disabled) {
+  background: var(--primary-dark) !important;
+}
+
+@media (max-width: 760px) {
+  .main-content :is(
+    .ventas-header, .caja-header, .usuarios-header, .productos-header,
+    .maintenance-header, .compras-header, .compra-process-header,
+    .despacho-header, .recetas-header, .report-header, .audit-header,
+    .proveedores-header, .roles-header
+  ) { align-items: stretch !important; flex-direction: column !important; }
 }

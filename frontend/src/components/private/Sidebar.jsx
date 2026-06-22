@@ -105,18 +105,25 @@ const Sidebar = () => {
     return (
         <aside className={`sidebar ${isOpen ? "open" : "closed"}`}>
             <div className="sidebar-header">
-                <PiListBold
+                <button
+                    type="button"
                     className="menu-toggle"
+                    aria-label={isOpen ? "Contraer menú" : "Expandir menú"}
+                    title={isOpen ? "Contraer menú" : "Expandir menú"}
                     onClick={() => setIsOpen(!isOpen)}
-                />
+                >
+                    <PiListBold />
+                </button>
                 {isOpen && <Logo to="/homePrivate" />}
             </div>
 
             <nav className="sidebar-menu">
+                {isOpen && <span className="sidebar-section-label">Navegación</span>}
                 {visibleMenuItems.map((item) => (
                     <NavLink
                         key={item.path}
                         to={item.path}
+                        title={!isOpen ? item.label : undefined}
                         className={({ isActive }) =>
                             isActive ? "menu-item active" : "menu-item"
                         }
@@ -131,7 +138,13 @@ const Sidebar = () => {
                 <div className="sidebar-footer">
                     <div
                         className="user-box"
+                        role="button"
+                        tabIndex="0"
+                        aria-expanded={menuOpen}
                         onClick={() => setMenuOpen(!menuOpen)}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") setMenuOpen(!menuOpen);
+                        }}
                     >
                         <div className="avatar">
                             {initial}

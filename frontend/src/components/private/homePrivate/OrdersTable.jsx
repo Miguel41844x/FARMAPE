@@ -34,7 +34,7 @@ export default function OrdersTable() {
                                 <td>{order.cliente || "Sin cliente"}</td>
                                 <td>{order.canalPedido}</td>
                                 <td>S/ {Number(order.total || 0).toFixed(2)}</td>
-                                <td><span className="badge estado">{order.estado}</span></td>
+                                <td><span className={`badge estado estado-${String(order.estado || "").toLowerCase()}`}>{order.estado}</span></td>
                             </tr>
                         ))}
                     </tbody>
