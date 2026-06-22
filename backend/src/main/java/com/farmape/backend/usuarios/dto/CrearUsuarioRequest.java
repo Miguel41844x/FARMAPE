@@ -3,6 +3,7 @@ package com.farmape.backend.usuarios.dto;
 import com.farmape.backend.usuarios.enums.EstadoCuentaUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record CrearUsuarioRequest(
         @NotBlank(message = "El DNI es obligatorio")
@@ -28,8 +29,8 @@ public record CrearUsuarioRequest(
         @NotBlank(message = "La clave es obligatoria")
         String clave,
 
-        @NotBlank(message = "El rol es obligatorio")
-        String rol,
+        @NotNull(message = "El rol es obligatorio")
+        Integer idRol,
 
         EstadoCuentaUsuario estado
 ) {

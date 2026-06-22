@@ -38,9 +38,24 @@ public class VentaController {
         return ventaService.listarPendientes();
     }
 
+    @GetMapping("/confirmadas")
+    public List<OrdenVentaResponse> listarConfirmadas() {
+        return ventaService.listarConfirmadas();
+    }
+
     @GetMapping("/{id}")
     public OrdenVentaResponse obtenerPorId(@PathVariable Integer id) {
         return ventaService.obtenerPorId(id);
+    }
+
+    @PatchMapping("/{id}/confirmar")
+    public OrdenVentaResponse confirmar(@PathVariable Integer id) {
+        return ventaService.confirmar(id);
+    }
+
+    @PatchMapping("/{id}/rechazar")
+    public OrdenVentaResponse rechazar(@PathVariable Integer id) {
+        return ventaService.rechazar(id);
     }
 
     @PatchMapping("/{id}/anular")

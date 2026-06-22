@@ -34,10 +34,10 @@ public class Producto {
     @Column(name = "laboratorio", length = 100)
     private String laboratorio;
 
-    @Column(name = "precio_compra", precision = 10, scale = 2)
+    @Column(name = "precio_compra", precision = 12, scale = 2)
     private BigDecimal precioCompra;
 
-    @Column(name = "precio_venta", nullable = false, precision = 10, scale = 2)
+    @Column(name = "precio_venta", nullable = false, precision = 12, scale = 2)
     private BigDecimal precioVenta;
 
     @Column(name = "stock_actual")

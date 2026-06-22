@@ -24,7 +24,7 @@ const Productos = () => {
         cargarProductos();
     }, []);
 
-    const cargarProductos = async () => {
+    async function cargarProductos() {
         try {
             setLoading(true);
             const data = await obtenerProductosService();
@@ -35,7 +35,7 @@ const Productos = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }
 
     const abrirCrearProducto = () => {
         setProductoEditando(null);
@@ -54,7 +54,7 @@ const Productos = () => {
         try {
             const productoActualizado = await actualizarEstadoProducto(
                 idProducto,
-                "INACTIVO"
+                "Inactivo"
             );
 
             setProductos(

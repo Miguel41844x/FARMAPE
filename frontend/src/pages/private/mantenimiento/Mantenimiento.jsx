@@ -1,6 +1,7 @@
 import "./mantenimiento.css";
 import MaintenanceCard from "../../../components/private/mantenimiento/MaintenanceCard";
-import MaintenanceTable from "../../../components/private/mantenimiento/MaintenanceTable";
+import { useAuth } from "../../../context/AuthContext";
+import { PERMISSIONS } from "../../../constants/permissions";
 
 const maintenanceOptions = [
     {
@@ -8,25 +9,30 @@ const maintenanceOptions = [
         description: "Gestiona usuarios del sistema",
         buttonText: "Administrar usuarios",
         route: "/mantenimiento/usuarios",
+        permission: PERMISSIONS.USER_MANAGE,
     },
     {
-        title: "Productos",
-        description: "Mantén actualizado el inventario",
-        buttonText: "Administrar productos",
-        route: "/mantenimiento/productos",
+        title: "Roles y permisos",
+        description: "Configura el acceso a cada módulo",
+        buttonText: "Administrar roles",
+        route: "/mantenimiento/roles",
+        permission: PERMISSIONS.ROLE_MANAGE,
     },
 ];
 
 const Mantenimiento = () => {
+    const { hasPermission } = useAuth();
+    const opcionesVisibles = maintenanceOptions.filter((option) => hasPermission(option.permission));
+
     return (
         <div className="maintenance-container">
             <div className="maintenance-header">
-                <h1>Mantenimiento</h1>
-                <p>Panel administrativo para gestionar datos principales del sistema.</p>
+                <h1>Administración de usuarios</h1>
+                <p>Gestiona cuentas, trabajadores y asignación de roles.</p>
             </div>
 
             <div className="maintenance-cards">
-                {maintenanceOptions.map((option) => (
+                {opcionesVisibles.map((option) => (
                 <MaintenanceCard
                     key={option.title}
                     title={option.title}
@@ -36,8 +42,6 @@ const Mantenimiento = () => {
                 />
                 ))}
             </div>
-
-            <MaintenanceTable />
         </div>
     );
 };

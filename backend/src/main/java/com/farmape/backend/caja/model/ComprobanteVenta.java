@@ -39,6 +39,6 @@ public class ComprobanteVenta {
     @Column(name = "fecha_emision")
     private LocalDateTime fechaEmision;
 
-    @Column(name = "monto_total", nullable = false, precision = 10, scale = 2)
+    @Column(name = "monto_total", nullable = false, precision = 12, scale = 2)
     private BigDecimal montoTotal;
 }

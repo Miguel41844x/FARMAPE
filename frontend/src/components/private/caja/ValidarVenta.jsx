@@ -4,17 +4,17 @@ const ValidarVenta = ({ ordenes = [], ordenSeleccionada, seleccionarOrden, loadi
     return (
         <section className="validar-card">
             <div className="caja-section-header">
-                <h2>Órdenes pendientes</h2>
+                <h2>Órdenes confirmadas</h2>
                 <span>{ordenes.length} órdenes</span>
             </div>
 
             {loading && (
-                <p className="caja-empty-message">Cargando órdenes pendientes...</p>
+                <p className="caja-empty-message">Cargando órdenes confirmadas...</p>
             )}
 
             {!loading && ordenes.length === 0 && (
                 <p className="caja-empty-message">
-                    No hay órdenes pendientes por cobrar.
+                    No hay órdenes confirmadas por cobrar.
                 </p>
             )}
 

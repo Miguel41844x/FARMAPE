@@ -2,6 +2,7 @@ package com.farmape.backend.productos.controller;
 
 import com.farmape.backend.productos.dto.ProductoRequest;
 import com.farmape.backend.productos.dto.ProductoResponse;
+import com.farmape.backend.productos.dto.CambiarEstadoProductoRequest;
 import com.farmape.backend.productos.service.ProductoService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
@@ -49,5 +50,13 @@ public class ProductoController {
             @Valid @RequestBody ProductoRequest request
     ) {
         return productoService.actualizar(id, request);
+    }
+
+    @PatchMapping("/{id}/estado")
+    public ProductoResponse cambiarEstado(
+            @PathVariable Integer id,
+            @Valid @RequestBody CambiarEstadoProductoRequest request
+    ) {
+        return productoService.cambiarEstado(id, request.estado());
     }
 }

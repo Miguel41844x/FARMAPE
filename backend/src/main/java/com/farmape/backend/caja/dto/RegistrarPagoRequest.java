@@ -8,9 +8,6 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public record RegistrarPagoRequest(
-        @NotNull(message = "El id del cajero es obligatorio")
-        Integer idCajero,
-
         @NotNull(message = "El monto pagado es obligatorio")
         @DecimalMin(value = "0.01", message = "El monto pagado debe ser mayor a 0")
         BigDecimal montoPagado,

@@ -107,7 +107,7 @@ const ProductosTable = ({
                                     <td>
                                         <span
                                             className={
-                                                producto.estado === "ACTIVO"
+                                                producto.estado === "Activo"
                                                     ? "productos-status activo"
                                                     : "productos-status inactivo"
                                             }

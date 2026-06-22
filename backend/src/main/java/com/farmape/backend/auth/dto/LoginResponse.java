@@ -1,5 +1,7 @@
 package com.farmape.backend.auth.dto;
 
+import java.util.List;
+
 public record LoginResponse(
         String token,
         String usuario,
@@ -7,5 +9,6 @@ public record LoginResponse(
         String nombres,
         String apellidos,
         Integer idCuenta,
-        Integer idTrabajador
+        Integer idTrabajador,
+        List<String> permisos
 ) {}

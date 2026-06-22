@@ -19,7 +19,7 @@ const Caja = () => {
         obtenerOrdenesPendientes();
     }, []);
 
-    const obtenerOrdenesPendientes = async () => {
+    async function obtenerOrdenesPendientes() {
         try {
             setLoadingOrdenes(true);
 
@@ -31,7 +31,7 @@ const Caja = () => {
         } finally {
             setLoadingOrdenes(false);
         }
-    };
+    }
 
     const seleccionarOrden = async (orden) => {
         try {
@@ -60,15 +60,7 @@ const Caja = () => {
         try {
             setLoadingPago(true);
 
-            const idCajero = localStorage.getItem("idTrabajador");
-
-            if (!idCajero) {
-                alert("No se encontró el cajero logueado. Cierra sesión e inicia sesión nuevamente.");
-                return;
-            }
-
             const request = {
-                idCajero: Number(idCajero),
                 montoPagado: Number(datosPago.montoPagado),
                 metodoPago: datosPago.metodoPago,
                 tipoComprobante: datosPago.tipoComprobante,
@@ -99,7 +91,7 @@ const Caja = () => {
         <div className="caja-container">
             <div className="caja-header">
                 <h1>Caja</h1>
-                <p>Valida órdenes pendientes, registra pagos y emite comprobantes.</p>
+                <p>Valida órdenes confirmadas, registra pagos y emite comprobantes.</p>
             </div>
 
             <div className="caja-layout">
@@ -112,6 +104,7 @@ const Caja = () => {
 
                 <aside className="caja-right-panel">
                     <PagoComprobante
+                        key={ordenSeleccionada?.idOrdenVenta || "sin-orden"}
                         orden={ordenSeleccionada}
                         procesarPago={procesarPago}
                         loadingPago={loadingPago}

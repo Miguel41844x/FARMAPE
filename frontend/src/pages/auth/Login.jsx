@@ -7,6 +7,7 @@ import { FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 
 // Contexto de autentificación
 import { useAuth } from "../../context/AuthContext";
+import { API_URL } from "../../config/api";
 import "./login.css";
 
 const Login = () => {
@@ -30,7 +31,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await fetch("http://localhost:8080/api/auth/login", {
+            const response = await fetch(`${API_URL}/auth/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -52,6 +53,9 @@ const Login = () => {
                 rol: data.rol,
                 nombres: data.nombres,
                 apellidos: data.apellidos,
+                idCuenta: data.idCuenta,
+                idTrabajador: data.idTrabajador,
+                permisos: data.permisos || [],
                 token: data.token,
             };
             
@@ -62,6 +66,7 @@ const Login = () => {
             localStorage.setItem("apellidos", data.apellidos);
             localStorage.setItem("idCuenta", data.idCuenta);
             localStorage.setItem("idTrabajador", data.idTrabajador);
+            localStorage.setItem("permisos", JSON.stringify(data.permisos || []));
 
             setUser(userData);
 

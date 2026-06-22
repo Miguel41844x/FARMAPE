@@ -43,7 +43,7 @@ public class OrdenVenta {
     @Column(name = "fecha_orden")
     private LocalDateTime fechaOrden;
 
-    @Column(name = "total", nullable = false, precision = 10, scale = 2)
+    @Column(name = "total", nullable = false, precision = 12, scale = 2)
     private BigDecimal total;
 
     @Column(name = "observacion", columnDefinition = "TEXT")

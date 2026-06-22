@@ -35,7 +35,7 @@ public class PagoVenta {
     @Column(name = "fecha_pago")
     private LocalDateTime fechaPago;
 
-    @Column(name = "monto_pagado", nullable = false, precision = 10, scale = 2)
+    @Column(name = "monto_pagado", nullable = false, precision = 12, scale = 2)
     private BigDecimal montoPagado;
 
     @Enumerated(EnumType.STRING)

@@ -54,11 +54,19 @@ public class CuentaUsuarioService {
         return toResponse(cuenta);
     }
 
+    @Transactional
     public CuentaUsuarioResponse cambiarEstado(Integer id, CambiarEstadoCuentaRequest request) {
         CuentaUsuario cuenta = cuentaUsuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Cuenta de usuario no encontrada"));
 
         cuenta.setEstado(request.estado());
+
+        if (request.estado() == EstadoCuentaUsuario.Inactivo) {
+            cuenta.getTrabajador().setEstado(EstadoTrabajador.Inactivo);
+        } else if (request.estado() == EstadoCuentaUsuario.Activo) {
+            cuenta.getTrabajador().setEstado(EstadoTrabajador.Activo);
+        }
+        trabajadorRepository.save(cuenta.getTrabajador());
 
         CuentaUsuario cuentaActualizada = cuentaUsuarioRepository.save(cuenta);
 
@@ -79,8 +87,9 @@ public class CuentaUsuarioService {
             throw new RuntimeException("Ya existe una cuenta con ese email");
         }
 
-        Rol rol = rolRepository.findByNombreRol(request.rol())
-                    .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + request.rol()));
+        Rol rol = rolRepository.findById(request.idRol())
+                    .filter(item -> Boolean.TRUE.equals(item.getActivo()))
+                    .orElseThrow(() -> new RuntimeException("Rol activo no encontrado"));
 
             Trabajador trabajador = Trabajador.builder()
                     .dni(request.dni())
@@ -90,6 +99,7 @@ public class CuentaUsuarioService {
                     .direccion(request.direccion())
                     .rol(rol)
                     .estado(EstadoTrabajador.Activo)
+                    .fechaRegistro(LocalDateTime.now())
                     .build();
 
             trabajador = trabajadorRepository.save(trabajador);
@@ -121,6 +131,8 @@ public class CuentaUsuarioService {
                 cuenta.getTrabajador().getApellidos(),
                 cuenta.getTrabajador().getDni(),
                 cuenta.getTrabajador().getTelefono(),
+                cuenta.getTrabajador().getDireccion(),
+                cuenta.getTrabajador().getEstado(),
                 cuenta.getTrabajador().getRol().getIdRol(),
                 cuenta.getTrabajador().getRol().getNombreRol()
         );

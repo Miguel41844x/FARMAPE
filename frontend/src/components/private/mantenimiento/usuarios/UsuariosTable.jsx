@@ -87,7 +87,7 @@ const UsuariosTable = ({
                                             <button
                                                 type="button"
                                                 className="delete"
-                                                onClick={() => onDelete(usuario.idTrabajador)}
+                                                onClick={() => onDelete(usuario.idCuenta)}
                                                 disabled={estaInactivo}
                                             >
                                                 {estaInactivo ? "Inactivo" : "Desactivar"}

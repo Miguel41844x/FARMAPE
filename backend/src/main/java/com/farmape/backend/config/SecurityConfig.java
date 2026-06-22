@@ -20,6 +20,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.*;
+import org.springframework.http.HttpMethod;
 
 import java.util.Collection;
 import java.util.List;
@@ -42,30 +43,46 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
 
-                        // Caja: solo Cajero
-                        .requestMatchers("/api/caja/**")
-                        .hasRole("Cajero")
-
-                        // Ventas: Empleado y Administrador
-                        .requestMatchers("/api/ventas/**")
-                        .hasAnyRole("Empleado", "Administrador")
-
-                        // Mantenimiento: Administrador
-                        .requestMatchers("/api/usuarios/**")
-                        .hasRole("Administrador")
-
-                        .requestMatchers("/api/trabajadores/**")
-                        .hasRole("Administrador")
-
-                        .requestMatchers("/api/roles/**")
-                        .hasRole("Administrador")
-
+                        .requestMatchers("/api/usuarios/**", "/api/trabajadores/**")
+                        .hasAuthority("USER_MANAGE")
+                        .requestMatchers(HttpMethod.GET, "/api/roles/**")
+                        .hasAuthority("ROLE_READ")
+                        .requestMatchers(HttpMethod.GET, "/api/permisos/**")
+                        .hasAuthority("ROLE_READ")
+                        .requestMatchers(HttpMethod.PUT, "/api/roles/*/permisos")
+                        .hasAuthority("ROLE_ASSIGN")
+                        .requestMatchers(HttpMethod.POST, "/api/roles/**")
+                        .hasAuthority("ROLE_MANAGE")
+                        .requestMatchers(HttpMethod.PUT, "/api/roles/**")
+                        .hasAuthority("ROLE_MANAGE")
+                        .requestMatchers(HttpMethod.PATCH, "/api/roles/**")
+                        .hasAuthority("ROLE_MANAGE")
+                        .requestMatchers(HttpMethod.DELETE, "/api/roles/**")
+                        .hasAuthority("ROLE_MANAGE")
+                        .requestMatchers(HttpMethod.GET, "/api/productos/**")
+                        .hasAnyAuthority("PRODUCT_READ", "PRODUCT_MANAGE")
+                        .requestMatchers(HttpMethod.GET, "/api/categorias/**")
+                        .hasAnyAuthority("PRODUCT_READ", "PRODUCT_MANAGE")
                         .requestMatchers("/api/productos/**")
-                        .hasRole("Administrador")
-
-                        // Reportes: Gerente
+                        .hasAuthority("PRODUCT_MANAGE")
+                        .requestMatchers("/api/clientes/**")
+                        .hasAuthority("CUSTOMER_MANAGE")
+                        .requestMatchers(HttpMethod.GET, "/api/ventas/**")
+                        .hasAnyAuthority("SALE_READ", "SALE_CREATE", "PAYMENT_READ")
+                        .requestMatchers(HttpMethod.POST, "/api/ventas/**")
+                        .hasAuthority("SALE_CREATE")
+                        .requestMatchers(HttpMethod.PATCH, "/api/ventas/*/confirmar")
+                        .hasAuthority("SALE_CONFIRM")
+                        .requestMatchers(HttpMethod.PATCH, "/api/ventas/*/rechazar")
+                        .hasAuthority("SALE_CANCEL")
+                        .requestMatchers(HttpMethod.PATCH, "/api/ventas/*/anular")
+                        .hasAuthority("SALE_CANCEL")
+                        .requestMatchers(HttpMethod.GET, "/api/caja/**")
+                        .hasAuthority("PAYMENT_READ")
+                        .requestMatchers(HttpMethod.POST, "/api/caja/**")
+                        .hasAuthority("PAYMENT_CREATE")
                         .requestMatchers("/api/reportes/**")
-                        .hasRole("Gerente")
+                        .hasAuthority("REPORT_VIEW")
 
                         .anyRequest().authenticated()
                 )
@@ -78,11 +95,12 @@ public class SecurityConfig {
     @Bean
     Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
         return jwt -> {
-            String rol = jwt.getClaimAsString("rol");
-
-            Collection<GrantedAuthority> authorities = List.of(
-                    new SimpleGrantedAuthority("ROLE_" + rol)
-            );
+            List<String> permisos = jwt.getClaimAsStringList("permisos");
+            Collection<GrantedAuthority> authorities = permisos == null
+                    ? List.of()
+                    : permisos.stream()
+                            .<GrantedAuthority>map(SimpleGrantedAuthority::new)
+                            .toList();
 
             return new JwtAuthenticationToken(
                     jwt,

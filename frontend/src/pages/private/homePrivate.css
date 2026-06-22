@@ -25,6 +25,8 @@
 }
 
 .home-card {
+    text-decoration: none;
+    color: inherit;
   background: #fff;
   padding: 20px;
   border-radius: 12px;

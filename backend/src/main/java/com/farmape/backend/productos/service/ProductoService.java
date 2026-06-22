@@ -61,8 +61,12 @@ public class ProductoService {
                 .categoria(categoria)
                 .nombre(request.nombre())
                 .descripcion(request.descripcion())
+                .laboratorio(request.laboratorio())
+                .precioCompra(request.precioCompra())
                 .precioVenta(request.precioVenta())
                 .stockActual(request.stockActual())
+                .stockMinimo(request.stockMinimo())
+                .fechaVencimiento(request.fechaVencimiento())
                 .estado(request.estado() != null ? request.estado() : EstadoProducto.Activo)
                 .build();
 
@@ -79,10 +83,21 @@ public class ProductoService {
         producto.setCategoria(categoria);
         producto.setNombre(request.nombre());
         producto.setDescripcion(request.descripcion());
+        producto.setLaboratorio(request.laboratorio());
+        producto.setPrecioCompra(request.precioCompra());
         producto.setPrecioVenta(request.precioVenta());
         producto.setStockActual(request.stockActual());
+        producto.setStockMinimo(request.stockMinimo());
+        producto.setFechaVencimiento(request.fechaVencimiento());
         producto.setEstado(request.estado() != null ? request.estado() : producto.getEstado());
 
+        return toResponse(productoRepository.save(producto));
+    }
+
+    public ProductoResponse cambiarEstado(Integer id, EstadoProducto estado) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        producto.setEstado(estado);
         return toResponse(productoRepository.save(producto));
     }
 

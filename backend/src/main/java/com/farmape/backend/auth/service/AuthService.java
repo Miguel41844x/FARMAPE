@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AuthService {
@@ -49,6 +50,11 @@ public class AuthService {
         cuentaUsuarioRepository.save(cuenta);
 
         String rol = cuenta.getTrabajador().getRol().getNombreRol();
+        List<String> permisos = cuenta.getTrabajador().getRol().getPermisos().stream()
+                .filter(permiso -> Boolean.TRUE.equals(permiso.getActivo()))
+                .map(permiso -> permiso.getCodigo())
+                .sorted()
+                .toList();
 
         Instant now = Instant.now();
 
@@ -60,6 +66,7 @@ public class AuthService {
                 .claim("usuario", cuenta.getUsuario())
                 .claim("email", cuenta.getEmail())
                 .claim("rol", rol)
+                .claim("permisos", permisos)
                 .claim("idCuenta", cuenta.getIdCuenta())
                 .claim("idTrabajador", cuenta.getTrabajador().getIdTrabajador())
                 .build();
@@ -77,7 +84,8 @@ public class AuthService {
                 cuenta.getTrabajador().getNombres(),
                 cuenta.getTrabajador().getApellidos(),
                 cuenta.getIdCuenta(),
-                cuenta.getTrabajador().getIdTrabajador()
+                cuenta.getTrabajador().getIdTrabajador(),
+                permisos
         );
     }
 }

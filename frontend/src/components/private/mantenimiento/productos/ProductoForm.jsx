@@ -6,6 +6,19 @@ import {
 } from "../../../../services/mantenimiento/productoService";
 import "./productoForm.css";
 
+const crearEstadoInicial = (producto = null) => ({
+    idCategoria: producto?.idCategoria ?? producto?.categoria?.idCategoria ?? "",
+    nombre: producto?.nombre || "",
+    descripcion: producto?.descripcion || "",
+    laboratorio: producto?.laboratorio || "",
+    precioCompra: producto?.precioCompra ?? "",
+    precioVenta: producto?.precioVenta ?? "",
+    stockActual: producto?.stockActual ?? "",
+    stockMinimo: producto?.stockMinimo ?? "",
+    fechaVencimiento: producto?.fechaVencimiento || "",
+    estado: producto?.estado || "Activo",
+});
+
 const ProductoForm = ({
     productoEditando,
     cerrarFormulario,
@@ -13,49 +26,13 @@ const ProductoForm = ({
 }) => {
     const [categorias, setCategorias] = useState([]);
 
-    const [form, setForm] = useState({
-        idCategoria: "",
-        nombre: "",
-        descripcion: "",
-        laboratorio: "",
-        precioCompra: "",
-        precioVenta: "",
-        stockActual: "",
-        stockMinimo: "",
-        fechaVencimiento: "",
-        estado: "ACTIVO",
-    });
+    const [form, setForm] = useState(() => crearEstadoInicial(productoEditando));
 
     useEffect(() => {
-        cargarCategorias();
-
-        if (productoEditando) {
-            setForm({
-                idCategoria:
-                    productoEditando.idCategoria ??
-                    productoEditando.categoria?.idCategoria ??
-                    "",
-                nombre: productoEditando.nombre || "",
-                descripcion: productoEditando.descripcion || "",
-                laboratorio: productoEditando.laboratorio || "",
-                precioCompra: productoEditando.precioCompra || "",
-                precioVenta: productoEditando.precioVenta || "",
-                stockActual: productoEditando.stockActual || "",
-                stockMinimo: productoEditando.stockMinimo || "",
-                fechaVencimiento: productoEditando.fechaVencimiento || "",
-                estado: productoEditando.estado || "ACTIVO",
-            });
-        }
-    }, [productoEditando]);
-
-    const cargarCategorias = async () => {
-        try {
-            const data = await obtenerCategoriasProducto();
-            setCategorias(data);
-        } catch (error) {
-            console.error("Error al cargar categorías:", error);
-        }
-    };
+        obtenerCategoriasProducto()
+            .then(setCategorias)
+            .catch((error) => console.error("Error al cargar categorías:", error));
+    }, []);
 
     const manejarCambio = (e) => {
         const { name, value } = e.target;
@@ -219,8 +196,8 @@ const ProductoForm = ({
                         value={form.estado}
                         onChange={manejarCambio}
                     >
-                        <option value="ACTIVO">Activo</option>
-                        <option value="INACTIVO">Inactivo</option>
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
                     </select>
                 </div>
 

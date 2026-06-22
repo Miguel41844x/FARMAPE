@@ -13,87 +13,68 @@ import { PiStorefrontLight, PiTruckLight } from "react-icons/pi";
 import Logo from "./Logo";
 import "./sidebar.css";
 
-import { ROLES } from "../../constants/roles";
+import { PERMISSIONS } from "../../constants/permissions";
 
 const menuItems = [
     {
         label: "Inicio",
         path: "/homePrivate",
         icon: <CiHome />,
-        roles: [
-            ROLES.EMPLEADO,
-            ROLES.CAJERO,
-            ROLES.ENCARGADO_DESPACHO,
-            ROLES.ENCARGADO_ALMACEN,
-            ROLES.ADMINISTRADOR,
-            ROLES.QUIMICO_FARMACEUTICO,
-            ROLES.GERENTE,
-            ROLES.ADMINISTRADOR,
-        ],
+        permissions: [PERMISSIONS.HOME_VIEW],
     },
     {
         label: "Ventas",
         path: "/ventas",
         icon: <CiShoppingCart />,
-        roles: [
-            ROLES.EMPLEADO,
-            ROLES.ADMINISTRADOR,
-        ],
+        permissions: [PERMISSIONS.SALE_CREATE],
     },
     {
         label: "Caja",
         path: "/caja",
         icon: <CiCoinInsert />,
-        roles: [
-            ROLES.CAJERO,
-        ],
+        permissions: [PERMISSIONS.PAYMENT_READ],
     },
     {
-        label: "Mantenimiento",
+        label: "Administración de usuarios",
         path: "/mantenimiento",
         icon: <CiSettings />,
-        roles: [
-            ROLES.ADMINISTRADOR,
-        ],
+        permissions: [PERMISSIONS.USER_MANAGE, PERMISSIONS.ROLE_MANAGE, PERMISSIONS.ROLE_ASSIGN],
+    },
+    {
+        label: "Productos",
+        path: "/productos",
+        icon: <PiStorefrontLight />,
+        permissions: [PERMISSIONS.PRODUCT_MANAGE],
     },
     {
         label: "Compras y proveedores",
         path: "/compras-proveedores",
         icon: <PiTruckLight />,
-        roles: [
-            ROLES.ADMINISTRADOR,
-        ],
+        permissions: [PERMISSIONS.PURCHASE_MANAGE],
     },
     {
         label: "Despacho y almacén",
         path: "/despacho-almacen",
         icon: <PiStorefrontLight />,
-        roles: [
-            ROLES.ADMINISTRADOR,
-        ],
+        permissions: [PERMISSIONS.DISPATCH_MANAGE, PERMISSIONS.INVENTORY_MANAGE],
     },
     {
         label: "Reportes",
         path: "/reportes",
         icon: <CiFileOn />,
-        roles: [
-            ROLES.GERENTE,
-            ROLES.ADMINISTRADOR
-        ],
+        permissions: [PERMISSIONS.REPORT_VIEW],
     },
 ];
 
 const Sidebar = () => {
 
     const navigate = useNavigate();
-    const { user, logout } = useAuth();
+    const { user, logout, hasPermission } = useAuth();
     const [isOpen, setIsOpen] = useState(true);
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const rolUsuario = user?.rol;
-
     const visibleMenuItems = menuItems.filter((item) =>
-        item.roles.includes(rolUsuario)
+        item.permissions.some(hasPermission)
     );
 
     const handleLogout = () => {

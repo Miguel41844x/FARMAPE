@@ -7,7 +7,7 @@ import DatosVenta from "../../../components/private/ventas/DatosVenta";
 
 import { obtenerProductos } from "../../../services/ventas/productoService";
 import { obtenerClientes } from "../../../services/ventas/clienteService";
-import { registrarVenta } from "../../../services/ventas/ventaService";
+import { confirmarVenta, registrarVenta } from "../../../services/ventas/ventaService";
 
 const Ventas = () => {
     const [productos, setProductos] = useState([]);
@@ -27,7 +27,7 @@ const Ventas = () => {
         cargarDatosIniciales();
     }, []);
 
-    const cargarDatosIniciales = async () => {
+    async function cargarDatosIniciales() {
         try {
             const productosData = await obtenerProductos();
             const clientesData = await obtenerClientes();
@@ -38,7 +38,7 @@ const Ventas = () => {
             console.error(error);
             alert(error.message);
         }
-    };
+    }
 
     const cargarClientes = async () => {
         try {
@@ -121,15 +121,8 @@ const Ventas = () => {
         try {
             setLoadingTicket(true);
 
-            const idTrabajador = localStorage.getItem("idTrabajador");
-
             if (!idCliente) {
                 alert("Selecciona un cliente para registrar la venta");
-                return;
-            }
-
-            if (!idTrabajador) {
-                alert("No se encontró el trabajador logueado. Cierra sesión e inicia sesión nuevamente.");
                 return;
             }
 
@@ -148,7 +141,6 @@ const Ventas = () => {
 
             const ventaRequest = {
                 idCliente: Number(idCliente),
-                idEmpleado: Number(idTrabajador),
                 canalPedido,
                 observacion: observacion || "Venta registrada desde frontend",
                 detalles: carrito.map((item) => ({
@@ -158,8 +150,9 @@ const Ventas = () => {
             };
 
             const ventaCreada = await registrarVenta(ventaRequest);
+            const ventaConfirmada = await confirmarVenta(ventaCreada.idOrdenVenta);
 
-            alert(`Ticket generado correctamente. Orden N° ${ventaCreada.idOrdenVenta}`);
+            alert(`Ticket generado y confirmado correctamente. Orden N° ${ventaConfirmada.idOrdenVenta}`);
 
             setCarrito([]);
             setIdCliente("");

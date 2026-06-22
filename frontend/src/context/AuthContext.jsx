@@ -1,15 +1,32 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useState } from "react";
-import { FaAppleAlt } from "react-icons/fa";
 
 const AuthContext = createContext();
+
+const tokenExpirado = (token) => {
+    try {
+        const payload = JSON.parse(atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/")));
+        return !payload.exp || payload.exp * 1000 <= Date.now();
+    } catch {
+        return true;
+    }
+};
 
 export const AuthProvider = ({ children }) => {
     
     const [user, setUser] = useState(() => {
         const token = localStorage.getItem("token");
         
-        if(!token)
+        if(!token || tokenExpirado(token))
             return null;
+
+        let permisos = [];
+        try {
+            permisos = JSON.parse(localStorage.getItem("permisos") || "[]");
+        } catch {
+            permisos = [];
+        }
+
         return{
             usuario : localStorage.getItem("usuario"),
             rol : localStorage.getItem("rol"),
@@ -17,6 +34,7 @@ export const AuthProvider = ({ children }) => {
             apellidos : localStorage.getItem("apellidos"),
             idCuenta: localStorage.getItem("idCuenta"),
             idTrabajador: localStorage.getItem("idTrabajador"),
+            permisos,
             token,
         };
     });
@@ -29,12 +47,15 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("apellidos");
         localStorage.removeItem("idCuenta");
         localStorage.removeItem("idTrabajador");
+        localStorage.removeItem("permisos");
         
         setUser(null);
     };
 
+    const hasPermission = (permission) => user?.permisos?.includes(permission) ?? false;
+
     return (
-        <AuthContext.Provider value={{ user, setUser, logout }}>
+        <AuthContext.Provider value={{ user, setUser, logout, hasPermission }}>
             {children}
         </AuthContext.Provider>
     );

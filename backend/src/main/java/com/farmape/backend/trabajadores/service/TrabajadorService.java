@@ -7,8 +7,12 @@ import com.farmape.backend.trabajadores.dto.TrabajadorResponse;
 import com.farmape.backend.trabajadores.enums.EstadoTrabajador;
 import com.farmape.backend.trabajadores.model.Trabajador;
 import com.farmape.backend.trabajadores.repository.TrabajadorRepository;
+import com.farmape.backend.usuarios.enums.EstadoCuentaUsuario;
+import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,13 +20,16 @@ public class TrabajadorService {
 
     private final TrabajadorRepository trabajadorRepository;
     private final RolRepository rolRepository;
+    private final CuentaUsuarioRepository cuentaUsuarioRepository;
 
     public TrabajadorService(
             TrabajadorRepository trabajadorRepository,
-            RolRepository rolRepository
+            RolRepository rolRepository,
+            CuentaUsuarioRepository cuentaUsuarioRepository
     ) {
         this.trabajadorRepository = trabajadorRepository;
         this.rolRepository = rolRepository;
+        this.cuentaUsuarioRepository = cuentaUsuarioRepository;
     }
 
     public List<TrabajadorResponse> listar() {
@@ -51,6 +58,7 @@ public class TrabajadorService {
                 .direccion(request.direccion())
                 .rol(rol)
                 .estado(request.estado() != null ? request.estado() : EstadoTrabajador.Activo)
+                .fechaRegistro(LocalDateTime.now())
                 .build();
 
         return toResponse(trabajadorRepository.save(trabajador));
@@ -77,11 +85,21 @@ public class TrabajadorService {
         return toResponse(trabajadorRepository.save(trabajador));
     }
 
+    @Transactional
     public TrabajadorResponse cambiarEstado(Integer id, EstadoTrabajador estado) {
         Trabajador trabajador = trabajadorRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Trabajador no encontrado"));
 
         trabajador.setEstado(estado);
+
+        cuentaUsuarioRepository.findByTrabajador_IdTrabajador(id).ifPresent(cuenta -> {
+            if (estado == EstadoTrabajador.Inactivo) {
+                cuenta.setEstado(EstadoCuentaUsuario.Inactivo);
+            } else if (cuenta.getEstado() == EstadoCuentaUsuario.Inactivo) {
+                cuenta.setEstado(EstadoCuentaUsuario.Activo);
+            }
+            cuentaUsuarioRepository.save(cuenta);
+        });
 
         return toResponse(trabajadorRepository.save(trabajador));
     }

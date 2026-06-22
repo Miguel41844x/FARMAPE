@@ -6,7 +6,7 @@ import "./usuarios.css";
 
 import {
     obtenerUsuarios as obtenerUsuariosService,
-    actualizarEstadoTrabajador,
+    actualizarEstadoCuenta,
 } from "../../../services/mantenimiento/usuarioService";
 
 const Usuarios = () => {
@@ -16,7 +16,7 @@ const Usuarios = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [busqueda, setBusqueda] = useState("");
     const [paginaActual, setPaginaActual] = useState(1);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const usuariosPorPagina = 10;
 
@@ -41,7 +41,21 @@ const Usuarios = () => {
     };
 
     useEffect(() => {
-        cargarUsuarios();
+        let activo = true;
+        obtenerUsuariosService()
+            .then((data) => {
+                if (activo) setUsuarios(Array.isArray(data) ? data : []);
+            })
+            .catch((error) => {
+                if (activo) alert(error.message);
+            })
+            .finally(() => {
+                if (activo) setLoading(false);
+            });
+
+        return () => {
+            activo = false;
+        };
     }, []);
 
     useEffect(() => {
@@ -71,15 +85,15 @@ const Usuarios = () => {
         if (!confirmar) return;
 
         try {
-            const trabajadorActualizado = await actualizarEstadoTrabajador(
+            const usuarioActualizado = await actualizarEstadoCuenta(
                 id,
-                "INACTIVO"
+                "Inactivo"
             );
 
             setUsuarios((usuariosActuales) =>
                 usuariosActuales.map((usuario) =>
-                    usuario.idTrabajador === id
-                        ? { ...usuario, ...trabajadorActualizado }
+                    usuario.idCuenta === id
+                        ? { ...usuario, ...usuarioActualizado }
                         : usuario
                 )
             );

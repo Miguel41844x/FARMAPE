@@ -1,33 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import "./pagoComprobante.css";
 
 const PagoComprobante = ({ orden, procesarPago, loadingPago }) => {
     const [metodoPago, setMetodoPago] = useState("Efectivo");
     const [tipoComprobante, setTipoComprobante] = useState("Boleta");
     const [montoPagado, setMontoPagado] = useState("");
-    const [vuelto, setVuelto] = useState(0);
-
-    useEffect(() => {
-        if (!orden) {
-            setMetodoPago("Efectivo");
-            setTipoComprobante("Boleta");
-            setMontoPagado("");
-            setVuelto(0);
-            return;
-        }
-
-        if (metodoPago !== "Efectivo") {
-            setMontoPagado(String(Number(orden.total || 0)));
-            setVuelto(0);
-            return;
-        }
-
-        const recibido = Number(montoPagado || 0);
-        const total = Number(orden.total || 0);
-        const calculo = recibido - total;
-
-        setVuelto(calculo > 0 ? calculo : 0);
-    }, [orden, metodoPago, montoPagado]);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -72,9 +49,10 @@ const PagoComprobante = ({ orden, procesarPago, loadingPago }) => {
 
     const total = Number(orden.total || 0);
     const monto = Number(montoPagado || 0);
+    const vuelto = metodoPago === "Efectivo" ? Math.max(0, monto - total) : 0;
     const botonDeshabilitado =
         loadingPago ||
-        orden.estado !== "Pendiente" ||
+        orden.estado !== "Confirmada" ||
         (metodoPago === "Efectivo" && (montoPagado === "" || monto < total));
 
     return (
@@ -93,7 +71,7 @@ const PagoComprobante = ({ orden, procesarPago, loadingPago }) => {
                         id="tipoComprobante"
                         value={tipoComprobante}
                         onChange={(e) => setTipoComprobante(e.target.value)}
-                        disabled={loadingPago || orden.estado !== "Pendiente"}
+                        disabled={loadingPago || orden.estado !== "Confirmada"}
                     >
                         <option value="Boleta">Boleta</option>
                         <option value="Factura">Factura</option>
@@ -106,7 +84,7 @@ const PagoComprobante = ({ orden, procesarPago, loadingPago }) => {
                         id="metodoPago"
                         value={metodoPago}
                         onChange={(e) => setMetodoPago(e.target.value)}
-                        disabled={loadingPago || orden.estado !== "Pendiente"}
+                        disabled={loadingPago || orden.estado !== "Confirmada"}
                     >
                         <option value="Efectivo">Efectivo</option>
                         <option value="Tarjeta">Tarjeta</option>
@@ -130,7 +108,7 @@ const PagoComprobante = ({ orden, procesarPago, loadingPago }) => {
                                 value={montoPagado}
                                 onChange={(e) => setMontoPagado(e.target.value)}
                                 required
-                                disabled={loadingPago || orden.estado !== "Pendiente"}
+                                disabled={loadingPago || orden.estado !== "Confirmada"}
                             />
                         </div>
                     </div>

@@ -1,10 +1,12 @@
 package com.farmape.backend.security;
 
 import com.farmape.backend.usuarios.enums.EstadoCuentaUsuario;
+import com.farmape.backend.trabajadores.enums.EstadoTrabajador;
 import com.farmape.backend.usuarios.model.CuentaUsuario;
 import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
 
 import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.*;
 import org.springframework.stereotype.Service;
 
@@ -28,10 +30,17 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new DisabledException("La cuenta no está activa");
         }
 
+        if (cuenta.getTrabajador().getEstado() != EstadoTrabajador.Activo) {
+            throw new DisabledException("El trabajador no está activo");
+        }
+
         return User.builder()
                 .username(cuenta.getUsuario())
                 .password(cuenta.getClave())
-                .roles(cuenta.getTrabajador().getRol().getNombreRol())
+                .authorities(cuenta.getTrabajador().getRol().getPermisos().stream()
+                        .filter(permiso -> Boolean.TRUE.equals(permiso.getActivo()))
+                        .map(permiso -> new SimpleGrantedAuthority(permiso.getCodigo()))
+                        .toList())
                 .build();
     }
 }

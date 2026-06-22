@@ -31,9 +31,9 @@ public class DetalleOrdenVenta {
     @Column(name = "cantidad", nullable = false)
     private Integer cantidad;
 
-    @Column(name = "precio_unitario", nullable = false, precision = 10, scale = 2)
+    @Column(name = "precio_unitario", nullable = false, precision = 12, scale = 2)
     private BigDecimal precioUnitario;
 
-    @Column(name = "subtotal", nullable = false, precision = 10, scale = 2)
+    @Column(name = "subtotal", nullable = false, precision = 12, scale = 2)
     private BigDecimal subtotal;
 }

@@ -3,7 +3,7 @@ import { API_URL } from "../../config/api"
 export const obtenerProductos = async () => {
     const token = localStorage.getItem("token");
 
-    const response = await fetch(`${API_URL}/productos`, {
+    const response = await fetch(`${API_URL}/productos/activos`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

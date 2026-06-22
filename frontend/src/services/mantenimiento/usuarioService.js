@@ -1,35 +1,64 @@
 import { API_URL } from "../../config/api";
 
+export const obtenerRoles = async (incluirInactivos = false) => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_URL}/roles?incluirInactivos=${incluirInactivos}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (!response.ok) {
+        throw new Error("No se pudieron obtener los roles");
+    }
+
+    return response.json();
+};
+
+const roleRequest = async (path, options = {}) => {
+    const response = await fetch(`${API_URL}${path}`, {
+        ...options,
+        headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+            ...options.headers,
+        },
+    });
+    if (!response.ok) {
+        const body = await response.json().catch(() => null);
+        throw new Error(body?.message || "No se pudo completar la operación");
+    }
+    return response.status === 204 ? null : response.json();
+};
+
+export const obtenerPermisos = () => roleRequest("/permisos");
+export const crearRol = (rol) => roleRequest("/roles", {
+    method: "POST",
+    body: JSON.stringify(rol),
+});
+export const actualizarRol = (idRol, rol) => roleRequest(`/roles/${idRol}`, {
+    method: "PUT",
+    body: JSON.stringify(rol),
+});
+export const asignarPermisosRol = (idRol, idPermisos) => roleRequest(`/roles/${idRol}/permisos`, {
+    method: "PUT",
+    body: JSON.stringify({ idPermisos }),
+});
+export const cambiarEstadoRol = (idRol, activo) => roleRequest(`/roles/${idRol}/estado`, {
+    method: "PATCH",
+    body: JSON.stringify({ activo }),
+});
+export const eliminarRol = (idRol) => roleRequest(`/roles/${idRol}`, { method: "DELETE" });
+
 export const obtenerUsuarios = async () => {
     const token = localStorage.getItem("token");
+    const response = await fetch(`${API_URL}/usuarios`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
 
-    const headers = {
-        Authorization: `Bearer ${token}`,
-    };
-
-    const [trabajadoresResponse, cuentasResponse] = await Promise.all([
-        fetch(`${API_URL}/trabajadores`, { headers }),
-        fetch(`${API_URL}/usuarios`, { headers }),
-    ]);
-
-    if (!trabajadoresResponse.ok || !cuentasResponse.ok) {
+    if (!response.ok) {
         throw new Error("Error al obtener usuarios");
     }
 
-    const [trabajadores, cuentas] = await Promise.all([
-        trabajadoresResponse.json(),
-        cuentasResponse.json(),
-    ]);
-
-    const cuentasPorTrabajador = new Map(
-        cuentas.map((cuenta) => [cuenta.idTrabajador, cuenta])
-    );
-
-    return trabajadores.map((trabajador) => ({
-        ...trabajador,
-        ...cuentasPorTrabajador.get(trabajador.idTrabajador),
-        estado: trabajador.estado,
-    }));
+    return response.json();
 };
 
 export const crearUsuario = async (usuarioRequest) => {
@@ -92,4 +121,23 @@ export const actualizarEstadoTrabajador = async (idTrabajador, estado) => {
     }
 
     return await response.json();
+};
+
+export const actualizarEstadoCuenta = async (idCuenta, estado) => {
+    const token = localStorage.getItem("token");
+    const response = await fetch(`${API_URL}/usuarios/${idCuenta}/estado`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ estado }),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || "No se pudo actualizar el estado de la cuenta");
+    }
+
+    return response.json();
 };

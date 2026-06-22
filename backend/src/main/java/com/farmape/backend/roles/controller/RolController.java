@@ -2,8 +2,11 @@ package com.farmape.backend.roles.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.farmape.backend.roles.model.Rol;
+import com.farmape.backend.roles.dto.*;
 import com.farmape.backend.roles.service.RolService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -18,7 +21,45 @@ public class RolController {
     }
 
     @GetMapping
-    public List<Rol> listarRoles() {
-        return rolService.listarRoles();
+    public List<RolResponse> listarRoles(
+            @RequestParam(defaultValue = "false") boolean incluirInactivos
+    ) {
+        return rolService.listarRoles(incluirInactivos);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public RolResponse crear(@Valid @RequestBody RolRequest request) {
+        return rolService.crear(request);
+    }
+
+    @PutMapping("/{idRol}")
+    public RolResponse actualizar(
+            @PathVariable Integer idRol,
+            @Valid @RequestBody RolRequest request
+    ) {
+        return rolService.actualizar(idRol, request);
+    }
+
+    @PutMapping("/{idRol}/permisos")
+    public RolResponse asignarPermisos(
+            @PathVariable Integer idRol,
+            @Valid @RequestBody AsignarPermisosRequest request
+    ) {
+        return rolService.asignarPermisos(idRol, request);
+    }
+
+    @PatchMapping("/{idRol}/estado")
+    public RolResponse cambiarEstado(
+            @PathVariable Integer idRol,
+            @Valid @RequestBody EstadoRolRequest request
+    ) {
+        return rolService.cambiarEstado(idRol, request);
+    }
+
+    @DeleteMapping("/{idRol}")
+    public ResponseEntity<Void> eliminar(@PathVariable Integer idRol) {
+        rolService.eliminar(idRol);
+        return ResponseEntity.noContent().build();
     }
 }

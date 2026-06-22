@@ -1,6 +1,7 @@
 package com.farmape.backend.usuarios.dto;
 
 import com.farmape.backend.usuarios.enums.EstadoCuentaUsuario;
+import com.farmape.backend.trabajadores.enums.EstadoTrabajador;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +17,8 @@ public record CuentaUsuarioResponse(
         String apellidos,
         String dni,
         String telefono,
+        String direccion,
+        EstadoTrabajador estadoTrabajador,
         Integer idRol,
         String rol
 ) {

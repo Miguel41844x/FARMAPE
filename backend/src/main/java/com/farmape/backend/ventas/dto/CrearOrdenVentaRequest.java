@@ -12,9 +12,6 @@ public record CrearOrdenVentaRequest(
         @NotNull(message = "El cliente es obligatorio")
         Integer idCliente,
 
-        @NotNull(message = "El empleado es obligatorio")
-        Integer idEmpleado,
-
         @NotNull(message = "El canal de pedido es obligatorio")
         CanalPedido canalPedido,
 

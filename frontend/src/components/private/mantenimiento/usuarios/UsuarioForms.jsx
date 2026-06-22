@@ -5,8 +5,9 @@ import { FaEye, FaEyeSlash, FaTimes } from "react-icons/fa";
 
 import {
     crearUsuario,
+    obtenerRoles,
     actualizarTrabajador,
-    actualizarEstadoTrabajador,
+    actualizarEstadoCuenta,
 } from "../../../../services/mantenimiento/usuarioService";
 
 const crearEstadoInicial = (usuario = null) => ({
@@ -22,7 +23,7 @@ const crearEstadoInicial = (usuario = null) => ({
     password: "",
     idRol: usuario?.idRol ?? usuario?.rol?.idRol ?? "",
     rol: usuario?.rol?.nombre ?? usuario?.nombreRol ?? usuario?.rol ?? "",
-    estado: String(usuario?.estado ?? "ACTIVO").toUpperCase(),
+    estado: usuario?.estado ?? "Activo",
 });
 
 const UsuarioForms = ({
@@ -41,21 +42,19 @@ const UsuarioForms = ({
 
     const esEdicion = Boolean(usuarioEditando);
 
-    const roles = [
-        { idRol: 1, nombreRol: "Administrador" },
-        { idRol: 2, nombreRol: "Empleado" },
-        { idRol: 3, nombreRol: "Cajero" },
-        { idRol: 4, nombreRol: "Encargado de Despacho" },
-        { idRol: 5, nombreRol: "Encargado de Almacen" },
-        { idRol: 6, nombreRol: "Quimico Farmaceutico" },
-        { idRol: 7, nombreRol: "Gerente" },
-    ];
+    const [roles, setRoles] = useState([]);
 
-    const estados = ["ACTIVO", "BLOQUEADO", "INACTIVO"];
+    const estados = ["Activo", "Bloqueado", "Inactivo"];
 
     const [formData, setFormData] = useState(() =>
         crearEstadoInicial(usuarioEditando)
     );
+
+    useEffect(() => {
+        obtenerRoles()
+            .then(setRoles)
+            .catch((error) => alert(error.message));
+    }, []);
 
     useEffect(() => {
         const cerrarMenus = (e) => {
@@ -172,8 +171,8 @@ const UsuarioForms = ({
                 });
 
                 if (formData.estado) {
-                    await actualizarEstadoTrabajador(
-                        formData.idTrabajador,
+                    await actualizarEstadoCuenta(
+                        formData.idCuenta,
                         formData.estado
                     );
                 }
