@@ -30,6 +30,7 @@ import NotasCredito from "../pages/private/compras/NotasCredito";
 import PagosCredito from "../pages/private/compras/PagosCredito";
 import ProveedoresCompras from "../pages/private/compras/ProveedoresCompras";
 import Recetas from "../pages/private/recetas/Recetas";
+import Auditoria from "../pages/private/auditoria/Auditoria";
 
 function AppRouter() {
     return (
@@ -114,6 +115,10 @@ function AppRouter() {
 
                     <Route element={<PermissionRoute permissions={[PERMISSIONS.REPORT_VIEW]} />}>
                         <Route path="/reportes" element={<Reporte />} />
+                    </Route>
+
+                    <Route element={<PermissionRoute permissions={[PERMISSIONS.AUDIT_VIEW]} />}>
+                        <Route path="/auditoria" element={<Auditoria />} />
                     </Route>
                 </Route>
             </Route>

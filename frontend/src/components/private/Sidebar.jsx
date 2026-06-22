@@ -4,7 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 import { CiShoppingCart, CiHome, CiFileOn, CiMedicalCase } from "react-icons/ci";
-import { FiLogOut, FiUser } from "react-icons/fi";
+import { FiActivity, FiLogOut, FiUser } from "react-icons/fi";
 import { PiListBold } from "react-icons/pi";
 import { CiSettings } from "react-icons/ci";
 import { CiCoinInsert } from "react-icons/ci";
@@ -70,6 +70,12 @@ const menuItems = [
         path: "/reportes",
         icon: <CiFileOn />,
         permissions: [PERMISSIONS.REPORT_VIEW],
+    },
+    {
+        label: "Auditoría",
+        path: "/auditoria",
+        icon: <FiActivity />,
+        permissions: [PERMISSIONS.AUDIT_VIEW],
     },
 ];
 
