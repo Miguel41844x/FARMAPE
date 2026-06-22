@@ -72,7 +72,7 @@ public class ReportesService {
                         bigDecimal("""
                                 SELECT COALESCE(SUM(monto_pagado), 0)
                                 FROM pagos_venta
-                                WHERE estado = 'Cancelado'
+                                WHERE estado = 'Pagado'
                                   AND fecha_pago >= ?
                                 """, Timestamp.valueOf(inicioMes)),
                         "MONEDA",
@@ -174,7 +174,7 @@ public class ReportesService {
                 obtenerSerie("""
                         SELECT metodo_pago AS etiqueta, COALESCE(SUM(monto_pagado), 0) AS valor
                         FROM pagos_venta
-                        WHERE estado = 'Cancelado'
+                        WHERE estado = 'Pagado'
                         GROUP BY metodo_pago
                         ORDER BY valor DESC
                         """),

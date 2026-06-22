@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import "./caja.css";
+import { useAuth } from "../../../context/AuthContext";
+import { PERMISSIONS } from "../../../constants/permissions";
 
 import ValidarVenta from "../../../components/private/caja/ValidarVenta";
 import PagoComprobante from "../../../components/private/caja/PagoComprobante";
@@ -9,6 +11,8 @@ import { listarOrdenesPendientesCaja, obtenerOrdenCaja,
     registrarPagoCaja, } from "../../../services/caja/cajaService";
 
 const Caja = () => {
+    const { hasPermission } = useAuth();
+    const puedeCobrar = hasPermission(PERMISSIONS.PAYMENT_CREATE);
     const [ordenes, setOrdenes] = useState([]);
     const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
     const [resultadoPago, setResultadoPago] = useState(null);
@@ -52,6 +56,11 @@ const Caja = () => {
     };
 
     const procesarPago = async (datosPago) => {
+        if (!puedeCobrar) {
+            alert("No tienes permiso para registrar pagos");
+            return;
+        }
+
         if (!ordenSeleccionada) {
             alert("Selecciona una orden de venta primero");
             return;
@@ -108,6 +117,7 @@ const Caja = () => {
                         orden={ordenSeleccionada}
                         procesarPago={procesarPago}
                         loadingPago={loadingPago}
+                        puedeCobrar={puedeCobrar}
                     />
 
                     <EstadoVenta

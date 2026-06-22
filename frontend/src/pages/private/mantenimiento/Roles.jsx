@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "../../../context/AuthContext";
+import { PERMISSIONS } from "../../../constants/permissions";
 import {
     actualizarRol,
     cambiarEstadoRol,
@@ -18,6 +20,10 @@ const estadoInicial = {
 };
 
 function Roles() {
+    const { hasPermission } = useAuth();
+    const puedeGestionarRoles = hasPermission(PERMISSIONS.ROLE_MANAGE);
+    const puedeAsignarPermisos = hasPermission(PERMISSIONS.ROLE_ASSIGN);
+
     const [roles, setRoles] = useState([]);
     const [permisos, setPermisos] = useState([]);
     const [form, setForm] = useState(estadoInicial);
@@ -54,12 +60,20 @@ function Roles() {
     }, []);
 
     const abrirNuevo = () => {
+        if (!puedeGestionarRoles) {
+            setError("No tienes permiso para crear roles");
+            return;
+        }
         setForm(estadoInicial);
         setAbierto(true);
         setError("");
     };
 
     const abrirEdicion = (rol) => {
+        if (!puedeGestionarRoles && !puedeAsignarPermisos) {
+            setError("No tienes permiso para editar roles");
+            return;
+        }
         setForm({
             idRol: rol.idRol,
             codigo: rol.codigo,
@@ -72,6 +86,7 @@ function Roles() {
     };
 
     const alternarPermiso = (idPermiso) => {
+        if (!puedeAsignarPermisos) return;
         setForm((actual) => ({
             ...actual,
             idPermisos: actual.idPermisos.includes(idPermiso)
@@ -82,6 +97,15 @@ function Roles() {
 
     const guardar = async (event) => {
         event.preventDefault();
+        if (form.idRol && !puedeGestionarRoles && !puedeAsignarPermisos) {
+            setError("No tienes permiso para editar roles");
+            return;
+        }
+        if (!form.idRol && !puedeGestionarRoles) {
+            setError("No tienes permiso para crear roles");
+            return;
+        }
+
         setGuardando(true);
         setError("");
         try {
@@ -106,6 +130,10 @@ function Roles() {
     };
 
     const alternarEstado = async (rol) => {
+        if (!puedeGestionarRoles) {
+            setError("No tienes permiso para cambiar el estado de roles");
+            return;
+        }
         try {
             await cambiarEstadoRol(rol.idRol, !rol.activo);
             await cargar();
@@ -115,6 +143,10 @@ function Roles() {
     };
 
     const borrar = async (rol) => {
+        if (!puedeGestionarRoles) {
+            setError("No tienes permiso para eliminar roles");
+            return;
+        }
         if (!confirm(`¿Eliminar el rol ${rol.nombreRol}?`)) return;
         try {
             await eliminarRol(rol.idRol);
@@ -131,7 +163,9 @@ function Roles() {
                     <h1>Roles y permisos</h1>
                     <p>Define las capacidades del sistema sin modificar el código.</p>
                 </div>
-                <button type="button" onClick={abrirNuevo}>Crear rol</button>
+                {puedeGestionarRoles && (
+                    <button type="button" onClick={abrirNuevo}>Crear rol</button>
+                )}
             </header>
 
             {error && <div className="roles-error" role="alert">{error}</div>}
@@ -149,9 +183,15 @@ function Roles() {
                                 <td>{rol.permisos?.length || 0}</td>
                                 <td><span className={`roles-status ${rol.activo ? "activo" : "inactivo"}`}>{rol.activo ? "Activo" : "Inactivo"}</span></td>
                                 <td className="roles-actions">
-                                    <button type="button" onClick={() => abrirEdicion(rol)}>Editar</button>
-                                    <button type="button" onClick={() => alternarEstado(rol)}>{rol.activo ? "Desactivar" : "Activar"}</button>
-                                    <button type="button" className="danger" onClick={() => borrar(rol)}>Eliminar</button>
+                                    {(puedeGestionarRoles || puedeAsignarPermisos) && (
+                                        <button type="button" onClick={() => abrirEdicion(rol)}>Editar</button>
+                                    )}
+                                    {puedeGestionarRoles && (
+                                        <>
+                                            <button type="button" onClick={() => alternarEstado(rol)}>{rol.activo ? "Desactivar" : "Activar"}</button>
+                                            <button type="button" className="danger" onClick={() => borrar(rol)}>Eliminar</button>
+                                        </>
+                                    )}
                                 </td>
                             </tr>
                         ))}
@@ -163,9 +203,9 @@ function Roles() {
                 <div className="roles-modal" onMouseDown={() => setAbierto(false)}>
                     <form className="roles-form" onSubmit={guardar} onMouseDown={(event) => event.stopPropagation()}>
                         <header><h2>{form.idRol ? "Editar rol" : "Crear rol"}</h2><button type="button" onClick={() => setAbierto(false)}>×</button></header>
-                        <label>Nombre<input required value={form.nombreRol} onChange={(e) => setForm({ ...form, nombreRol: e.target.value })} /></label>
-                        <label>Código<input required value={form.codigo} onChange={(e) => setForm({ ...form, codigo: e.target.value })} placeholder="EJEMPLO_ROL" /></label>
-                        <label>Descripción<textarea value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} /></label>
+                        <label>Nombre<input required value={form.nombreRol} onChange={(e) => setForm({ ...form, nombreRol: e.target.value })} disabled={!puedeGestionarRoles} /></label>
+                        <label>Código<input required value={form.codigo} onChange={(e) => setForm({ ...form, codigo: e.target.value })} placeholder="EJEMPLO_ROL" disabled={!puedeGestionarRoles} /></label>
+                        <label>Descripción<textarea value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} disabled={!puedeGestionarRoles} /></label>
                         <div className="roles-permisos">
                             <h3>Permisos asignados</h3>
                             {Object.entries(permisosPorModulo).map(([modulo, items]) => (
@@ -173,7 +213,7 @@ function Roles() {
                                     <legend>{modulo}</legend>
                                     {items.map((permiso) => (
                                         <label key={permiso.idPermiso} className="permiso-check">
-                                            <input type="checkbox" checked={form.idPermisos.includes(permiso.idPermiso)} onChange={() => alternarPermiso(permiso.idPermiso)} />
+                                            <input type="checkbox" checked={form.idPermisos.includes(permiso.idPermiso)} onChange={() => alternarPermiso(permiso.idPermiso)} disabled={!puedeAsignarPermisos} />
                                             <span><strong>{permiso.nombre}</strong><small>{permiso.codigo}</small></span>
                                         </label>
                                     ))}

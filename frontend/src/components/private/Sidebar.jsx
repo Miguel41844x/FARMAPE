@@ -39,7 +39,7 @@ const menuItems = [
         label: "Administración de usuarios",
         path: "/mantenimiento",
         icon: <CiSettings />,
-        permissions: [PERMISSIONS.USER_MANAGE, PERMISSIONS.ROLE_MANAGE, PERMISSIONS.ROLE_ASSIGN],
+        permissions: [PERMISSIONS.USER_MANAGE, PERMISSIONS.ROLE_READ, PERMISSIONS.ROLE_MANAGE, PERMISSIONS.ROLE_ASSIGN],
     },
     {
         label: "Productos",

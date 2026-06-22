@@ -55,6 +55,7 @@ function AppRouter() {
                             <PermissionRoute
                                 permissions={[
                                     PERMISSIONS.USER_MANAGE,
+                                    PERMISSIONS.ROLE_READ,
                                     PERMISSIONS.ROLE_MANAGE,
                                     PERMISSIONS.ROLE_ASSIGN,
                                 ]}
@@ -68,7 +69,7 @@ function AppRouter() {
                         <Route path="/mantenimiento/usuarios" element={<Usuarios />} />
                     </Route>
 
-                    <Route element={<PermissionRoute permissions={[PERMISSIONS.ROLE_MANAGE, PERMISSIONS.ROLE_ASSIGN]} />}>
+                    <Route element={<PermissionRoute permissions={[PERMISSIONS.ROLE_READ, PERMISSIONS.ROLE_MANAGE, PERMISSIONS.ROLE_ASSIGN]} />}>
                         <Route path="/mantenimiento/roles" element={<Roles />} />
                     </Route>
 

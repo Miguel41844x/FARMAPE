@@ -1,5 +1,6 @@
 package com.farmape.backend.common;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -21,6 +22,11 @@ public class ApiExceptionHandler {
         return response(HttpStatus.CONFLICT, exception.getMessage());
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> dataIntegrity(DataIntegrityViolationException exception) {
+        return response(HttpStatus.CONFLICT, "No se puede completar la operación porque afecta datos relacionados");
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> validation(MethodArgumentNotValidException exception) {
         String message = exception.getBindingResult().getFieldErrors().stream()
@@ -28,6 +34,11 @@ public class ApiExceptionHandler {
                 .map(error -> error.getDefaultMessage())
                 .orElse("Solicitud inválida");
         return response(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ApiError> runtime(RuntimeException exception) {
+        return response(HttpStatus.BAD_REQUEST, exception.getMessage() == null ? "Solicitud inválida" : exception.getMessage());
     }
 
     private ResponseEntity<ApiError> response(HttpStatus status, String message) {

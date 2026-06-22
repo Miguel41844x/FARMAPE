@@ -1,13 +1,18 @@
 import { useState } from "react";
 import "./pagoComprobante.css";
 
-const PagoComprobante = ({ orden, procesarPago, loadingPago }) => {
+const PagoComprobante = ({ orden, procesarPago, loadingPago, puedeCobrar = false }) => {
     const [metodoPago, setMetodoPago] = useState("Efectivo");
     const [tipoComprobante, setTipoComprobante] = useState("Boleta");
     const [montoPagado, setMontoPagado] = useState("");
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!puedeCobrar) {
+            alert("No tienes permiso para registrar pagos");
+            return;
+        }
 
         if (!orden) {
             alert("Selecciona una orden primero");
@@ -36,6 +41,17 @@ const PagoComprobante = ({ orden, procesarPago, loadingPago }) => {
         });
     };
 
+    if (!puedeCobrar) {
+        return (
+            <div className="pago-card placeholder-state">
+                <h2>Registrar pago</h2>
+                <p className="pago-placeholder">
+                    Puedes consultar órdenes de caja, pero no tienes permiso para emitir comprobantes ni registrar pagos.
+                </p>
+            </div>
+        );
+    }
+
     if (!orden) {
         return (
             <div className="pago-card placeholder-state">
@@ -51,6 +67,7 @@ const PagoComprobante = ({ orden, procesarPago, loadingPago }) => {
     const monto = Number(montoPagado || 0);
     const vuelto = metodoPago === "Efectivo" ? Math.max(0, monto - total) : 0;
     const botonDeshabilitado =
+        !puedeCobrar ||
         loadingPago ||
         orden.estado !== "Confirmada" ||
         (metodoPago === "Efectivo" && (montoPagado === "" || monto < total));

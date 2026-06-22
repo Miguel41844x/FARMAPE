@@ -38,14 +38,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
 
-                        .requestMatchers(
-                                "/api/auth/login",
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**"
-                        ).permitAll()
+                        .requestMatchers("/api/auth/login")
+                        .permitAll()
 
                         .requestMatchers("/api/perfil/**")
                         .authenticated()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
+                        .hasAuthority("AUDIT_MANAGE")
                         .requestMatchers("/api/usuarios/**", "/api/trabajadores/**")
                         .hasAuthority("USER_MANAGE")
                         .requestMatchers(HttpMethod.GET, "/api/roles/**")
@@ -103,8 +102,10 @@ public class SecurityConfig {
                         .hasAuthority("AUDIT_VIEW")
                         .requestMatchers(HttpMethod.POST, "/api/auditoria/**")
                         .hasAuthority("AUDIT_MANAGE")
-                        .requestMatchers("/api/reportes/**")
+                        .requestMatchers(HttpMethod.GET, "/api/reportes/**")
                         .hasAuthority("REPORT_VIEW")
+                        .requestMatchers("/api/reportes/**")
+                        .hasAuthority("REPORT_MANAGE")
 
                         .anyRequest().authenticated()
                 )

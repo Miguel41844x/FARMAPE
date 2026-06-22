@@ -2,7 +2,11 @@ package com.farmape.backend.almacen.repository;
 
 import com.farmape.backend.almacen.model.LoteProducto;
 import com.farmape.backend.productos.model.Producto;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,4 +19,15 @@ public interface LoteProductoRepository extends JpaRepository<LoteProducto, Inte
     long countByFechaVencimientoBetweenAndStockDisponibleGreaterThan(LocalDate desde, LocalDate hasta, Integer stockMinimo);
 
     List<LoteProducto> findTop5ByStockDisponibleGreaterThanOrderByFechaVencimientoAsc(Integer stockMinimo);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+            SELECT l
+            FROM LoteProducto l
+            WHERE l.producto = :producto
+              AND COALESCE(l.stockDisponible, 0) > 0
+              AND l.estado = 'Disponible'
+            ORDER BY l.fechaVencimiento ASC, l.fechaIngreso ASC, l.idLote ASC
+            """)
+    List<LoteProducto> findDisponiblesForUpdateByProductoFefo(@Param("producto") Producto producto);
 }

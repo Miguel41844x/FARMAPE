@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
+import { useAuth } from "../../context/AuthContext";
+import { PERMISSIONS } from "../../constants/permissions";
 import {
     actualizarEstadoAccionGerencial,
     listarAccionesGerenciales,
@@ -44,6 +46,9 @@ const obtenerMaximo = (items = []) => {
 };
 
 const Reporte = () => {
+    const { hasPermission } = useAuth();
+    const puedeGestionarReportes = hasPermission(PERMISSIONS.REPORT_MANAGE);
+
     const [resumen, setResumen] = useState(null);
     const [informes, setInformes] = useState([]);
     const [acciones, setAcciones] = useState([]);
@@ -114,6 +119,11 @@ const Reporte = () => {
     const handleRegistrarInforme = async (event) => {
         event.preventDefault();
 
+        if (!puedeGestionarReportes) {
+            setError("No tienes permiso para registrar informes");
+            return;
+        }
+
         if (!informeForm.area || !informeForm.titulo) {
             setError("Completa el área y el título del informe");
             return;
@@ -137,6 +147,11 @@ const Reporte = () => {
 
     const handleRegistrarAccion = async (event) => {
         event.preventDefault();
+
+        if (!puedeGestionarReportes) {
+            setError("No tienes permiso para registrar acciones gerenciales");
+            return;
+        }
 
         if (!accionForm.idInforme || !accionForm.accionTomar) {
             setError("Selecciona un informe y escribe la acción gerencial");
@@ -163,6 +178,10 @@ const Reporte = () => {
     };
 
     const handleCambiarEstadoAccion = async (idAccion, estado) => {
+        if (!puedeGestionarReportes) {
+            setError("No tienes permiso para actualizar acciones gerenciales");
+            return;
+        }
         try {
             setError("");
             setMensaje("");
@@ -321,7 +340,8 @@ const Reporte = () => {
                 </div>
             </section>
 
-            <div className="report-forms-grid">
+            {puedeGestionarReportes ? (
+                <div className="report-forms-grid">
                 <section className="report-card">
                     <div className="report-card-header">
                         <div>
@@ -413,6 +433,16 @@ const Reporte = () => {
                     </form>
                 </section>
             </div>
+            ) : (
+                <section className="report-card">
+                    <div className="report-card-header">
+                        <div>
+                            <h2>Modo consulta</h2>
+                            <span>Tu permiso REPORT_VIEW permite revisar indicadores, informes y acciones, pero no registrar cambios.</span>
+                        </div>
+                    </div>
+                </section>
+            )}
 
             <section className="report-card">
                 <div className="report-card-header">
@@ -473,13 +503,13 @@ const Reporte = () => {
                                 <th>Acción</th>
                                 <th>Gerente</th>
                                 <th>Estado</th>
-                                <th>Cambiar estado</th>
+                                {puedeGestionarReportes && <th>Cambiar estado</th>}
                             </tr>
                         </thead>
                         <tbody>
                             {acciones.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="report-empty-cell">
+                                    <td colSpan={puedeGestionarReportes ? 6 : 5} className="report-empty-cell">
                                         No hay acciones gerenciales registradas
                                     </td>
                                 </tr>
@@ -498,18 +528,20 @@ const Reporte = () => {
                                                 {accion.estado}
                                             </span>
                                         </td>
-                                        <td>
-                                            <select
-                                                className="report-status-select"
-                                                value={accion.estado}
-                                                onChange={(e) => handleCambiarEstadoAccion(accion.idAccion, e.target.value)}
-                                            >
-                                                <option value="Pendiente">Pendiente</option>
-                                                <option value="En Proceso">En Proceso</option>
-                                                <option value="Completada">Completada</option>
-                                                <option value="Cancelada">Cancelada</option>
-                                            </select>
-                                        </td>
+                                        {puedeGestionarReportes && (
+                                            <td>
+                                                <select
+                                                    className="report-status-select"
+                                                    value={accion.estado}
+                                                    onChange={(e) => handleCambiarEstadoAccion(accion.idAccion, e.target.value)}
+                                                >
+                                                    <option value="Pendiente">Pendiente</option>
+                                                    <option value="En Proceso">En Proceso</option>
+                                                    <option value="Completada">Completada</option>
+                                                    <option value="Cancelada">Cancelada</option>
+                                                </select>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))
                             )}
