@@ -40,17 +40,24 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/login", "/api/auth/solicitar-restablecimiento")
-                        .permitAll()
+
+                        .requestMatchers(
+                                "/api/auth/login",
+                                "/api/auth/solicitar-restablecimiento"
+                        ).permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/auth/solicitudes-restablecimiento")
                         .hasAuthority("USER_MANAGE")
+
                         .requestMatchers("/api/perfil/**")
                         .authenticated()
+
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**")
                         .hasAuthority("AUDIT_MANAGE")
+
                         .requestMatchers("/api/usuarios/**", "/api/trabajadores/**")
                         .hasAuthority("USER_MANAGE")
+
                         .requestMatchers(HttpMethod.GET, "/api/roles/**")
                         .hasAuthority("ROLE_READ")
                         .requestMatchers(HttpMethod.GET, "/api/permisos/**")
@@ -65,14 +72,17 @@ public class SecurityConfig {
                         .hasAuthority("ROLE_MANAGE")
                         .requestMatchers(HttpMethod.DELETE, "/api/roles/**")
                         .hasAuthority("ROLE_MANAGE")
+
                         .requestMatchers(HttpMethod.GET, "/api/productos/**")
                         .hasAnyAuthority("PRODUCT_READ", "PRODUCT_MANAGE", "FORMULA_MANAGE")
                         .requestMatchers(HttpMethod.GET, "/api/categorias/**")
                         .hasAnyAuthority("PRODUCT_READ", "PRODUCT_MANAGE")
                         .requestMatchers("/api/productos/**")
                         .hasAuthority("PRODUCT_MANAGE")
+
                         .requestMatchers("/api/clientes/**")
                         .hasAnyAuthority("CUSTOMER_MANAGE", "FORMULA_MANAGE", "SALE_CREATE")
+
                         .requestMatchers(HttpMethod.GET, "/api/ventas/**")
                         .hasAnyAuthority("SALE_READ", "SALE_CREATE", "PAYMENT_READ")
                         .requestMatchers(HttpMethod.POST, "/api/ventas/**")
@@ -83,32 +93,54 @@ public class SecurityConfig {
                         .hasAuthority("SALE_CANCEL")
                         .requestMatchers(HttpMethod.PATCH, "/api/ventas/*/anular")
                         .hasAuthority("SALE_CANCEL")
+
                         .requestMatchers(HttpMethod.GET, "/api/caja/**")
                         .hasAuthority("PAYMENT_READ")
                         .requestMatchers(HttpMethod.POST, "/api/caja/**")
                         .hasAuthority("PAYMENT_CREATE")
+
                         .requestMatchers(HttpMethod.GET, "/api/despacho/**")
                         .hasAnyAuthority("DISPATCH_MANAGE", "INVENTORY_MANAGE")
                         .requestMatchers("/api/despacho/**")
                         .hasAuthority("DISPATCH_MANAGE")
+
                         .requestMatchers(HttpMethod.GET, "/api/almacen/**")
                         .hasAnyAuthority("INVENTORY_MANAGE", "DISPATCH_MANAGE")
                         .requestMatchers("/api/almacen/**")
                         .hasAuthority("INVENTORY_MANAGE")
-                        .requestMatchers(HttpMethod.GET, "/api/proveedores/**", "/api/ordenes-compra/**", "/api/facturas-proveedor/**", "/api/notas-credito-proveedor/**", "/api/pagos-proveedor/**")
+
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/proveedores/**",
+                                "/api/ordenes-compra/**",
+                                "/api/facturas-proveedor/**",
+                                "/api/notas-credito-proveedor/**",
+                                "/api/pagos-proveedor/**"
+                        )
                         .hasAuthority("PURCHASE_MANAGE")
-                        .requestMatchers("/api/proveedores/**", "/api/ordenes-compra/**", "/api/facturas-proveedor/**", "/api/notas-credito-proveedor/**", "/api/pagos-proveedor/**")
+
+                        .requestMatchers(
+                                "/api/proveedores/**",
+                                "/api/ordenes-compra/**",
+                                "/api/facturas-proveedor/**",
+                                "/api/notas-credito-proveedor/**",
+                                "/api/pagos-proveedor/**"
+                        )
                         .hasAuthority("PURCHASE_MANAGE")
+
                         .requestMatchers("/api/formulas/**")
                         .hasAuthority("FORMULA_MANAGE")
+
                         .requestMatchers(HttpMethod.GET, "/api/auditoria/**")
                         .hasAuthority("AUDIT_VIEW")
                         .requestMatchers(HttpMethod.POST, "/api/auditoria/**")
                         .hasAuthority("AUDIT_MANAGE")
+
                         .requestMatchers(HttpMethod.GET, "/api/reportes/**")
                         .hasAuthority("REPORT_VIEW")
                         .requestMatchers("/api/reportes/**")
                         .hasAuthority("REPORT_MANAGE")
+
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
@@ -121,23 +153,23 @@ public class SecurityConfig {
     Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
         return jwt -> {
             List<String> permisos = jwt.getClaimAsStringList("permisos");
+
             Collection<GrantedAuthority> authorities = permisos == null
                     ? List.of()
                     : permisos.stream()
-                    .<GrantedAuthority>map(SimpleGrantedAuthority::new)
-                    .toList();
+                            .map(SimpleGrantedAuthority::new)
+                            .map(GrantedAuthority.class::cast)
+                            .toList();
 
-            return new JwtAuthenticationToken(
-                    jwt,
-                    authorities,
-                    jwt.getSubject()
-            );
+            return new JwtAuthenticationToken(jwt, authorities, jwt.getSubject());
         };
     }
 
     @Bean
-    AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
-                                                PasswordEncoder passwordEncoder) {
+    AuthenticationManager authenticationManager(
+            UserDetailsService userDetailsService,
+            PasswordEncoder passwordEncoder
+    ) {
         DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
         provider.setPasswordEncoder(passwordEncoder);
         return new ProviderManager(provider);
@@ -154,17 +186,38 @@ public class SecurityConfig {
 
         String allowedOrigins = System.getenv().getOrDefault(
                 "CORS_ALLOWED_ORIGINS",
-                "https://farmape-three.vercel.app"
+                "https://farmape-three.vercel.app,http://localhost:5173"
         );
 
-        config.setAllowedOrigins(Arrays.stream(allowedOrigins.split(","))
-                .map(String::trim)
-                .filter(origin -> !origin.isBlank())
-                .toList());
+        String allowedOriginPatterns = System.getenv().getOrDefault(
+                "CORS_ALLOWED_ORIGIN_PATTERNS",
+                "https://*.vercel.app"
+        );
 
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
-        config.setExposedHeaders(List.of("Authorization"));
+        config.setAllowedOrigins(parseCsv(allowedOrigins));
+        config.setAllowedOriginPatterns(parseCsv(allowedOriginPatterns));
+
+        config.setAllowedMethods(List.of(
+                "GET",
+                "POST",
+                "PUT",
+                "PATCH",
+                "DELETE",
+                "OPTIONS"
+        ));
+
+        config.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With"
+        ));
+
+        config.setExposedHeaders(List.of(
+                "Authorization"
+        ));
+
         config.setAllowCredentials(false);
         config.setMaxAge(3600L);
 
@@ -172,5 +225,17 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", config);
 
         return source;
+    }
+
+    private List<String> parseCsv(String value) {
+        if (value == null || value.isBlank()) {
+            return List.of();
+        }
+
+        return Arrays.stream(value.split(","))
+                .map(String::trim)
+                .filter(item -> !item.isBlank())
+                .distinct()
+                .toList();
     }
 }
