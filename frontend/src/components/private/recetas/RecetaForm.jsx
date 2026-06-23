@@ -319,7 +319,7 @@ const RecetaForm = ({ onValidacionExitosa, onCancelar, formulaSolicitadaInsumos 
 
                     <div className="form-row-full componentes-dinamicos-wrapper">
                         <div className="componentes-dinamicos-header">
-                            <label>Componentes y Proporciones Básicas</label>
+                            <label>Componentes y Formulación</label>
                             <button type="button" className="btn-add-insumo-row" onClick={handleAgregarComponente}>+ Agregar Componente</button>
                         </div>
                         <div className="tabla-dinamica-scroll">
