@@ -122,7 +122,7 @@ const Login = () => {
                     </div>
 
                     <p className="login-help">
-                        ¿Olvidaste tu contraseña? <Link to="/recuperar-acceso">Solicitar ayuda</Link>
+                        ¿Olvidaste tu contraseña? <Link>Comunicate con el administrador</Link>
                     </p>
 
                     <div className="login-button">
