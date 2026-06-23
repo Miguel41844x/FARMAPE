@@ -2,6 +2,8 @@
   box-sizing: border-box;
 }
 
+
+
 .login-layout {
   display: flex;
   justify-content: center;
@@ -157,6 +159,10 @@
 }
 
 /* FOOTER */
+
+a{
+  text-decoration: none;
+}
 
 .login-footer {
   margin-top: auto;
