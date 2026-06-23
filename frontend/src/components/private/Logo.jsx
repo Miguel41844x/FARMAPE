@@ -6,7 +6,7 @@ const Logo = ({ to }) => {
         <Link to={to} className="logo">
         <img src="/logo.jpeg" alt="logo" className="logo-img"/>
         <div className="logo-text">
-            <span className="logo-top">Farmacias</span>
+            <span className="logo-top">Farmaceuticas</span>
             <span className="logo-bottom">Perú</span>
         </div>
         </Link>

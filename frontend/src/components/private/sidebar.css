@@ -95,7 +95,6 @@
   width: 4px;
   height: 22px;
   border-radius: 999px;
-  background: #5cd1b7;
 }
 
 .sidebar.closed .sidebar-header { justify-content: center; }
