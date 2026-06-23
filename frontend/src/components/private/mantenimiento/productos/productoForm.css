@@ -1,58 +1,42 @@
 .producto-form-container {
     width: 100%;
+    max-width: 720px;
     background: #fff;
-    border-radius: 22px;
-    padding: 2rem;
-    box-shadow: 0 18px 45px rgba(27, 127, 121, 0.18);
+    border-radius: 18px;
+    padding: 1.4rem;
+    box-shadow: 0 16px 38px rgba(27, 127, 121, 0.16);
     border: 1px solid rgba(27, 127, 121, 0.08);
     overflow: visible;
+    box-sizing: border-box;
 }
 
 /* HEADER */
 
 .producto-form-header {
-    margin-bottom: 2rem;
-    padding-bottom: 1.2rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: .9rem;
     border-bottom: 1px solid rgba(27, 127, 121, 0.12);
 }
 
 .producto-form-header h2 {
     color: var(--primary);
-    font-size: 2rem;
-    letter-spacing: -0.5px;
+    font-size: 1.45rem;
+    letter-spacing: -0.3px;
     margin: 0;
 }
 
 .producto-form-header p {
-    margin-top: .45rem;
+    margin-top: .35rem;
     color: var(--text-secondary);
-    font-size: .95rem;
-}
-
-/* BOTÓN CERRAR */
-
-.producto-close-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    border-radius: 12px;
-    background: #fdecea;
-    color: var(--danger);
-    font-size: 1.4rem;
-    cursor: pointer;
-    transition: .2s ease;
-}
-
-.producto-close-btn:hover {
-    opacity: .9;
+    font-size: .88rem;
 }
 
 /* FORM */
 
 .producto-form-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.25rem 1.4rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .9rem 1rem;
 }
 
 .producto-form-group {
@@ -65,8 +49,8 @@
 }
 
 .producto-form-group label {
-    margin-bottom: .45rem;
-    font-size: .88rem;
+    margin-bottom: .35rem;
+    font-size: .82rem;
     font-weight: 700;
     color: var(--text-primary);
 }
@@ -78,23 +62,24 @@
 .producto-form-group textarea {
     width: 100%;
     border: 1px solid rgba(27, 127, 121, 0.18);
-    border-radius: 14px;
+    border-radius: 12px;
     outline: none;
     background: #f9fbfb;
     color: var(--text-primary);
-    font-size: .95rem;
+    font-size: .88rem;
     transition: all .2s ease;
+    box-sizing: border-box;
 }
 
 .producto-form-group input,
 .producto-form-group select {
-    height: 46px;
-    padding: 0 .95rem;
+    height: 40px;
+    padding: 0 .8rem;
 }
 
 .producto-form-group textarea {
-    padding: .95rem;
-    min-height: 120px;
+    padding: .8rem;
+    min-height: 78px;
     resize: vertical;
 }
 
@@ -115,7 +100,7 @@
 .producto-form-group textarea:focus {
     border-color: var(--primary);
     background: #fff;
-    box-shadow: 0 0 0 4px rgba(27, 127, 121, 0.12);
+    box-shadow: 0 0 0 3px rgba(27, 127, 121, 0.12);
 }
 
 /* BOTONES */
@@ -124,16 +109,16 @@
     grid-column: span 2;
     display: flex;
     justify-content: flex-end;
-    gap: 12px;
-    margin-top: 1rem;
+    gap: 10px;
+    margin-top: .8rem;
 }
 
 .producto-form-actions button {
-    height: 48px;
-    padding: 0 20px;
+    height: 42px;
+    padding: 0 18px;
     border: none;
-    border-radius: 15px;
-    font-size: .95rem;
+    border-radius: 13px;
+    font-size: .88rem;
     font-weight: 700;
     cursor: pointer;
     transition: .2s ease;
@@ -147,12 +132,12 @@
 .producto-form-actions button:not(.cancel) {
     background: var(--primary);
     color: #fff;
-    box-shadow: 0 12px 25px rgba(27, 127, 121, 0.28);
+    box-shadow: 0 10px 22px rgba(27, 127, 121, 0.25);
 }
 
 .producto-form-actions button:not(.cancel):hover {
     transform: translateY(-2px);
-    box-shadow: 0 16px 30px rgba(27, 127, 121, 0.34);
+    box-shadow: 0 14px 26px rgba(27, 127, 121, 0.32);
 }
 
 .producto-form-actions button:not(.cancel):active {
@@ -163,12 +148,14 @@
 
 @media (max-width: 768px) {
     .producto-form-container {
-        padding: 1.5rem;
-        border-radius: 18px;
+        max-width: 100%;
+        padding: 1.1rem;
+        border-radius: 16px;
     }
 
     .producto-form-grid {
         grid-template-columns: 1fr;
+        gap: .85rem;
     }
 
     .producto-form-group.full {
@@ -177,7 +164,7 @@
 
     .producto-form-actions {
         grid-column: span 1;
-        flex-direction: column;
+        flex-direction: column-reverse;
     }
 
     .producto-form-actions button {
