@@ -2,25 +2,29 @@ package com.farmape.backend.auth.service;
 
 import com.farmape.backend.auth.dto.LoginRequest;
 import com.farmape.backend.auth.dto.LoginResponse;
+import com.farmape.backend.auth.dto.RefreshTokenRequest;       
+import com.farmape.backend.auth.dto.RefreshTokenResponse;     
 import com.farmape.backend.auth.dto.SolicitarRestablecimientoRequest;
 import com.farmape.backend.auth.dto.SolicitarRestablecimientoResponse;
 import com.farmape.backend.auth.dto.SolicitudRestablecimientoResponse;
 import com.farmape.backend.auth.model.SolicitudRestablecimientoClave;
 import com.farmape.backend.auth.repository.SolicitudRestablecimientoClaveRepository;
+import com.farmape.backend.trabajadores.enums.EstadoTrabajador;  
+import com.farmape.backend.usuarios.enums.EstadoCuentaUsuario;  
 import com.farmape.backend.usuarios.model.CuentaUsuario;
 import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;                   
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.Jwt;            
+import org.springframework.security.oauth2.jwt.JwtDecoder;    
+import org.springframework.security.oauth2.jwt.JwtException;  
+import org.springframework.web.server.ResponseStatusException; 
+import com.farmape.backend.security.JwtService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,19 +32,24 @@ import java.util.List;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
-    private final JwtEncoder jwtEncoder;
+    private final JwtService jwtService;
+    private final JwtDecoder jwtDecoder;        
     private final CuentaUsuarioRepository cuentaUsuarioRepository;
     private final SolicitudRestablecimientoClaveRepository solicitudRestablecimientoClaveRepository;
 
     @Value("${app.jwt.expiration-minutes}")
     private Long expirationMinutes;
 
-    public AuthService(AuthenticationManager authenticationManager,
-                       JwtEncoder jwtEncoder,
-                       CuentaUsuarioRepository cuentaUsuarioRepository,
-                       SolicitudRestablecimientoClaveRepository solicitudRestablecimientoClaveRepository) {
+    public AuthService(
+            AuthenticationManager authenticationManager,
+            JwtService jwtService,
+            JwtDecoder jwtDecoder,                                    
+            CuentaUsuarioRepository cuentaUsuarioRepository,
+            SolicitudRestablecimientoClaveRepository solicitudRestablecimientoClaveRepository
+    ) {
         this.authenticationManager = authenticationManager;
-        this.jwtEncoder = jwtEncoder;
+        this.jwtService = jwtService;
+        this.jwtDecoder = jwtDecoder;                               
         this.cuentaUsuarioRepository = cuentaUsuarioRepository;
         this.solicitudRestablecimientoClaveRepository = solicitudRestablecimientoClaveRepository;
     }
@@ -67,29 +76,12 @@ public class AuthService {
                 .sorted()
                 .toList();
 
-        Instant now = Instant.now();
-
-        JwtClaimsSet claims = JwtClaimsSet.builder()
-                .issuer("farmape-backend")
-                .issuedAt(now)
-                .expiresAt(now.plusSeconds(expirationMinutes * 60))
-                .subject(cuenta.getUsuario())
-                .claim("usuario", cuenta.getUsuario())
-                .claim("email", cuenta.getEmail())
-                .claim("rol", rol)
-                .claim("permisos", permisos)
-                .claim("idCuenta", cuenta.getIdCuenta())
-                .claim("idTrabajador", cuenta.getTrabajador().getIdTrabajador())
-                .build();
-
-        JwsHeader header = JwsHeader.with(MacAlgorithm.HS256).build();
-
-        String token = jwtEncoder.encode(
-                JwtEncoderParameters.from(header, claims)
-        ).getTokenValue();
+        String accessToken = jwtService.generateAccessToken(cuenta, rol, permisos);
+        String refreshToken = jwtService.generateRefreshToken(cuenta);
 
         return new LoginResponse(
-                token,
+                accessToken,
+                refreshToken,
                 cuenta.getUsuario(),
                 rol,
                 cuenta.getTrabajador().getNombres(),
@@ -100,6 +92,62 @@ public class AuthService {
         );
     }
 
+  
+    public RefreshTokenResponse refreshToken(RefreshTokenRequest request) {
+
+        Jwt jwt;
+        try {
+            jwt = jwtDecoder.decode(request.refreshToken());
+        } catch (JwtException e) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Token de refresco inválido o expirado"
+            );
+        }
+
+        String tipo = jwt.getClaimAsString("tipo");
+        if (!"REFRESH".equals(tipo)) {
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "El token proporcionado no es un token de refresco"
+            );
+        }
+
+        String username = jwt.getSubject();
+        CuentaUsuario cuenta = cuentaUsuarioRepository
+                .findByUsuario(username)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.UNAUTHORIZED,
+                        "La cuenta no existe"
+                ));
+
+        if (cuenta.getEstado() != EstadoCuentaUsuario.Activo) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "La cuenta no está activa"
+            );
+        }
+
+        if (cuenta.getTrabajador().getEstado() != EstadoTrabajador.Activo) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "El trabajador no está activo"
+            );
+        }
+
+        String rol = cuenta.getTrabajador().getRol().getNombreRol();
+        List<String> permisos = cuenta.getTrabajador().getRol().getPermisos().stream()
+                .filter(permiso -> Boolean.TRUE.equals(permiso.getActivo()))
+                .map(permiso -> permiso.getCodigo())
+                .sorted()
+                .toList();
+
+        String nuevoAccessToken = jwtService.generateAccessToken(cuenta, rol, permisos);
+
+        return new RefreshTokenResponse(nuevoAccessToken);
+    }
+
+  
     @Transactional
     public SolicitarRestablecimientoResponse solicitarRestablecimiento(SolicitarRestablecimientoRequest request) {
         String usuarioOCorreo = request.usuarioOCorreo().trim();
@@ -146,9 +194,7 @@ public class AuthService {
     }
 
     private String limpiar(String valor) {
-        if (valor == null) {
-            return null;
-        }
+        if (valor == null) return null;
         String limpio = valor.trim();
         return limpio.isBlank() ? null : limpio;
     }
