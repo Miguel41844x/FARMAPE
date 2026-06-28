@@ -2,6 +2,8 @@ package com.farmape.backend.auth.controller;
 
 import com.farmape.backend.auth.dto.LoginRequest;
 import com.farmape.backend.auth.dto.LoginResponse;
+import com.farmape.backend.auth.dto.RefreshTokenRequest;       
+import com.farmape.backend.auth.dto.RefreshTokenResponse;
 import com.farmape.backend.auth.dto.SolicitarRestablecimientoRequest;
 import com.farmape.backend.auth.dto.SolicitarRestablecimientoResponse;
 import com.farmape.backend.auth.dto.SolicitudRestablecimientoResponse;
@@ -27,6 +29,13 @@ public class AuthController {
         return ResponseEntity.ok(authService.login(request));
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<RefreshTokenResponse> refresh(
+            @Valid @RequestBody RefreshTokenRequest request
+    ) {
+        return ResponseEntity.ok(authService.refreshToken(request));
+    }
+    
     @PostMapping("/solicitar-restablecimiento")
     public ResponseEntity<SolicitarRestablecimientoResponse> solicitarRestablecimiento(
             @Valid @RequestBody SolicitarRestablecimientoRequest request
