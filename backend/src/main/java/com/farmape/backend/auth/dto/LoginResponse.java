@@ -3,7 +3,8 @@ package com.farmape.backend.auth.dto;
 import java.util.List;
 
 public record LoginResponse(
-        String token,
+        String accessToken,
+        String refreshToken,
         String usuario,
         String rol,
         String nombres,
