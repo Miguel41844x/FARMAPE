@@ -21,8 +21,7 @@ const Login = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        
+      
         if (!usuario.trim() || !password.trim()) {
             alert("Ingrese usuario y contraseña");
             return;
@@ -48,18 +47,8 @@ const Login = () => {
 
             const data = await response.json();
 
-            const userData = {
-                usuario: data.usuario,
-                rol: data.rol,
-                nombres: data.nombres,
-                apellidos: data.apellidos,
-                idCuenta: data.idCuenta,
-                idTrabajador: data.idTrabajador,
-                permisos: data.permisos || [],
-                token: data.token,
-            };
-            
-            localStorage.setItem("token", data.token);
+            localStorage.setItem("token", data.accessToken);     
+            localStorage.setItem("refreshToken", data.refreshToken); 
             localStorage.setItem("usuario", data.usuario);
             localStorage.setItem("rol", data.rol);
             localStorage.setItem("nombres", data.nombres);
@@ -68,13 +57,19 @@ const Login = () => {
             localStorage.setItem("idTrabajador", data.idTrabajador);
             localStorage.setItem("permisos", JSON.stringify(data.permisos || []));
 
-            setUser(userData);
-
-            console.log("Login exitoso:", userData);
+            setUser({
+                usuario: data.usuario,
+                rol: data.rol,
+                nombres: data.nombres,
+                apellidos: data.apellidos,
+                idCuenta: data.idCuenta,
+                idTrabajador: data.idTrabajador,
+                permisos: data.permisos || [],
+                token: data.accessToken,          
+            });
 
             navigate("/homePrivate");
         } catch (error) {
-            console.error(error.message);
             alert(error.message);
         } finally {
             setLoading(false);
