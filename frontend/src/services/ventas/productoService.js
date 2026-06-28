@@ -1,17 +1,6 @@
-import { API_URL } from "../../config/api"
+import apiClient from "../api/apiClient";
 
-export const obtenerProductos = async () => {
-    const token = localStorage.getItem("token");
-
-    const response = await fetch(`${API_URL}/productos/activos`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
+export const obtenerProductos = () =>
+    apiClient("/productos/activos", {
+        mensajeError: "Error al obtener productos",
     });
-
-    if (!response.ok) {
-        throw new Error("Error al obtener productos");
-    }
-
-    return await response.json();
-};
