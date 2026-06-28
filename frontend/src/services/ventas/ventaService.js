@@ -1,50 +1,25 @@
-import { API_URL } from "../../config/api";
+import apiClient from "../api/apiClient";
 
-const getAuthHeaders = () => ({
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-});
-
-const validar = async (response, mensaje) => {
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || mensaje);
-    }
-    return response.json();
-};
-
-export const registrarVenta = async (ventaRequest) => {
-    const response = await fetch(`${API_URL}/ventas`, {
+export const registrarVenta = (ventaRequest) =>
+    apiClient("/ventas", {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify(ventaRequest),
+        mensajeError: "No se pudo generar el ticket",
     });
 
-    return validar(response, "No se pudo generar el ticket");
-};
-
-export const confirmarVenta = async (idOrdenVenta) => {
-    const response = await fetch(`${API_URL}/ventas/${idOrdenVenta}/confirmar`, {
+export const confirmarVenta = (idOrdenVenta) =>
+    apiClient(`/ventas/${idOrdenVenta}/confirmar`, {
         method: "PATCH",
-        headers: getAuthHeaders(),
+        mensajeError: "No se pudo confirmar la orden",
     });
 
-    return validar(response, "No se pudo confirmar la orden");
-};
-
-export const rechazarVenta = async (idOrdenVenta) => {
-    const response = await fetch(`${API_URL}/ventas/${idOrdenVenta}/rechazar`, {
+export const rechazarVenta = (idOrdenVenta) =>
+    apiClient(`/ventas/${idOrdenVenta}/rechazar`, {
         method: "PATCH",
-        headers: getAuthHeaders(),
+        mensajeError: "No se pudo rechazar la orden",
     });
 
-    return validar(response, "No se pudo rechazar la orden");
-};
-
-export const obtenerUltimasOrdenes = async () => {
-    const response = await fetch(`${API_URL}/ventas/ultimas`, {
-        headers: getAuthHeaders(),
+export const obtenerUltimasOrdenes = () =>
+    apiClient("/ventas/ultimas", {
+        mensajeError: "No se pudieron cargar las órdenes",
     });
-
-    return validar(response, "No se pudieron cargar las órdenes");
-};
