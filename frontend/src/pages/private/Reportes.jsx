@@ -78,7 +78,7 @@ const Reporte = () => {
         cargarDatos();
     }, []);
 
-    const cargarDatos = async () => {
+    async function cargarDatos() {
         try {
             setLoading(true);
             setError("");
@@ -104,7 +104,7 @@ const Reporte = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }
 
     const handleInformeChange = (event) => {
         const { name, value } = event.target;
@@ -371,6 +371,8 @@ const Reporte = () => {
                                 value={informeForm.titulo}
                                 onChange={handleInformeChange}
                                 placeholder="Ej. Informe semanal de ventas"
+                                maxLength={150}
+                                required
                             />
                         </label>
 
@@ -382,6 +384,7 @@ const Reporte = () => {
                                 onChange={handleInformeChange}
                                 placeholder="Describe el hallazgo, problema o resumen del área"
                                 rows="4"
+                                maxLength={1000}
                             />
                         </label>
 
@@ -406,6 +409,7 @@ const Reporte = () => {
                                 name="idInforme"
                                 value={accionForm.idInforme}
                                 onChange={handleAccionChange}
+                                required
                             >
                                 <option value="">Selecciona un informe</option>
                                 {informes.map((informe) => (
@@ -424,6 +428,8 @@ const Reporte = () => {
                                 onChange={handleAccionChange}
                                 placeholder="Ej. Priorizar compra preventiva de productos críticos"
                                 rows="5"
+                                maxLength={1000}
+                                required
                             />
                         </label>
 

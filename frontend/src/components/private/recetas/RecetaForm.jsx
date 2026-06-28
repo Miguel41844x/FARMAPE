@@ -23,6 +23,10 @@ const ModalRegistrarCliente = ({ dniInicial, onGuardar, onCancelar }) => {
     const handleChange = (e) => setDatos({ ...datos, [e.target.name]: e.target.value });
 
     const handleGuardar = async () => {
+        if (!/^\d{8}$|^\d{11}$/.test(datos.documento.trim())) {
+            setError("El documento debe contener 8 dígitos (DNI) u 11 dígitos (RUC).");
+            return;
+        }
         if (!datos.nombres.trim() || !datos.apellidos.trim()) {
             setError("Nombres y Apellidos son obligatorios.");
             return;
@@ -53,7 +57,7 @@ const ModalRegistrarCliente = ({ dniInicial, onGuardar, onCancelar }) => {
                     <div className="modal-row">
                         <div className="modal-field">
                             <label>DNI / RUC</label>
-                            <input type="text" name="documento" placeholder="Ejemplo: 76543210" value={datos.documento} onChange={handleChange} maxLength="11" />
+                            <input type="text" name="documento" placeholder="Ejemplo: 76543210" value={datos.documento} onChange={handleChange} inputMode="numeric" minLength="8" maxLength="11" pattern="(\d{8}|\d{11})" required />
                         </div>
                         <div className="modal-field">
                             <label>Tipo cliente</label>
@@ -66,31 +70,31 @@ const ModalRegistrarCliente = ({ dniInicial, onGuardar, onCancelar }) => {
                     <div className="modal-row">
                         <div className="modal-field">
                             <label>Nombres</label>
-                            <input type="text" name="nombres" placeholder="Nombres" value={datos.nombres} onChange={handleChange} />
+                            <input type="text" name="nombres" placeholder="Nombres" value={datos.nombres} onChange={handleChange} maxLength="100" required />
                         </div>
                         <div className="modal-field">
                             <label>Apellidos</label>
-                            <input type="text" name="apellidos" placeholder="Apellidos" value={datos.apellidos} onChange={handleChange} />
+                            <input type="text" name="apellidos" placeholder="Apellidos" value={datos.apellidos} onChange={handleChange} maxLength="100" required />
                         </div>
                     </div>
                     <div className="modal-row">
                         <div className="modal-field">
                             <label>Teléfono</label>
-                            <input type="text" name="telefono" placeholder="Teléfono" value={datos.telefono} onChange={handleChange} />
+                            <input type="text" name="telefono" placeholder="Teléfono" value={datos.telefono} onChange={handleChange} inputMode="tel" maxLength="20" />
                         </div>
                         <div className="modal-field">
                             <label>WhatsApp</label>
-                            <input type="text" name="whatsapp" placeholder="WhatsApp" value={datos.whatsapp} onChange={handleChange} />
+                            <input type="text" name="whatsapp" placeholder="WhatsApp" value={datos.whatsapp} onChange={handleChange} inputMode="tel" maxLength="20" />
                         </div>
                     </div>
                     <div className="modal-row">
                         <div className="modal-field">
                             <label>Email</label>
-                            <input type="email" name="email" placeholder="correo@ejemplo.com" value={datos.email} onChange={handleChange} />
+                            <input type="email" name="email" placeholder="correo@ejemplo.com" value={datos.email} onChange={handleChange} maxLength="100" />
                         </div>
                         <div className="modal-field">
                             <label>Dirección</label>
-                            <input type="text" name="direccion" placeholder="Dirección" value={datos.direccion} onChange={handleChange} />
+                            <input type="text" name="direccion" placeholder="Dirección" value={datos.direccion} onChange={handleChange} maxLength="150" />
                         </div>
                     </div>
                     {error && <span className="error-text block-error">{error}</span>}
@@ -106,7 +110,7 @@ const ModalRegistrarCliente = ({ dniInicial, onGuardar, onCancelar }) => {
     );
 };
 
-const RecetaForm = ({ onValidacionExitosa, onCancelar, formulaSolicitadaInsumos = [] }) => {
+const RecetaForm = ({ onValidacionExitosa, onCancelar }) => {
     const [formData, setFormData] = useState({
         dniPaciente: "",
         nombrePaciente: "",
@@ -339,7 +343,7 @@ const RecetaForm = ({ onValidacionExitosa, onCancelar, formulaSolicitadaInsumos 
                                                 <input type="text" placeholder="Escriba el nombre del insumo libremente..." value={componente.nombre_insumo} onChange={(e) => handleComponenteChange(index, "nombre_insumo", e.target.value)} className="input-insumo-libre" />
                                             </td>
                                             <td>
-                                                <input type="number" step="0.01" min="0.01" placeholder="0.00" value={componente.cantidad_usada} onChange={(e) => handleComponenteChange(index, "cantidad_usada", e.target.value)} />
+                                                <input type="number" step="0.001" min="0.001" placeholder="0.000" value={componente.cantidad_usada} onChange={(e) => handleComponenteChange(index, "cantidad_usada", e.target.value)} />
                                             </td>
                                             <td>
                                                 <select value={componente.unidad_medida} onChange={(e) => handleComponenteChange(index, "unidad_medida", e.target.value)} className="select-unidad-inline">

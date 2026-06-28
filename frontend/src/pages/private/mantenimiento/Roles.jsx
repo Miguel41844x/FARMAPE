@@ -203,9 +203,9 @@ function Roles() {
                 <div className="roles-modal" onMouseDown={() => setAbierto(false)}>
                     <form className="roles-form" onSubmit={guardar} onMouseDown={(event) => event.stopPropagation()}>
                         <header><h2>{form.idRol ? "Editar rol" : "Crear rol"}</h2><button type="button" onClick={() => setAbierto(false)}>×</button></header>
-                        <label>Nombre<input required value={form.nombreRol} onChange={(e) => setForm({ ...form, nombreRol: e.target.value })} disabled={!puedeGestionarRoles} /></label>
-                        <label>Código<input required value={form.codigo} onChange={(e) => setForm({ ...form, codigo: e.target.value })} placeholder="EJEMPLO_ROL" disabled={!puedeGestionarRoles} /></label>
-                        <label>Descripción<textarea value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} disabled={!puedeGestionarRoles} /></label>
+                        <label>Nombre<input required maxLength={80} value={form.nombreRol} onChange={(e) => setForm({ ...form, nombreRol: e.target.value })} disabled={!puedeGestionarRoles} /></label>
+                        <label>Código<input required maxLength={50} pattern="[A-Za-z0-9_-]+" title="Use letras, números, guiones o guion bajo" value={form.codigo} onChange={(e) => setForm({ ...form, codigo: e.target.value })} placeholder="EJEMPLO_ROL" disabled={!puedeGestionarRoles} /></label>
+                        <label>Descripción<textarea maxLength={255} value={form.descripcion} onChange={(e) => setForm({ ...form, descripcion: e.target.value })} disabled={!puedeGestionarRoles} /></label>
                         <div className="roles-permisos">
                             <h3>Permisos asignados</h3>
                             {Object.entries(permisosPorModulo).map(([modulo, items]) => (

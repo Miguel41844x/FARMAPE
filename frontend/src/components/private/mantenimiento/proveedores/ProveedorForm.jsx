@@ -34,6 +34,15 @@ const ProveedorForm = ({
     const guardarProveedor = async (e) => {
         e.preventDefault();
 
+        if (!/^\d{11}$/.test(form.ruc.trim())) {
+            alert("El RUC debe contener exactamente 11 dígitos");
+            return;
+        }
+        if (!form.razonSocial.trim()) {
+            alert("La razón social es obligatoria");
+            return;
+        }
+
         try {
             setGuardando(true);
             if (proveedorEditando) {
@@ -83,6 +92,10 @@ const ProveedorForm = ({
                         onChange={manejarCambio}
                         placeholder="Ej: 20123456789"
                         maxLength="11"
+                        minLength="11"
+                        inputMode="numeric"
+                        pattern="\d{11}"
+                        title="Ingrese un RUC de 11 dígitos"
                         required
                     />
                 </div>
@@ -94,6 +107,7 @@ const ProveedorForm = ({
                         value={form.razonSocial}
                         onChange={manejarCambio}
                         placeholder="Ej: Distribuidora Farma SAC"
+                        maxLength={150}
                         required
                     />
                 </div>
@@ -105,6 +119,8 @@ const ProveedorForm = ({
                         value={form.telefono}
                         onChange={manejarCambio}
                         placeholder="Ej: 014567890"
+                        maxLength={20}
+                        inputMode="tel"
                     />
                 </div>
 
@@ -116,6 +132,7 @@ const ProveedorForm = ({
                         value={form.email}
                         onChange={manejarCambio}
                         placeholder="Ej: ventas@farma.com"
+                        maxLength={100}
                     />
                 </div>
 
@@ -138,6 +155,7 @@ const ProveedorForm = ({
                         name="direccion"
                         value={form.direccion}
                         onChange={manejarCambio}
+                        maxLength={200}
                         placeholder="Ej: Av. Industrial 100, Lima"
                     />
                 </div>

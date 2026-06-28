@@ -6,38 +6,38 @@ const configuraciones = {
         campos: [
             { name: "idProveedor", label: "Proveedor", type: "proveedor", required: true },
             { name: "fechaEntrega", label: "Fecha de entrega", type: "date", required: true },
-            { name: "observaciones", label: "Observaciones", type: "textarea" },
+            { name: "observaciones", label: "Observaciones", type: "textarea", maxLength: 500 },
         ],
     },
     factura: {
         titulo: "Registrar factura de proveedor",
         campos: [
-            { name: "idOrdenCompra", label: "ID de orden de compra", type: "number", required: true },
-            { name: "serie", label: "Serie", required: true },
-            { name: "numero", label: "Número", required: true },
+            { name: "idOrdenCompra", label: "ID de orden de compra", type: "number", min: 1, required: true },
+            { name: "serie", label: "Serie", maxLength: 20, required: true },
+            { name: "numero", label: "Número", maxLength: 30, required: true },
             { name: "fechaEmision", label: "Fecha de emisión", type: "date", required: true },
             { name: "fechaVencimiento", label: "Fecha de vencimiento", type: "date" },
-            { name: "total", label: "Importe total", type: "number", step: "0.01", required: true },
+            { name: "total", label: "Importe total", type: "number", step: "0.01", min: 0, required: true },
             { name: "condicionPago", label: "Condición de pago", type: "select", options: ["CONTADO", "CREDITO"], required: true },
         ],
     },
     nota: {
         titulo: "Registrar nota de crédito",
         campos: [
-            { name: "idFacturaProveedor", label: "ID de factura", type: "number", required: true },
+            { name: "idFacturaProveedor", label: "ID de factura", type: "number", min: 1, required: true },
             { name: "motivo", label: "Motivo", type: "select", options: ["DEVOLUCION", "DESCUENTO", "DIFERENCIA_PRECIO", "OTRO"], required: true },
-            { name: "monto", label: "Monto", type: "number", step: "0.01", required: true },
-            { name: "descripcion", label: "Descripción", type: "textarea", required: true },
+            { name: "monto", label: "Monto", type: "number", step: "0.01", min: 0.01, required: true },
+            { name: "descripcion", label: "Descripción", type: "textarea", maxLength: 500, required: true },
         ],
     },
     pago: {
         titulo: "Registrar pago a proveedor",
         campos: [
-            { name: "idFacturaProveedor", label: "ID de factura", type: "number", required: true },
+            { name: "idFacturaProveedor", label: "ID de factura", type: "number", min: 1, required: true },
             { name: "fechaPago", label: "Fecha de pago", type: "date", required: true },
-            { name: "monto", label: "Monto pagado", type: "number", step: "0.01", required: true },
+            { name: "monto", label: "Monto pagado", type: "number", step: "0.01", min: 0.01, required: true },
             { name: "metodoPago", label: "Método de pago", type: "select", options: ["TRANSFERENCIA", "EFECTIVO", "TARJETA"], required: true },
-            { name: "referencia", label: "Número de operación o referencia" },
+            { name: "referencia", label: "Número de operación o referencia", maxLength: 100 },
         ],
     },
 };
@@ -123,7 +123,7 @@ function FormularioProcesoCompra({ tipo, proveedores, productos, onCancel, onSav
                     <label key={campo.name} className={campo.type === "textarea" ? "wide" : ""}>
                         {campo.label}
                         {campo.type === "textarea" ? (
-                            <textarea name={campo.name} value={form[campo.name]} onChange={manejarCambio} required={campo.required} />
+                            <textarea name={campo.name} value={form[campo.name]} onChange={manejarCambio} maxLength={campo.maxLength} required={campo.required} />
                         ) : campo.type === "select" ? (
                             <select name={campo.name} value={form[campo.name]} onChange={manejarCambio} required={campo.required}>
                                 {campo.options.map((option) => <option key={option} value={option}>{option.replaceAll("_", " ")}</option>)}
@@ -140,6 +140,8 @@ function FormularioProcesoCompra({ tipo, proveedores, productos, onCancel, onSav
                                 name={campo.name}
                                 type={campo.type || "text"}
                                 step={campo.step}
+                                min={campo.min}
+                                maxLength={campo.maxLength}
                                 value={form[campo.name]}
                                 onChange={manejarCambio}
                                 required={campo.required}

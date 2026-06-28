@@ -198,6 +198,8 @@ function DatosVenta({
                                 onChange={manejarCambioBusqueda}
                                 onKeyDown={buscarConEnter}
                                 placeholder="Ingrese DNI/RUC y presione Enter"
+                                inputMode="numeric"
+                                maxLength={20}
                             />
 
                             <button
@@ -259,6 +261,7 @@ function DatosVenta({
                             onChange={(e) => setObservacion(e.target.value)}
                             placeholder="Ejemplo: Venta registrada desde mostrador"
                             rows="3"
+                            maxLength={500}
                         />
                     </div>
                 </div>
@@ -314,6 +317,9 @@ function DatosVenta({
                                         name="dniRuc"
                                         value={nuevoCliente.dniRuc}
                                         onChange={manejarCambioCliente}
+                                        inputMode="numeric"
+                                        maxLength={20}
+                                        required
                                         placeholder="Ejemplo: 76543210"
                                     />
                                 </div>
@@ -336,6 +342,8 @@ function DatosVenta({
                                         name="nombres"
                                         value={nuevoCliente.nombres}
                                         onChange={manejarCambioCliente}
+                                        maxLength={100}
+                                        required
                                         placeholder="Nombres"
                                     />
                                 </div>
@@ -346,6 +354,7 @@ function DatosVenta({
                                         name="apellidos"
                                         value={nuevoCliente.apellidos}
                                         onChange={manejarCambioCliente}
+                                        maxLength={100}
                                         placeholder="Apellidos"
                                     />
                                 </div>
@@ -356,6 +365,8 @@ function DatosVenta({
                                         name="telefono"
                                         value={nuevoCliente.telefono}
                                         onChange={manejarCambioCliente}
+                                        inputMode="tel"
+                                        maxLength={20}
                                         placeholder="Teléfono"
                                     />
                                 </div>
@@ -366,6 +377,8 @@ function DatosVenta({
                                         name="whatsapp"
                                         value={nuevoCliente.whatsapp}
                                         onChange={manejarCambioCliente}
+                                        inputMode="tel"
+                                        maxLength={20}
                                         placeholder="WhatsApp"
                                     />
                                 </div>
@@ -374,8 +387,10 @@ function DatosVenta({
                                     <label>Email</label>
                                     <input
                                         name="email"
+                                        type="email"
                                         value={nuevoCliente.email}
                                         onChange={manejarCambioCliente}
+                                        maxLength={100}
                                         placeholder="correo@ejemplo.com"
                                     />
                                 </div>
@@ -386,6 +401,7 @@ function DatosVenta({
                                         name="direccion"
                                         value={nuevoCliente.direccion}
                                         onChange={manejarCambioCliente}
+                                        maxLength={150}
                                         placeholder="Dirección"
                                     />
                                 </div>

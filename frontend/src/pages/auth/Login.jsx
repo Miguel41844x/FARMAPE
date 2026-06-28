@@ -102,6 +102,9 @@ const Login = () => {
                         placeholder="e.g: usuario o usuario@farmaceuticasperu.com"
                         value={usuario}
                         onChange={(e) => setUsuario(e.target.value)}
+                        maxLength={100}
+                        autoComplete="username"
+                        required
                     />
 
                     <label>Contraseña</label>
@@ -112,6 +115,9 @@ const Login = () => {
                             placeholder="Ingrese su contraseña"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            maxLength={100}
+                            autoComplete="current-password"
+                            required
                         />
                         <span
                             className="password-toggle"

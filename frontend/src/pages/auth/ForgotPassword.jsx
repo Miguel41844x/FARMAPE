@@ -65,6 +65,8 @@ const ForgotPassword = () => {
                             onChange={(event) => setUsuarioOCorreo(event.target.value)}
                             placeholder="Ejemplo: cajero01 o cajero01@farmaceuticasperu.com"
                             maxLength={100}
+                            required
+                            autoComplete="username"
                         />
                     </label>
 

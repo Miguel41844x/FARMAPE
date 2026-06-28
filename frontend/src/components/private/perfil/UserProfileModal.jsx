@@ -146,6 +146,8 @@ const UserProfileModal = ({ open, onClose }) => {
                                     value={form.telefono}
                                     onChange={handleChange}
                                     maxLength={20}
+                                    inputMode="tel"
+                                    autoComplete="tel"
                                 />
                             </label>
 
@@ -156,6 +158,7 @@ const UserProfileModal = ({ open, onClose }) => {
                                     value={form.direccion}
                                     onChange={handleChange}
                                     maxLength={150}
+                                    autoComplete="street-address"
                                 />
                             </label>
                         </div>

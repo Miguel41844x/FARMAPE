@@ -46,6 +46,11 @@ const ProductoForm = ({
     const guardarProducto = async (e) => {
         e.preventDefault();
 
+        if (!form.nombre.trim()) {
+            alert("El nombre del producto es obligatorio");
+            return;
+        }
+
         try {
             const request = {
                 idCategoria: Number(form.idCategoria),
@@ -118,6 +123,7 @@ const ProductoForm = ({
                         value={form.nombre}
                         onChange={manejarCambio}
                         placeholder="Ej: Paracetamol 500mg"
+                        maxLength={150}
                         required
                     />
                 </div>
@@ -129,6 +135,7 @@ const ProductoForm = ({
                         value={form.laboratorio}
                         onChange={manejarCambio}
                         placeholder="Ej: Medifarma"
+                        maxLength={100}
                     />
                 </div>
 
@@ -138,6 +145,7 @@ const ProductoForm = ({
                         name="precioCompra"
                         type="number"
                         step="0.01"
+                        min="0"
                         value={form.precioCompra}
                         onChange={manejarCambio}
                         placeholder="0.00"
@@ -150,6 +158,7 @@ const ProductoForm = ({
                         name="precioVenta"
                         type="number"
                         step="0.01"
+                        min="0.01"
                         value={form.precioVenta}
                         onChange={manejarCambio}
                         placeholder="0.00"
@@ -162,6 +171,8 @@ const ProductoForm = ({
                     <input
                         name="stockActual"
                         type="number"
+                        min="0"
+                        step="1"
                         value={form.stockActual}
                         onChange={manejarCambio}
                         placeholder="0"
@@ -173,6 +184,8 @@ const ProductoForm = ({
                     <input
                         name="stockMinimo"
                         type="number"
+                        min="0"
+                        step="1"
                         value={form.stockMinimo}
                         onChange={manejarCambio}
                         placeholder="0"
@@ -207,6 +220,7 @@ const ProductoForm = ({
                         name="descripcion"
                         value={form.descripcion}
                         onChange={manejarCambio}
+                        maxLength={500}
                         placeholder="Descripción del producto"
                     />
                 </div>

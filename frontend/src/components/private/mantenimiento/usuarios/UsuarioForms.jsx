@@ -143,31 +143,31 @@ const UsuarioForms = ({ cerrarFormulario, obtenerUsuarios, usuarioEditando = nul
             <form className="usuario-form" onSubmit={handleSubmit}>
                 <div className="form-group">
                     <label>DNI</label>
-                    <input name="dni" value={formData.dni} placeholder="Ingrese DNI" onChange={handleChange} inputMode="numeric" maxLength="11" autoFocus required />
+                    <input name="dni" value={formData.dni} placeholder="Ingrese DNI" onChange={handleChange} inputMode="numeric" minLength="8" maxLength="11" pattern="\d{8,11}" title="Ingrese entre 8 y 11 dígitos" autoFocus required />
                 </div>
                 <div className="form-group">
                     <label>Nombres</label>
-                    <input name="nombres" value={formData.nombres} placeholder="Ingrese nombres" onChange={handleChange} required />
+                    <input name="nombres" value={formData.nombres} placeholder="Ingrese nombres" onChange={handleChange} maxLength="100" required />
                 </div>
                 <div className="form-group">
                     <label>Apellidos</label>
-                    <input name="apellidos" value={formData.apellidos} placeholder="Ingrese apellidos" onChange={handleChange} required />
+                    <input name="apellidos" value={formData.apellidos} placeholder="Ingrese apellidos" onChange={handleChange} maxLength="100" required />
                 </div>
                 <div className="form-group">
                     <label>Teléfono</label>
-                    <input name="telefono" value={formData.telefono} placeholder="Ingrese teléfono" onChange={handleChange} />
+                    <input name="telefono" value={formData.telefono} placeholder="Ingrese teléfono" onChange={handleChange} inputMode="tel" maxLength="20" />
                 </div>
                 <div className="form-group">
                     <label>Dirección</label>
-                    <input name="direccion" value={formData.direccion} placeholder="Ingrese dirección" onChange={handleChange} />
+                    <input name="direccion" value={formData.direccion} placeholder="Ingrese dirección" onChange={handleChange} maxLength="150" />
                 </div>
                 <div className="form-group">
                     <label>Usuario</label>
-                    <input name="usuario" value={formData.usuario} placeholder="Ingrese usuario de acceso" onChange={handleChange} required />
+                    <input name="usuario" value={formData.usuario} placeholder="Ingrese usuario de acceso" onChange={handleChange} maxLength="50" autoComplete="username" required />
                 </div>
                 <div className="form-group">
                     <label>Email</label>
-                    <input type="email" name="email" value={formData.email} placeholder="Ingrese correo electrónico" onChange={handleChange} required />
+                    <input type="email" name="email" value={formData.email} placeholder="Ingrese correo electrónico" onChange={handleChange} maxLength="100" autoComplete="email" required />
                 </div>
 
                 <div className="form-group rol-dropdown-wrapper" ref={rolDropdownRef}>
@@ -207,7 +207,7 @@ const UsuarioForms = ({ cerrarFormulario, obtenerUsuarios, usuarioEditando = nul
                 <div className="form-group">
                     <label>{esEdicion ? "Nueva contraseña (opcional)" : "Contraseña"}</label>
                     <div className="password-container">
-                        <input type={showPassword ? "text" : "password"} name="password" value={formData.password} placeholder={esEdicion ? "Dejar en blanco para conservar" : "Ingrese contraseña"} onChange={handleChange} />
+                        <input type={showPassword ? "text" : "password"} name="password" value={formData.password} placeholder={esEdicion ? "Dejar en blanco para conservar" : "Ingrese contraseña"} onChange={handleChange} minLength={6} maxLength={100} autoComplete="new-password" required={!esEdicion} />
                         <button type="button" className="password-toggle" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}>
                             {showPassword ? <FaEyeSlash /> : <FaEye />}
                         </button>

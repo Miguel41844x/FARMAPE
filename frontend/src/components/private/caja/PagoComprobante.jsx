@@ -119,8 +119,8 @@ const PagoComprobante = ({ orden, procesarPago, loadingPago, puedeCobrar = false
                             <input
                                 id="montoPagado"
                                 type="number"
-                                step="0.10"
-                                min="0"
+                                step="0.01"
+                                min={Math.max(total, 0.01)}
                                 placeholder="0.00"
                                 value={montoPagado}
                                 onChange={(e) => setMontoPagado(e.target.value)}
