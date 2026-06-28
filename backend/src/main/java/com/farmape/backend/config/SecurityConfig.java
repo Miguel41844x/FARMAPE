@@ -43,7 +43,8 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/auth/login",
-                                "/api/auth/solicitar-restablecimiento"
+                                "/api/auth/solicitar-restablecimiento",
+                                "/api/auth/refresh"
                         ).permitAll()
 
                         .requestMatchers(HttpMethod.GET, "/api/auth/solicitudes-restablecimiento")
