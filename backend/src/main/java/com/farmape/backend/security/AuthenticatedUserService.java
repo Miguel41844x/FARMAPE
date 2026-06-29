@@ -2,6 +2,8 @@ package com.farmape.backend.security;
 
 import com.farmape.backend.usuarios.model.CuentaUsuario;
 import com.farmape.backend.usuarios.repository.CuentaUsuarioRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,14 @@ public class AuthenticatedUserService {
     }
 
     public CuentaUsuario currentAccount() {
-        String usuario = SecurityContextHolder.getContext().getAuthentication().getName();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            throw new IllegalStateException("No hay una cuenta autenticada");
+        }
+
+        String usuario = authentication.getName();
         return cuentaUsuarioRepository.findByUsuario(usuario)
                 .orElseThrow(() -> new IllegalStateException("La cuenta autenticada no existe"));
     }
