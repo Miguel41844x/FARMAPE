@@ -8,6 +8,14 @@ import {
     obtenerRoles,
     actualizarUsuarioCompleto,
 } from "../../../../services/mantenimiento/usuarioService";
+import {
+    emailValue,
+    isValidEmail,
+    onlyDigits,
+    onlyLetters,
+    phoneDigits,
+    safeText,
+} from "../../../../utils/inputSanitizers";
 
 const crearEstadoInicial = (usuario = null) => ({
     idCuenta: usuario?.idCuenta ?? null,
@@ -66,7 +74,20 @@ const UsuarioForms = ({ cerrarFormulario, obtenerUsuarios, usuarioEditando = nul
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
+        const sanitizers = {
+            dni: () => onlyDigits(value, 11),
+            nombres: () => onlyLetters(value, 100),
+            apellidos: () => onlyLetters(value, 100),
+            telefono: () => phoneDigits(value, 20),
+            direccion: () => safeText(value, 150),
+            usuario: () => value.replace(/[^A-Za-z0-9._-]/g, "").slice(0, 50),
+            email: () => emailValue(value, 100),
+            password: () => value.replace(/\s/g, "").slice(0, 100),
+        };
+        setFormData((prev) => ({
+            ...prev,
+            [name]: sanitizers[name] ? sanitizers[name]() : value,
+        }));
     };
 
     const validarFormulario = () => {
@@ -75,10 +96,14 @@ const UsuarioForms = ({ cerrarFormulario, obtenerUsuarios, usuarioEditando = nul
         if (!formData.apellidos.trim()) return "Ingrese los apellidos";
         if (!formData.idRol) return "Seleccione un rol";
         if (!formData.usuario.trim()) return "Ingrese el usuario de acceso";
+        if (!/^[A-Za-z0-9._-]{3,50}$/.test(formData.usuario)) {
+            return "El usuario debe tener entre 3 y 50 caracteres y solo usar letras, números, punto, guion o guion bajo";
+        }
         if (!formData.email.trim()) return "Ingrese el email";
-        if (!/^\S+@\S+\.\S+$/.test(formData.email.trim())) return "Ingrese un email válido";
+        if (!isValidEmail(formData.email.trim())) return "Ingrese un email válido";
         if (!esEdicion && !formData.password.trim()) return "Ingrese una contraseña";
         if (formData.password && formData.password.length < 6) return "La contraseña debe tener al menos 6 caracteres";
+        if (formData.password.length > 100) return "La contraseña no debe superar 100 caracteres";
         return null;
     };
 
@@ -163,11 +188,11 @@ const UsuarioForms = ({ cerrarFormulario, obtenerUsuarios, usuarioEditando = nul
                 </div>
                 <div className="form-group">
                     <label>Usuario</label>
-                    <input name="usuario" value={formData.usuario} placeholder="Ingrese usuario de acceso" onChange={handleChange} maxLength="50" autoComplete="username" required />
+                    <input name="usuario" value={formData.usuario} placeholder="Ingrese usuario de acceso" onChange={handleChange} minLength={3} maxLength={50} pattern="[A-Za-z0-9._-]{3,50}" title="Use entre 3 y 50 letras, números, punto, guion o guion bajo" autoComplete="username" spellCheck={false} required />
                 </div>
                 <div className="form-group">
                     <label>Email</label>
-                    <input type="email" name="email" value={formData.email} placeholder="Ingrese correo electrónico" onChange={handleChange} maxLength="100" autoComplete="email" required />
+                    <input type="email" name="email" value={formData.email} placeholder="Ingrese correo electrónico" onChange={handleChange} maxLength={100} autoComplete="email" spellCheck={false} required />
                 </div>
 
                 <div className="form-group rol-dropdown-wrapper" ref={rolDropdownRef}>
