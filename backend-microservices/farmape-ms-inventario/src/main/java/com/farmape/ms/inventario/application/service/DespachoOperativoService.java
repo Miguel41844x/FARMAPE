@@ -52,6 +52,13 @@ public class DespachoOperativoService {
     }
 
     @Transactional
+    public RepartoDomicilioResponse prepararRepartoDesdeOrden(Integer idOrdenVenta) {
+        return despachoOperativoRepository.findByTipoDespachoAndIdOrdenVenta(TIPO_DOMICILIO, idOrdenVenta)
+                .map(this::toRepartoDomicilioResponse)
+                .orElseGet(() -> crearRepartoPendiente(idOrdenVenta));
+    }
+
+    @Transactional
     public RepartoDomicilioResponse entregarReparto(Integer idReparto) {
         DespachoOperativo despacho = despachoOperativoRepository.findById(idReparto)
                 .orElseThrow(() -> new InventarioNotFoundException("Reparto no encontrado: " + idReparto));
@@ -60,6 +67,23 @@ public class DespachoOperativoService {
         despacho.setFechaEntrega(LocalDateTime.now());
 
         return toRepartoDomicilioResponse(despachoOperativoRepository.save(despacho));
+    }
+
+    private RepartoDomicilioResponse crearRepartoPendiente(Integer idOrdenVenta) {
+        DespachoOperativo ordenBase = despachoOperativoRepository
+                .findByTipoDespachoAndIdOrdenVenta(TIPO_LOCAL, idOrdenVenta)
+                .orElseThrow(() -> new InventarioNotFoundException("Orden para reparto no encontrada: " + idOrdenVenta));
+
+        DespachoOperativo reparto = new DespachoOperativo();
+        reparto.setIdOrdenVenta(ordenBase.getIdOrdenVenta());
+        reparto.setCliente(ordenBase.getCliente());
+        reparto.setFechaOrden(ordenBase.getFechaOrden());
+        reparto.setTotal(ordenBase.getTotal());
+        reparto.setTipoDespacho(TIPO_DOMICILIO);
+        reparto.setDireccion("Pendiente de direccion");
+        reparto.setEstado("PENDIENTE");
+
+        return toRepartoDomicilioResponse(despachoOperativoRepository.save(reparto));
     }
 
     private OrdenTiendaResponse toOrdenTiendaResponse(DespachoOperativo despacho) {

@@ -55,6 +55,39 @@ class DespachoOperativoServiceTests {
         assertThat(response.estado()).isEqualTo("ENTREGADO");
     }
 
+    @Test
+    void prepararRepartoDesdeOrdenDevuelveRepartoExistente() {
+        DespachoOperativo despacho = despachoDomicilio();
+
+        when(despachoOperativoRepository.findByTipoDespachoAndIdOrdenVenta("DOMICILIO", 201))
+                .thenReturn(Optional.of(despacho));
+
+        var response = despachoOperativoService.prepararRepartoDesdeOrden(201);
+
+        assertThat(response.idReparto()).isEqualTo(6);
+        assertThat(response.idOrdenVenta()).isEqualTo(201);
+        assertThat(response.estado()).isEqualTo("PENDIENTE");
+    }
+
+    @Test
+    void prepararRepartoDesdeOrdenCreaRepartoPendienteDesdeOrdenLocal() {
+        DespachoOperativo ordenLocal = despachoLocal();
+
+        when(despachoOperativoRepository.findByTipoDespachoAndIdOrdenVenta("DOMICILIO", 101))
+                .thenReturn(Optional.empty());
+        when(despachoOperativoRepository.findByTipoDespachoAndIdOrdenVenta("LOCAL", 101))
+                .thenReturn(Optional.of(ordenLocal));
+        when(despachoOperativoRepository.save(org.mockito.ArgumentMatchers.any(DespachoOperativo.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = despachoOperativoService.prepararRepartoDesdeOrden(101);
+
+        assertThat(response.idOrdenVenta()).isEqualTo(101);
+        assertThat(response.cliente()).isEqualTo("Ana Torres");
+        assertThat(response.direccion()).isEqualTo("Pendiente de direccion");
+        assertThat(response.estado()).isEqualTo("PENDIENTE");
+    }
+
     private DespachoOperativo despachoLocal() {
         DespachoOperativo despacho = new DespachoOperativo();
         despacho.setIdDespacho(1);
