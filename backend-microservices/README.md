@@ -86,6 +86,35 @@ Cada microservicio de infraestructura incluye su propio `Dockerfile`. Antes de c
 
 Luego se podra construir cada imagen desde su carpeta correspondiente. El despliegue coordinado se definira con `docker-compose.yml`.
 
+## Despliegue local con Docker Compose
+
+El archivo `docker-compose.yml` levanta los servicios de infraestructura en el orden esperado:
+
+1. `config-server`
+2. `eureka-server`
+3. `gateway`
+
+Para ejecutar el entorno local:
+
+```powershell
+.\mvnw.cmd clean package -DskipTests
+docker compose up -d --build
+```
+
+Para apagar los contenedores:
+
+```powershell
+docker compose down
+```
+
+Verificacion rapida:
+
+```text
+http://localhost:8888/farmape-ms-eureka/default
+http://localhost:8761
+http://localhost:8080/actuator/health
+```
+
 ## Relacion con el frontend
 
 El frontend actual se mantiene sin cambios. Mas adelante, cuando el Gateway tenga las rutas de negocio, el frontend debera apuntar a `http://localhost:8080` en desarrollo o a la URL publica del Gateway en despliegue.
