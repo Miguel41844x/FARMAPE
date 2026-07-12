@@ -9,6 +9,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.farmape.ms.inventario.application.service.InventarioConsultaService;
 import com.farmape.ms.inventario.application.service.InventarioMovimientoService;
+import com.farmape.ms.inventario.application.service.DespachoOperativoService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,6 +26,9 @@ class ApplicationTests {
 
     @MockitoBean
     private InventarioMovimientoService inventarioMovimientoService;
+
+    @MockitoBean
+    private DespachoOperativoService despachoOperativoService;
 
     @Test
     void contextLoads() {

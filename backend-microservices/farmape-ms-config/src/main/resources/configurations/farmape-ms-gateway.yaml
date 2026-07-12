@@ -24,11 +24,11 @@ spring:
             - id: inventario-api-legacy
               uri: lb://FARMAPE-MS-INVENTARIO
               predicates:
-                - Path=/api/productos,/api/productos/**,/api/categorias,/api/almacen,/api/almacen/**
+                - Path=/api/productos,/api/productos/**,/api/categorias,/api/almacen,/api/almacen/**,/api/despacho,/api/despacho/**
             - id: inventario-root-legacy
               uri: lb://FARMAPE-MS-INVENTARIO
               predicates:
-                - Path=/productos,/productos/**,/categorias,/almacen,/almacen/**
+                - Path=/productos,/productos/**,/categorias,/almacen,/almacen/**,/despacho,/despacho/**
               filters:
                 - RewritePath=/(?<segment>.*), /api/${segment}
           globalcors:
