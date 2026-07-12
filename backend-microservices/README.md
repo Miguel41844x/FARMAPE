@@ -136,6 +136,49 @@ docker compose logs eureka-server --tail=50
 docker compose logs gateway --tail=50
 ```
 
+Plan de verificacion manual:
+
+```powershell
+docker compose ps
+docker compose logs config-server --tail=50
+docker compose logs eureka-server --tail=50
+docker compose logs gateway --tail=50
+```
+
+Despues de revisar los logs, comprobar en el navegador o en Insomnia:
+
+```text
+http://localhost:8888/farmape-ms-eureka/default
+http://localhost:8761
+http://localhost:8080/actuator/health
+```
+
+## Despliegue local en Kubernetes
+
+La carpeta `k8s/` contiene manifiestos base para los tres servicios de infraestructura. Siguiendo el orden de la PPT, primero se construyen los `.jar` e imagenes, y luego se aplican los manifiestos:
+
+```powershell
+.\mvnw.cmd clean package -DskipTests
+docker compose build
+kubectl apply -f k8s/
+```
+
+Verificacion en Kubernetes:
+
+```powershell
+kubectl get pods
+kubectl get svc
+kubectl logs deployment/config-server --tail=50
+kubectl logs deployment/eureka-server --tail=50
+kubectl logs deployment/gateway --tail=50
+```
+
+Para consumir el Gateway desde la maquina local:
+
+```powershell
+kubectl port-forward service/gateway 8080:8080
+```
+
 ## Relacion con el frontend
 
 El frontend actual se mantiene sin cambios. Mas adelante, cuando el Gateway tenga las rutas de negocio, el frontend debera apuntar a `http://localhost:8080` en desarrollo o a la URL publica del Gateway en despliegue.

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: gateway
+  name: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: gateway
+  template:
+    metadata:
+      labels:
+        io.kompose.service: gateway
+    spec:
+      initContainers:
+        - name: wait-for-services
+          image: busybox:1.36
+          command:
+            - sh
+            - -c
+            - |
+              until nc -z -w 2 config-server 8888 && nc -z -w 2 eureka-server 8761; do
+                echo "Waiting for config-server and eureka-server..."
+                sleep 2
+              done
+      containers:
+        - image: farmape-ms-gateway
+          imagePullPolicy: IfNotPresent
+          name: gateway
+          env:
+            - name: SPRING_CONFIG_IMPORT
+              value: optional:configserver:http://config-server:8888
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: http://eureka-server:8761/eureka/
+            - name: FRONTEND_LOCAL_ORIGIN
+              value: http://localhost:5173
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+      restartPolicy: Always
