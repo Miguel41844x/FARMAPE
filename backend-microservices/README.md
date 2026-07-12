@@ -94,11 +94,13 @@ Cada modulo tambien incluye un `.dockerignore` para enviar al contexto de Docker
 
 ## Despliegue local con Docker Compose
 
-El archivo `docker-compose.yml` levanta los servicios de infraestructura en el orden esperado:
+El archivo `docker-compose.yml` levanta la base de datos de inventario y los servicios en el orden esperado:
 
-1. `config-server`
-2. `eureka-server`
-3. `gateway`
+1. `mysql-inventario`
+2. `config-server`
+3. `eureka-server`
+4. `inventario-service`
+5. `gateway`
 
 Antes de ejecutar Docker Compose, se puede crear un archivo `.env` local a partir del ejemplo:
 
@@ -130,7 +132,7 @@ http://localhost:8080/actuator/health
 http://localhost:8080/actuator/health/readiness
 ```
 
-El archivo Compose usa `depends_on` con `service_healthy` para que Eureka espere al Config Server y el Gateway espere a ambos servicios de infraestructura.
+El archivo Compose usa `depends_on` con `service_healthy` para que Inventario espere a MySQL, Config Server y Eureka; luego el Gateway espera a los servicios necesarios antes de exponerse.
 
 Comandos utiles de revision:
 
@@ -138,6 +140,7 @@ Comandos utiles de revision:
 docker compose ps
 docker compose logs config-server --tail=50
 docker compose logs eureka-server --tail=50
+docker compose logs inventario-service --tail=50
 docker compose logs gateway --tail=50
 ```
 
@@ -147,6 +150,7 @@ Plan de verificacion manual:
 docker compose ps
 docker compose logs config-server --tail=50
 docker compose logs eureka-server --tail=50
+docker compose logs inventario-service --tail=50
 docker compose logs gateway --tail=50
 ```
 

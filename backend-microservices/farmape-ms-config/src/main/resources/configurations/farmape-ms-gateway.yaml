@@ -14,6 +14,13 @@ spring:
             locator:
               enabled: true
               lower-case-service-id: true
+          routes:
+            - id: inventario
+              uri: lb://FARMAPE-MS-INVENTARIO
+              predicates:
+                - Path=/inventario/**
+              filters:
+                - RewritePath=/inventario/(?<segment>.*), /api/inventario/${segment}
           globalcors:
             cors-configurations:
               "[/**]":

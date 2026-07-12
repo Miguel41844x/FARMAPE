@@ -62,6 +62,13 @@ class ApplicationTests {
                 .anySatisfy(source -> {
                     assertThat(source.get("spring.application.name")).isEqualTo("farmape-ms-gateway");
                     assertThat(source.get("server.port")).isEqualTo(8080);
+                    assertThat(source.get("spring.cloud.gateway.server.webflux.routes[0].id")).isEqualTo("inventario");
+                    assertThat(source.get("spring.cloud.gateway.server.webflux.routes[0].uri"))
+                            .isEqualTo("lb://FARMAPE-MS-INVENTARIO");
+                    assertThat(source.get("spring.cloud.gateway.server.webflux.routes[0].predicates[0]"))
+                            .isEqualTo("Path=/inventario/**");
+                    assertThat(source.get("spring.cloud.gateway.server.webflux.routes[0].filters[0]"))
+                            .isEqualTo("RewritePath=/inventario/(?<segment>.*), /api/inventario/${segment}");
                 });
         assertThat(environment.toString())
                 .contains("farmape-ms-gateway");
@@ -76,6 +83,8 @@ class ApplicationTests {
                 .anySatisfy(source -> {
                     assertThat(source.get("spring.application.name")).isEqualTo("farmape-ms-inventario");
                     assertThat(source.get("server.port")).isEqualTo(8081);
+                    assertThat(source.get("spring.datasource.driver-class-name")).isEqualTo("com.mysql.cj.jdbc.Driver");
+                    assertThat(source.get("spring.jpa.hibernate.ddl-auto")).isEqualTo("none");
                 });
         assertThat(environment.toString())
                 .contains("farmape-ms-inventario");

@@ -1,5 +1,25 @@
 services:
 
+  # Inventario Database
+  mysql-inventario:
+    image: mysql:8.4
+    container_name: farmape-mysql-inventario
+    ports:
+      - "${INVENTARIO_MYSQL_PORT:-3307}:3306"
+    environment:
+      - MYSQL_DATABASE=${INVENTARIO_DB_NAME:-farmape_inventario}
+      - MYSQL_USER=${INVENTARIO_DB_USER:-farmape}
+      - MYSQL_PASSWORD=${INVENTARIO_DB_PASSWORD:-farmape}
+      - MYSQL_ROOT_PASSWORD=${INVENTARIO_DB_ROOT_PASSWORD:-root}
+    volumes:
+      - mysql-inventario-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${INVENTARIO_DB_USER:-farmape} -p${INVENTARIO_DB_PASSWORD:-farmape} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   # Config Server
   config-server:
     build: ./farmape-ms-config
@@ -37,6 +57,31 @@ services:
       retries: 10
       start_period: 20s
 
+  # Inventario Service
+  inventario-service:
+    build: ./farmape-ms-inventario
+    image: farmape-ms-inventario
+    container_name: farmape-ms-inventario
+    ports:
+      - "${INVENTARIO_PORT:-8081}:8081"
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL:-http://config-server:8888}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_SERVER_URL:-http://eureka-server:8761/eureka/}
+      - SPRING_DATASOURCE_URL=${INVENTARIO_DATASOURCE_URL:-jdbc:mysql://mysql-inventario:3306/farmape_inventario?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+      - SPRING_DATASOURCE_USERNAME=${INVENTARIO_DB_USER:-farmape}
+      - SPRING_DATASOURCE_PASSWORD=${INVENTARIO_DB_PASSWORD:-farmape}
+      - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
+    depends_on:
+      - mysql-inventario
+      - config-server
+      - eureka-server
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8081/actuator/health/readiness || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   # API Gateway
   gateway:
     build: ./farmape-ms-gateway
@@ -53,9 +98,13 @@ services:
     depends_on:
       - config-server
       - eureka-server
+      - inventario-service
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health/readiness || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 20s
+
+volumes:
+  mysql-inventario-data:
