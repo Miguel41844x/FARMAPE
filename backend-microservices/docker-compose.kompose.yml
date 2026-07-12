@@ -1,0 +1,61 @@
+services:
+
+  # Config Server
+  config-server:
+    build: ./farmape-ms-config
+    image: farmape-ms-config
+    container_name: farmape-ms-config
+    ports:
+      - "${CONFIG_SERVER_PORT:-8888}:8888"
+    environment:
+      - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8888/farmape-ms-eureka/default || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # Eureka Server
+  eureka-server:
+    build: ./farmape-ms-eureka
+    image: farmape-ms-eureka
+    container_name: farmape-ms-eureka
+    ports:
+      - "${EUREKA_SERVER_PORT:-8761}:8761"
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL:-http://config-server:8888}
+      - EUREKA_INSTANCE_HOSTNAME=eureka-server
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_SERVER_URL:-http://eureka-server:8761/eureka/}
+      - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
+    depends_on:
+      - config-server
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8761/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  # API Gateway
+  gateway:
+    build: ./farmape-ms-gateway
+    image: farmape-ms-gateway
+    container_name: farmape-ms-gateway
+    ports:
+      - "${GATEWAY_PORT:-8080}:8080"
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL:-http://config-server:8888}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_SERVER_URL:-http://eureka-server:8761/eureka/}
+      - FRONTEND_LOCAL_ORIGIN=${FRONTEND_LOCAL_ORIGIN:-http://localhost:5173}
+      - FRONTEND_ALLOWED_ORIGIN_PATTERN=${FRONTEND_ALLOWED_ORIGIN_PATTERN:-https://*.vercel.app}
+      - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
+    depends_on:
+      - config-server
+      - eureka-server
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s

@@ -163,6 +163,12 @@ docker compose build
 kubectl apply -f k8s/
 ```
 
+Si se desea regenerar manifiestos con Kompose, usar la variante compatible que evita `depends_on.condition`:
+
+```powershell
+kompose convert -f docker-compose.kompose.yml -o k8s/
+```
+
 Verificacion en Kubernetes:
 
 ```powershell
