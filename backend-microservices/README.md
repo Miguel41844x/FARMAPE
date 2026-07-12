@@ -94,6 +94,14 @@ El archivo `docker-compose.yml` levanta los servicios de infraestructura en el o
 2. `eureka-server`
 3. `gateway`
 
+Antes de ejecutar Docker Compose, se puede crear un archivo `.env` local a partir del ejemplo:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+El archivo `.env` permite cambiar puertos, URLs internas y origen permitido del frontend sin modificar archivos versionados.
+
 Para ejecutar el entorno local:
 
 ```powershell
