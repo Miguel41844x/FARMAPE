@@ -20,10 +20,12 @@ import com.farmape.ms.inventario.domain.model.MotivoMovimiento;
 import com.farmape.ms.inventario.domain.model.MovimientoAlmacen;
 import com.farmape.ms.inventario.domain.model.Producto;
 import com.farmape.ms.inventario.domain.model.TipoMovimiento;
+import com.farmape.ms.inventario.domain.model.VerificacionAlmacen;
 import com.farmape.ms.inventario.domain.repository.CategoriaRepository;
 import com.farmape.ms.inventario.domain.repository.LoteProductoRepository;
 import com.farmape.ms.inventario.domain.repository.MovimientoAlmacenRepository;
 import com.farmape.ms.inventario.domain.repository.ProductoRepository;
+import com.farmape.ms.inventario.domain.repository.VerificacionAlmacenRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -43,6 +45,9 @@ class InventarioConsultaServiceTests {
 
     @Mock
     private MovimientoAlmacenRepository movimientoAlmacenRepository;
+
+    @Mock
+    private VerificacionAlmacenRepository verificacionAlmacenRepository;
 
     @InjectMocks
     private InventarioConsultaService inventarioConsultaService;
@@ -151,6 +156,40 @@ class InventarioConsultaServiceTests {
         assertThat(response.ultimosMovimientos()).hasSize(1);
     }
 
+    @Test
+    void listarVerificacionesProductosMapsDomainToResponse() {
+        Producto producto = producto();
+        VerificacionAlmacen verificacion = verificacion(producto);
+
+        when(verificacionAlmacenRepository.findAllByOrderByFechaVerificacionDescIdVerificacionDesc())
+                .thenReturn(List.of(verificacion));
+
+        var responses = inventarioConsultaService.listarVerificacionesProductos();
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().idVerificacion()).isEqualTo(5);
+        assertThat(responses.getFirst().idPedidoCompra()).isEqualTo(30);
+        assertThat(responses.getFirst().producto()).isEqualTo("Paracetamol 500mg");
+        assertThat(responses.getFirst().cantidadPedida()).isEqualTo(12);
+        assertThat(responses.getFirst().cantidadRecibida()).isEqualTo(10);
+        assertThat(responses.getFirst().estado()).isEqualTo("OBSERVADO");
+    }
+
+    @Test
+    void confirmarVerificacionActualizaEstado() {
+        Producto producto = producto();
+        VerificacionAlmacen verificacion = verificacion(producto);
+
+        when(verificacionAlmacenRepository.findById(5)).thenReturn(Optional.of(verificacion));
+        when(verificacionAlmacenRepository.save(verificacion)).thenReturn(verificacion);
+
+        var response = inventarioConsultaService.confirmarVerificacionProducto(5);
+
+        assertThat(verificacion.getEstado()).isEqualTo("CONFORME");
+        assertThat(verificacion.getObservacion()).isEqualTo("CONFORME");
+        assertThat(response.estado()).isEqualTo("CONFORME");
+    }
+
     private Producto producto() {
         Categoria categoria = new Categoria();
         categoria.setIdCategoria(10);
@@ -185,5 +224,17 @@ class InventarioConsultaServiceTests {
         lote.setStockDisponible(12);
         lote.setEstado("Disponible");
         return lote;
+    }
+
+    private VerificacionAlmacen verificacion(Producto producto) {
+        VerificacionAlmacen verificacion = new VerificacionAlmacen();
+        verificacion.setIdVerificacion(5);
+        verificacion.setIdPedidoCompra(30);
+        verificacion.setProducto(producto);
+        verificacion.setCantidadPedida(12);
+        verificacion.setCantidadRecibida(10);
+        verificacion.setEstado("OBSERVADO");
+        verificacion.setObservacion("Diferencia en recepcion");
+        return verificacion;
     }
 }

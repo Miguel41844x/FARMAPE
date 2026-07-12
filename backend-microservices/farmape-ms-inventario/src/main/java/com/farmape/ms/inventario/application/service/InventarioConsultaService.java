@@ -30,10 +30,12 @@ import com.farmape.ms.inventario.domain.model.MotivoMovimiento;
 import com.farmape.ms.inventario.domain.model.MovimientoAlmacen;
 import com.farmape.ms.inventario.domain.model.Producto;
 import com.farmape.ms.inventario.domain.model.TipoMovimiento;
+import com.farmape.ms.inventario.domain.model.VerificacionAlmacen;
 import com.farmape.ms.inventario.domain.repository.CategoriaRepository;
 import com.farmape.ms.inventario.domain.repository.LoteProductoRepository;
 import com.farmape.ms.inventario.domain.repository.MovimientoAlmacenRepository;
 import com.farmape.ms.inventario.domain.repository.ProductoRepository;
+import com.farmape.ms.inventario.domain.repository.VerificacionAlmacenRepository;
 
 @Service
 @Transactional(readOnly = true)
@@ -45,17 +47,20 @@ public class InventarioConsultaService {
     private final ProductoRepository productoRepository;
     private final LoteProductoRepository loteProductoRepository;
     private final MovimientoAlmacenRepository movimientoAlmacenRepository;
+    private final VerificacionAlmacenRepository verificacionAlmacenRepository;
 
     public InventarioConsultaService(
             CategoriaRepository categoriaRepository,
             ProductoRepository productoRepository,
             LoteProductoRepository loteProductoRepository,
-            MovimientoAlmacenRepository movimientoAlmacenRepository
+            MovimientoAlmacenRepository movimientoAlmacenRepository,
+            VerificacionAlmacenRepository verificacionAlmacenRepository
     ) {
         this.categoriaRepository = categoriaRepository;
         this.productoRepository = productoRepository;
         this.loteProductoRepository = loteProductoRepository;
         this.movimientoAlmacenRepository = movimientoAlmacenRepository;
+        this.verificacionAlmacenRepository = verificacionAlmacenRepository;
     }
 
     public List<CategoriaResponse> listarCategoriasActivas() {
@@ -275,15 +280,28 @@ public class InventarioConsultaService {
     }
 
     public List<VerificacionProductoResponse> listarVerificacionesProductos() {
-        return List.of();
+        return verificacionAlmacenRepository.findAllByOrderByFechaVerificacionDescIdVerificacionDesc()
+                .stream()
+                .map(this::toVerificacionProductoResponse)
+                .toList();
     }
 
+    @Transactional
     public VerificacionProductoResponse confirmarVerificacionProducto(Integer idVerificacion) {
-        throw new InventarioNotFoundException("Verificacion no encontrada: " + idVerificacion);
+        VerificacionAlmacen verificacion = obtenerVerificacion(idVerificacion);
+        verificacion.setEstado("CONFORME");
+        verificacion.setObservacion("CONFORME");
+
+        return toVerificacionProductoResponse(verificacionAlmacenRepository.save(verificacion));
     }
 
+    @Transactional
     public VerificacionProductoResponse observarVerificacionProducto(Integer idVerificacion) {
-        throw new InventarioNotFoundException("Verificacion no encontrada: " + idVerificacion);
+        VerificacionAlmacen verificacion = obtenerVerificacion(idVerificacion);
+        verificacion.setEstado("OBSERVADO");
+        verificacion.setObservacion("OBSERVADO");
+
+        return toVerificacionProductoResponse(verificacionAlmacenRepository.save(verificacion));
     }
 
     public List<InformeAlmacenResponse> obtenerInformeAlmacen(String periodo) {
@@ -305,6 +323,7 @@ public class InventarioConsultaService {
                 LocalDate.now().plusDays(60),
                 0
         );
+        long verificacionesObservadas = verificacionAlmacenRepository.countByEstado("OBSERVADO");
 
         List<InformeAlmacenResponse> indicadores = new ArrayList<>();
         indicadores.add(new InformeAlmacenResponse(
@@ -328,7 +347,7 @@ public class InventarioConsultaService {
         indicadores.add(new InformeAlmacenResponse(
                 4,
                 "Verificaciones observadas",
-                0L,
+                verificacionesObservadas,
                 "Diferencias entre cantidad pedida y recibida"
         ));
 
@@ -443,6 +462,26 @@ public class InventarioConsultaService {
                 null,
                 null,
                 "REGISTRADO"
+        );
+    }
+
+    private VerificacionAlmacen obtenerVerificacion(Integer idVerificacion) {
+        return verificacionAlmacenRepository.findById(idVerificacion)
+                .orElseThrow(() -> new InventarioNotFoundException("Verificacion no encontrada: " + idVerificacion));
+    }
+
+    private VerificacionProductoResponse toVerificacionProductoResponse(VerificacionAlmacen verificacion) {
+        Producto producto = verificacion.getProducto();
+
+        return new VerificacionProductoResponse(
+                verificacion.getIdVerificacion(),
+                verificacion.getIdPedidoCompra(),
+                producto != null ? producto.getIdProducto() : null,
+                producto != null ? producto.getNombre() : null,
+                verificacion.getCantidadPedida(),
+                verificacion.getCantidadRecibida(),
+                verificacion.getEstado(),
+                verificacion.getObservacion()
         );
     }
 
