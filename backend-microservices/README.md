@@ -125,6 +125,17 @@ http://localhost:8761
 http://localhost:8080/actuator/health
 ```
 
+El archivo Compose usa `depends_on` con `service_healthy` para que Eureka espere al Config Server y el Gateway espere a ambos servicios de infraestructura.
+
+Comandos utiles de revision:
+
+```powershell
+docker compose ps
+docker compose logs config-server --tail=50
+docker compose logs eureka-server --tail=50
+docker compose logs gateway --tail=50
+```
+
 ## Relacion con el frontend
 
 El frontend actual se mantiene sin cambios. Mas adelante, cuando el Gateway tenga las rutas de negocio, el frontend debera apuntar a `http://localhost:8080` en desarrollo o a la URL publica del Gateway en despliegue.

@@ -14,6 +14,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 20s
 
   # Eureka Server
   eureka-server:
@@ -28,12 +29,14 @@ services:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_SERVER_URL:-http://eureka-server:8761/eureka/}
       - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
     depends_on:
-      - config-server
+      config-server:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8761/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 20s
 
   # API Gateway
   gateway:
@@ -49,10 +52,13 @@ services:
       - FRONTEND_ALLOWED_ORIGIN_PATTERN=${FRONTEND_ALLOWED_ORIGIN_PATTERN:-https://*.vercel.app}
       - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
     depends_on:
-      - config-server
-      - eureka-server
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
+      start_period: 20s
