@@ -11,9 +11,15 @@ spring:
       server:
         native:
           search-locations: classpath:/configurations
+        fail-on-composite-error: true
 
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+
+info:
+  app:
+    name: FARMAPE Config Server
+    description: Servidor de configuracion centralizada para los microservicios de FARMAPE.

@@ -45,6 +45,17 @@ El orden de arranque local sera:
 
 Cuando se agreguen microservicios de negocio, estos se registraran en Eureka y el Gateway enroutara las peticiones del frontend hacia ellos.
 
+## Verificacion de configuracion
+
+El Config Server publica las configuraciones centralizadas desde el puerto `8888`.
+
+```text
+http://localhost:8888/farmape-ms-eureka/default
+http://localhost:8888/farmape-ms-gateway/default
+```
+
+Estas URLs deben responder antes de levantar los demas servicios de infraestructura.
+
 ## Relacion con el frontend
 
 El frontend actual se mantiene sin cambios. Mas adelante, cuando el Gateway tenga las rutas de negocio, el frontend debera apuntar a `http://localhost:8080` en desarrollo o a la URL publica del Gateway en despliegue.

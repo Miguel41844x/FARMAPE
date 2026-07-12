@@ -6,16 +6,13 @@ spring:
     name: farmape-ms-eureka
 
 eureka:
-  instance:
-    prefer-ip-address: true
   client:
     register-with-eureka: false
     fetch-registry: false
     service-url:
-      defaultZone: http://localhost:${server.port}/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:${server.port}/eureka/}
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
+info:
+  app:
+    name: FARMAPE Eureka Server
+    description: Registro de servicios para los microservicios de FARMAPE.
