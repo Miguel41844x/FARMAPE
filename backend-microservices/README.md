@@ -66,6 +66,16 @@ http://localhost:8761
 
 En desarrollo local se ejecuta como servidor unico, por eso no se registra a si mismo ni descarga registros de otros servidores Eureka.
 
+## Verificacion del Gateway
+
+El API Gateway se publica en el puerto `8080`:
+
+```text
+http://localhost:8080/actuator/health
+```
+
+Por ahora usa descubrimiento dinamico de servicios. Cuando se creen los microservicios de negocio, se agregaran rutas explicitas para conservar las rutas `/api/...` que consume el frontend.
+
 ## Relacion con el frontend
 
 El frontend actual se mantiene sin cambios. Mas adelante, cuando el Gateway tenga las rutas de negocio, el frontend debera apuntar a `http://localhost:8080` en desarrollo o a la URL publica del Gateway en despliegue.

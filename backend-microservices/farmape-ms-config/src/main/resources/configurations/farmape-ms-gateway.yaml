@@ -8,15 +8,48 @@ spring:
     gateway:
       server:
         webflux:
+          default-filters:
+            - AddRequestHeader=X-Gateway-Request, true
           discovery:
             locator:
               enabled: true
               lower-case-service-id: true
+          globalcors:
+            cors-configurations:
+              "[/**]":
+                allowed-origins:
+                  - ${FRONTEND_LOCAL_ORIGIN:http://localhost:5173}
+                allowed-origin-patterns:
+                  - ${FRONTEND_ALLOWED_ORIGIN_PATTERN:https://*.vercel.app}
+                allowed-methods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowed-headers:
+                  - Authorization
+                  - Content-Type
+                  - Accept
+                  - Origin
+                  - X-Requested-With
+                exposed-headers:
+                  - Authorization
 
 eureka:
+  instance:
+    prefer-ip-address: true
   client:
+    register-with-eureka: false
+    fetch-registry: true
     service-url:
       defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+
+management:
+  endpoint:
+    health:
+      show-details: always
 
 info:
   app:
