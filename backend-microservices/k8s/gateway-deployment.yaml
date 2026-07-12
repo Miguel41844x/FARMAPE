@@ -36,12 +36,16 @@ spec:
               value: http://eureka-server:8761/eureka/
             - name: FRONTEND_LOCAL_ORIGIN
               value: http://localhost:5173
+            - name: FRONTEND_ALLOWED_ORIGIN_PATTERN
+              value: https://*.vercel.app
+            - name: JAVA_OPTS
+              value: -Xmx300m -Xss512k
           ports:
             - containerPort: 8080
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/liveness
               port: 8080
             initialDelaySeconds: 60
             periodSeconds: 10
@@ -49,7 +53,7 @@ spec:
             failureThreshold: 5
           readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/readiness
               port: 8080
             initialDelaySeconds: 60
             periodSeconds: 10

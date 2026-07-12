@@ -123,6 +123,7 @@ Verificacion rapida:
 http://localhost:8888/farmape-ms-eureka/default
 http://localhost:8761
 http://localhost:8080/actuator/health
+http://localhost:8080/actuator/health/readiness
 ```
 
 El archivo Compose usa `depends_on` con `service_healthy` para que Eureka espere al Config Server y el Gateway espere a ambos servicios de infraestructura.
@@ -156,6 +157,8 @@ http://localhost:8080/actuator/health
 ## Despliegue local en Kubernetes
 
 La carpeta `k8s/` contiene manifiestos base para los tres servicios de infraestructura. Siguiendo el orden de la PPT, primero se construyen los `.jar` e imagenes, y luego se aplican los manifiestos:
+
+Los `Deployment` mantienen las mismas variables principales del despliegue con Docker Compose: importacion desde Config Server, registro en Eureka, memoria Java y origenes permitidos para el frontend.
 
 ```powershell
 .\mvnw.cmd clean package -DskipTests

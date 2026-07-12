@@ -18,24 +18,23 @@ spec:
         - image: farmape-ms-config
           imagePullPolicy: IfNotPresent
           name: config-server
+          env:
+            - name: JAVA_OPTS
+              value: -Xmx300m -Xss512k
           ports:
             - containerPort: 8888
               protocol: TCP
           livenessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - wget --no-verbose --tries=1 --spider http://localhost:8888/farmape-ms-eureka/default || exit 1
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8888
             failureThreshold: 10
             periodSeconds: 10
             timeoutSeconds: 5
           readinessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - wget --no-verbose --tries=1 --spider http://localhost:8888/farmape-ms-eureka/default || exit 1
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8888
             failureThreshold: 10
             periodSeconds: 10
             timeoutSeconds: 5
