@@ -28,6 +28,7 @@
         <module>farmape-ms-config</module>
         <module>farmape-ms-eureka</module>
         <module>farmape-ms-gateway</module>
+        <module>farmape-ms-inventario</module>
     </modules>
 
     <dependencyManagement>

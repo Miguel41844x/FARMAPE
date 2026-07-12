@@ -66,4 +66,18 @@ class ApplicationTests {
         assertThat(environment.toString())
                 .contains("farmape-ms-gateway");
     }
+
+    @Test
+    void publishesInventarioConfiguration() {
+        Environment environment = environmentRepository.findOne("farmape-ms-inventario", "default", null);
+
+        assertThat(environment.getPropertySources())
+                .extracting(PropertySource::getSource)
+                .anySatisfy(source -> {
+                    assertThat(source.get("spring.application.name")).isEqualTo("farmape-ms-inventario");
+                    assertThat(source.get("server.port")).isEqualTo(8081);
+                });
+        assertThat(environment.toString())
+                .contains("farmape-ms-inventario");
+    }
 }

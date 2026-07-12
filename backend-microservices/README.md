@@ -13,6 +13,7 @@ La solucion sigue una arquitectura de microservicios con servicios de infraestru
 | `farmape-ms-config` | Centraliza la configuracion de los microservicios con Spring Cloud Config. | `8888` |
 | `farmape-ms-eureka` | Registra y permite descubrir microservicios con Eureka Server. | `8761` |
 | `farmape-ms-gateway` | Expone el punto de entrada HTTP hacia los microservicios internos. | `8080` |
+| `farmape-ms-inventario` | Administra productos, categorias, lotes y movimientos de almacen. | `8081` |
 
 ## Tecnologias
 
@@ -33,6 +34,7 @@ backend-microservices/
   farmape-ms-config/
   farmape-ms-eureka/
   farmape-ms-gateway/
+  farmape-ms-inventario/
 ```
 
 ## Ejecucion esperada
@@ -42,8 +44,9 @@ El orden de arranque local sera:
 1. `farmape-ms-config`
 2. `farmape-ms-eureka`
 3. `farmape-ms-gateway`
+4. `farmape-ms-inventario`
 
-Cuando se agreguen microservicios de negocio, estos se registraran en Eureka y el Gateway enroutara las peticiones del frontend hacia ellos.
+Los microservicios de negocio se registran en Eureka y el Gateway enruta las peticiones del frontend hacia ellos.
 
 ## Verificacion de configuracion
 
@@ -52,6 +55,7 @@ El Config Server publica las configuraciones centralizadas desde el puerto `8888
 ```text
 http://localhost:8888/farmape-ms-eureka/default
 http://localhost:8888/farmape-ms-gateway/default
+http://localhost:8888/farmape-ms-inventario/default
 ```
 
 Estas URLs deben responder antes de levantar los demas servicios de infraestructura.
