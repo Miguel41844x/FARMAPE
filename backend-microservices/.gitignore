@@ -1,0 +1,13 @@
+target/
+*.log
+*.class
+
+.env
+.env.*
+!.env.example
+
+.idea/
+.vscode/
+
+docker-compose.override.yml
+
