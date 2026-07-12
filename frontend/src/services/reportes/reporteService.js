@@ -1,76 +1,37 @@
-import { API_URL } from "../../config/api";
+import apiClient from "../api/apiClient";
 
-const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
-
-    return {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-    };
-};
-
-const validarRespuesta = async (response, mensajeError) => {
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || mensajeError);
-    }
-
-    return await response.json();
-};
-
-export const obtenerResumenReportes = async () => {
-    const response = await fetch(`${API_URL}/reportes/resumen`, {
-        method: "GET",
-        headers: getAuthHeaders(),
+export const obtenerResumenReportes = () =>
+    apiClient("/reportes/resumen", {
+        mensajeError: "No se pudo obtener el resumen gerencial",
     });
 
-    return await validarRespuesta(response, "No se pudo obtener el resumen gerencial");
-};
-
-export const listarInformesGerenciales = async () => {
-    const response = await fetch(`${API_URL}/reportes/informes`, {
-        method: "GET",
-        headers: getAuthHeaders(),
+export const listarInformesGerenciales = () =>
+    apiClient("/reportes/informes", {
+        mensajeError: "No se pudieron obtener los informes",
     });
 
-    return await validarRespuesta(response, "No se pudieron obtener los informes");
-};
-
-export const registrarInformeGerencial = async (datosInforme) => {
-    const response = await fetch(`${API_URL}/reportes/informes`, {
+export const registrarInformeGerencial = (datosInforme) =>
+    apiClient("/reportes/informes", {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify(datosInforme),
+        mensajeError: "No se pudo registrar el informe",
     });
 
-    return await validarRespuesta(response, "No se pudo registrar el informe");
-};
-
-export const listarAccionesGerenciales = async () => {
-    const response = await fetch(`${API_URL}/reportes/acciones`, {
-        method: "GET",
-        headers: getAuthHeaders(),
+export const listarAccionesGerenciales = () =>
+    apiClient("/reportes/acciones", {
+        mensajeError: "No se pudieron obtener las acciones gerenciales",
     });
 
-    return await validarRespuesta(response, "No se pudieron obtener las acciones gerenciales");
-};
-
-export const registrarAccionGerencial = async (datosAccion) => {
-    const response = await fetch(`${API_URL}/reportes/acciones`, {
+export const registrarAccionGerencial = (datosAccion) =>
+    apiClient("/reportes/acciones", {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify(datosAccion),
+        mensajeError: "No se pudo registrar la acción gerencial",
     });
 
-    return await validarRespuesta(response, "No se pudo registrar la acción gerencial");
-};
-
-export const actualizarEstadoAccionGerencial = async (idAccion, estado) => {
-    const response = await fetch(`${API_URL}/reportes/acciones/${idAccion}/estado`, {
+export const actualizarEstadoAccionGerencial = (idAccion, estado) =>
+    apiClient(`/reportes/acciones/${idAccion}/estado`, {
         method: "PATCH",
-        headers: getAuthHeaders(),
         body: JSON.stringify({ estado }),
+        mensajeError: "No se pudo actualizar la acción gerencial",
     });
-
-    return await validarRespuesta(response, "No se pudo actualizar la acción gerencial");
-};

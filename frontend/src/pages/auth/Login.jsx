@@ -8,6 +8,7 @@ import { FaShieldAlt, FaEye, FaEyeSlash } from "react-icons/fa";
 // Contexto de autentificación
 import { useAuth } from "../../context/AuthContext";
 import { API_URL } from "../../config/api";
+import { authIdentifier, isValidEmail } from "../../utils/inputSanitizers";
 import "./login.css";
 
 const Login = () => {
@@ -22,8 +23,26 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
       
-        if (!usuario.trim() || !password.trim()) {
+        const identificador = usuario.trim();
+
+        if (!identificador || !password) {
             alert("Ingrese usuario y contraseña");
+            return;
+        }
+
+        if (identificador.includes("@") && !isValidEmail(identificador)) {
+            alert("Ingrese un correo electrónico válido");
+            return;
+        }
+
+        if (!identificador.includes("@")
+                && (!/^[A-Za-z0-9._-]{3,50}$/.test(identificador))) {
+            alert("El usuario debe tener entre 3 y 50 caracteres válidos");
+            return;
+        }
+
+        if (password.length < 6 || password.length > 100) {
+            alert("La contraseña debe tener entre 6 y 100 caracteres");
             return;
         }
 
@@ -36,7 +55,7 @@ const Login = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    usuario: usuario,
+                    usuario: identificador,
                     clave: password,
                 }),
             });
@@ -96,8 +115,10 @@ const Login = () => {
                         type="text"
                         placeholder="e.g: usuario o usuario@farmaceuticasperu.com"
                         value={usuario}
-                        onChange={(e) => setUsuario(e.target.value)}
+                        onChange={(e) => setUsuario(authIdentifier(e.target.value))}
+                        minLength={3}
                         maxLength={100}
+                        spellCheck={false}
                         autoComplete="username"
                         required
                     />
@@ -110,6 +131,7 @@ const Login = () => {
                             placeholder="Ingrese su contraseña"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            minLength={6}
                             maxLength={100}
                             autoComplete="current-password"
                             required

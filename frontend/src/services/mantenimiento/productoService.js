@@ -1,82 +1,32 @@
-import { API_URL } from "../../config/api";
+import apiClient from "../api/apiClient";
 
-const getAuthHeaders = () => {
-    const token = localStorage.getItem("token");
-
-    return {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-    };
-};
-
-const validarRespuesta = async (response, mensajeError) => {
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || mensajeError);
-    }
-
-    return await response.json();
-};
-
-export const obtenerProductos = async () => {
-    const response = await fetch(`${API_URL}/productos`, {
-        method: "GET",
-        headers: getAuthHeaders(),
+export const obtenerProductos = () =>
+    apiClient("/productos", {
+        mensajeError: "No se pudieron obtener los productos",
     });
 
-    return await validarRespuesta(
-        response,
-        "No se pudieron obtener los productos"
-    );
-};
-
-export const crearProducto = async (producto) => {
-    const response = await fetch(`${API_URL}/productos`, {
+export const crearProducto = (producto) =>
+    apiClient("/productos", {
         method: "POST",
-        headers: getAuthHeaders(),
         body: JSON.stringify(producto),
+        mensajeError: "No se pudo crear el producto",
     });
 
-    return await validarRespuesta(
-        response,
-        "No se pudo crear el producto"
-    );
-};
-
-export const actualizarProducto = async (idProducto, producto) => {
-    const response = await fetch(`${API_URL}/productos/${idProducto}`, {
+export const actualizarProducto = (idProducto, producto) =>
+    apiClient(`/productos/${idProducto}`, {
         method: "PUT",
-        headers: getAuthHeaders(),
         body: JSON.stringify(producto),
+        mensajeError: "No se pudo actualizar el producto",
     });
 
-    return await validarRespuesta(
-        response,
-        "No se pudo actualizar el producto"
-    );
-};
-
-export const actualizarEstadoProducto = async (idProducto, estado) => {
-    const response = await fetch(`${API_URL}/productos/${idProducto}/estado`, {
+export const actualizarEstadoProducto = (idProducto, estado) =>
+    apiClient(`/productos/${idProducto}/estado`, {
         method: "PATCH",
-        headers: getAuthHeaders(),
         body: JSON.stringify({ estado }),
+        mensajeError: "No se pudo actualizar el estado del producto",
     });
 
-    return await validarRespuesta(
-        response,
-        "No se pudo actualizar el estado del producto"
-    );
-};
-
-export const obtenerCategoriasProducto = async () => {
-    const response = await fetch(`${API_URL}/categorias`, {
-        method: "GET",
-        headers: getAuthHeaders(),
+export const obtenerCategoriasProducto = () =>
+    apiClient("/categorias", {
+        mensajeError: "No se pudieron obtener las categorías",
     });
-
-    return await validarRespuesta(
-        response,
-        "No se pudieron obtener las categorías"
-    );
-};

@@ -1,92 +1,75 @@
-import { API_URL } from "../../config/api";
+import apiClient from "../api/apiClient";
 
-const getAuthHeaders = () => ({
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-    "Content-Type": "application/json",
-});
-
-const parseError = async (response, mensajeDefault) => {
-    const text = await response.text();
-    if (!text) return mensajeDefault;
-    try {
-        const json = JSON.parse(text);
-        return json.message || json.error || text;
-    } catch {
-        return text;
-    }
-};
-
-const request = async (path, options = {}, mensajeDefault = "No se pudo completar la operación") => {
-    const response = await fetch(`${API_URL}${path}`, {
-        ...options,
-        headers: {
-            ...getAuthHeaders(),
-            ...options.headers,
-        },
+export const obtenerRoles = (incluirInactivos = false) =>
+    apiClient(`/roles?incluirInactivos=${incluirInactivos}`, {
+        mensajeError: "No se pudieron obtener los roles",
     });
 
-    if (!response.ok) {
-        throw new Error(await parseError(response, mensajeDefault));
-    }
+export const obtenerPermisos = () =>
+    apiClient("/permisos", { mensajeError: "No se pudieron obtener los permisos" });
 
-    return response.status === 204 ? null : response.json();
-};
+export const crearRol = (rol) =>
+    apiClient("/roles", { method: "POST", body: JSON.stringify(rol) });
 
-export const obtenerRoles = async (incluirInactivos = false) =>
-    request(`/roles?incluirInactivos=${incluirInactivos}`, { method: "GET" }, "No se pudieron obtener los roles");
+export const actualizarRol = (idRol, rol) =>
+    apiClient(`/roles/${idRol}`, { method: "PUT", body: JSON.stringify(rol) });
 
-export const obtenerPermisos = () => request("/permisos", { method: "GET" }, "No se pudieron obtener los permisos");
+export const asignarPermisosRol = (idRol, idPermisos) =>
+    apiClient(`/roles/${idRol}/permisos`, {
+        method: "PUT",
+        body: JSON.stringify({ idPermisos }),
+    });
 
-export const crearRol = (rol) => request("/roles", {
-    method: "POST",
-    body: JSON.stringify(rol),
-});
+export const cambiarEstadoRol = (idRol, activo) =>
+    apiClient(`/roles/${idRol}/estado`, {
+        method: "PATCH",
+        body: JSON.stringify({ activo }),
+    });
 
-export const actualizarRol = (idRol, rol) => request(`/roles/${idRol}`, {
-    method: "PUT",
-    body: JSON.stringify(rol),
-});
+export const eliminarRol = (idRol) =>
+    apiClient(`/roles/${idRol}`, { method: "DELETE" });
 
-export const asignarPermisosRol = (idRol, idPermisos) => request(`/roles/${idRol}/permisos`, {
-    method: "PUT",
-    body: JSON.stringify({ idPermisos }),
-});
+export const obtenerUsuarios = () =>
+    apiClient("/usuarios", { mensajeError: "Error al obtener usuarios" });
 
-export const cambiarEstadoRol = (idRol, activo) => request(`/roles/${idRol}/estado`, {
-    method: "PATCH",
-    body: JSON.stringify({ activo }),
-});
+export const crearUsuario = (usuarioRequest) =>
+    apiClient("/usuarios", {
+        method: "POST",
+        body: JSON.stringify(usuarioRequest),
+        mensajeError: "No se pudo registrar el usuario",
+    });
 
-export const eliminarRol = (idRol) => request(`/roles/${idRol}`, { method: "DELETE" });
+export const actualizarUsuarioCompleto = (idCuenta, usuarioRequest) =>
+    apiClient(`/usuarios/${idCuenta}`, {
+        method: "PUT",
+        body: JSON.stringify(usuarioRequest),
+        mensajeError: "No se pudo actualizar el usuario",
+    });
 
-export const obtenerUsuarios = async () => request("/usuarios", { method: "GET" }, "Error al obtener usuarios");
+export const cambiarClaveUsuario = (idCuenta, nuevaClave) =>
+    apiClient(`/usuarios/${idCuenta}/clave`, {
+        method: "PATCH",
+        body: JSON.stringify({ nuevaClave }),
+        mensajeError: "No se pudo cambiar la contraseña",
+    });
 
-export const crearUsuario = async (usuarioRequest) => request("/usuarios", {
-    method: "POST",
-    body: JSON.stringify(usuarioRequest),
-}, "No se pudo registrar el usuario");
+export const actualizarTrabajador = (idTrabajador, trabajadorRequest) =>
+    apiClient(`/trabajadores/${idTrabajador}`, {
+        method: "PUT",
+        body: JSON.stringify(trabajadorRequest),
+        mensajeError: "No se pudo actualizar el trabajador",
+    });
 
-export const actualizarUsuarioCompleto = async (idCuenta, usuarioRequest) => request(`/usuarios/${idCuenta}`, {
-    method: "PUT",
-    body: JSON.stringify(usuarioRequest),
-}, "No se pudo actualizar el usuario");
+export const actualizarEstadoTrabajador = (idTrabajador, estado) =>
+    apiClient(`/trabajadores/${idTrabajador}/estado`, {
+        method: "PATCH",
+        body: JSON.stringify({ estado }),
+        mensajeError: "No se pudo actualizar el estado del trabajador",
+    });
 
-export const cambiarClaveUsuario = async (idCuenta, nuevaClave) => request(`/usuarios/${idCuenta}/clave`, {
-    method: "PATCH",
-    body: JSON.stringify({ nuevaClave }),
-}, "No se pudo cambiar la contraseña");
-
-export const actualizarTrabajador = async (idTrabajador, trabajadorRequest) => request(`/trabajadores/${idTrabajador}`, {
-    method: "PUT",
-    body: JSON.stringify(trabajadorRequest),
-}, "No se pudo actualizar el trabajador");
-
-export const actualizarEstadoTrabajador = async (idTrabajador, estado) => request(`/trabajadores/${idTrabajador}/estado`, {
-    method: "PATCH",
-    body: JSON.stringify({ estado }),
-}, "No se pudo actualizar el estado del trabajador");
-
-export const actualizarEstadoCuenta = async (idCuenta, estado) => request(`/usuarios/${idCuenta}/estado`, {
-    method: "PATCH",
-    body: JSON.stringify({ estado }),
-}, "No se pudo actualizar el estado de la cuenta");
+export const actualizarEstadoCuenta = (idCuenta, estado) =>
+    apiClient(`/usuarios/${idCuenta}/estado`, {
+        method: "PATCH",
+        body: JSON.stringify({ estado }),
+        mensajeError: "No se pudo actualizar el estado de la cuenta",
+    });
