@@ -5,6 +5,9 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+
+import com.farmape.ms.inventario.application.service.InventarioConsultaService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,6 +18,9 @@ import static org.assertj.core.api.Assertions.assertThat;
         "spring.autoconfigure.exclude=org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration,org.springframework.boot.hibernate.autoconfigure.HibernateJpaAutoConfiguration"
 })
 class ApplicationTests {
+
+    @MockitoBean
+    private InventarioConsultaService inventarioConsultaService;
 
     @Test
     void contextLoads() {

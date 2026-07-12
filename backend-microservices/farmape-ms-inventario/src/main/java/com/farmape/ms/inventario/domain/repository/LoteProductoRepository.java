@@ -18,6 +18,11 @@ public interface LoteProductoRepository extends JpaRepository<LoteProducto, Inte
 
     Optional<LoteProducto> findByProductoAndNumeroLote(Producto producto, String numeroLote);
 
+    List<LoteProducto> findByProductoAndStockDisponibleGreaterThanOrderByFechaVencimientoAsc(
+            Producto producto,
+            Integer stockMinimo
+    );
+
     long countByFechaVencimientoBetweenAndStockDisponibleGreaterThan(
             LocalDate desde,
             LocalDate hasta,
