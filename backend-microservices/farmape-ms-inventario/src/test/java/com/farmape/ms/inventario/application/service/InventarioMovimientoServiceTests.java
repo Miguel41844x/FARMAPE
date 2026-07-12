@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.farmape.ms.inventario.api.dto.AjusteInventarioRequest;
 import com.farmape.ms.inventario.api.dto.MovimientoAlmacenRequest;
 import com.farmape.ms.inventario.application.exception.InventarioBusinessException;
 import com.farmape.ms.inventario.domain.model.Categoria;
@@ -96,6 +97,59 @@ class InventarioMovimientoServiceTests {
         assertThatThrownBy(() -> inventarioMovimientoService.registrarMovimiento(request))
                 .isInstanceOf(InventarioBusinessException.class)
                 .hasMessageContaining("Stock insuficiente");
+    }
+
+    @Test
+    void registrarAjusteDeLoteActualizaProductoPorDiferencia() {
+        Producto producto = producto(20);
+        LoteProducto lote = lote(producto, 8);
+        AjusteInventarioRequest request = new AjusteInventarioRequest(
+                1,
+                10,
+                3,
+                12,
+                "CONTEO",
+                88,
+                "Conteo fisico"
+        );
+
+        when(productoRepository.findByIdForUpdate(1)).thenReturn(Optional.of(producto));
+        when(loteProductoRepository.findByIdForUpdate(10)).thenReturn(Optional.of(lote));
+        when(movimientoAlmacenRepository.save(any(MovimientoAlmacen.class)))
+                .thenAnswer(invocation -> {
+                    MovimientoAlmacen movimiento = invocation.getArgument(0);
+                    movimiento.setIdMovimiento(100);
+                    return movimiento;
+                });
+
+        var response = inventarioMovimientoService.registrarAjuste(request);
+
+        assertThat(producto.getStockActual()).isEqualTo(24);
+        assertThat(lote.getStockDisponible()).isEqualTo(12);
+        assertThat(response.idMovimiento()).isEqualTo(100);
+        assertThat(response.tipoMovimiento()).isEqualTo("Ajuste");
+        assertThat(response.motivo()).isEqualTo("Ajuste");
+        assertThat(response.cantidad()).isEqualTo(4);
+    }
+
+    @Test
+    void registrarAjusteFallaCuandoNoHayDiferencia() {
+        Producto producto = producto(20);
+        AjusteInventarioRequest request = new AjusteInventarioRequest(
+                1,
+                null,
+                3,
+                20,
+                "CONTEO",
+                89,
+                "Sin diferencia"
+        );
+
+        when(productoRepository.findByIdForUpdate(1)).thenReturn(Optional.of(producto));
+
+        assertThatThrownBy(() -> inventarioMovimientoService.registrarAjuste(request))
+                .isInstanceOf(InventarioBusinessException.class)
+                .hasMessageContaining("igual al stock registrado");
     }
 
     private Producto producto(Integer stockActual) {

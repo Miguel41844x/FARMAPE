@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.farmape.ms.inventario.api.dto.AjusteInventarioRequest;
 import com.farmape.ms.inventario.api.dto.MovimientoAlmacenRequest;
 import com.farmape.ms.inventario.api.dto.MovimientoAlmacenResponse;
 import com.farmape.ms.inventario.application.service.InventarioMovimientoService;
@@ -25,5 +26,11 @@ public class InventarioMovimientoController {
     @ResponseStatus(HttpStatus.CREATED)
     public MovimientoAlmacenResponse registrarMovimiento(@RequestBody MovimientoAlmacenRequest request) {
         return inventarioMovimientoService.registrarMovimiento(request);
+    }
+
+    @PostMapping("/ajustes")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MovimientoAlmacenResponse registrarAjuste(@RequestBody AjusteInventarioRequest request) {
+        return inventarioMovimientoService.registrarAjuste(request);
     }
 }

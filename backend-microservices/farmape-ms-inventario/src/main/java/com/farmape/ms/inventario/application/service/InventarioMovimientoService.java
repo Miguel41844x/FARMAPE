@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.farmape.ms.inventario.api.dto.AjusteInventarioRequest;
 import com.farmape.ms.inventario.api.dto.MovimientoAlmacenRequest;
 import com.farmape.ms.inventario.api.dto.MovimientoAlmacenResponse;
 import com.farmape.ms.inventario.application.exception.InventarioBusinessException;
@@ -73,6 +74,48 @@ public class InventarioMovimientoService {
         return toMovimientoAlmacenResponse(guardado);
     }
 
+    @Transactional
+    public MovimientoAlmacenResponse registrarAjuste(AjusteInventarioRequest request) {
+        validarAjusteRequest(request);
+
+        Producto producto = productoRepository.findByIdForUpdate(request.idProducto())
+                .orElseThrow(() -> new InventarioNotFoundException("Producto no encontrado: " + request.idProducto()));
+        LoteProducto lote = obtenerLote(request.idLote(), producto);
+
+        Integer stockAnterior = lote != null ? lote.getStockDisponible() : producto.getStockActual();
+        Integer diferencia = request.stockFisico() - stockAnterior;
+
+        if (diferencia == 0) {
+            throw new InventarioBusinessException("El stock fisico es igual al stock registrado.");
+        }
+
+        if (lote != null) {
+            lote.setStockDisponible(request.stockFisico());
+            producto.setStockActual(producto.getStockActual() + diferencia);
+            if (producto.getStockActual() < 0) {
+                throw new InventarioBusinessException("El ajuste dejaria el producto con stock negativo.");
+            }
+        } else {
+            producto.setStockActual(request.stockFisico());
+        }
+
+        MovimientoAlmacen movimiento = new MovimientoAlmacen();
+        movimiento.setProducto(producto);
+        movimiento.setLote(lote);
+        movimiento.setIdTrabajador(request.idTrabajador());
+        movimiento.setTipoMovimiento(TipoMovimiento.Ajuste);
+        movimiento.setMotivo(MotivoMovimiento.Ajuste);
+        movimiento.setCantidad(Math.abs(diferencia));
+        movimiento.setReferenciaTipo(request.referenciaTipo());
+        movimiento.setReferenciaId(request.referenciaId());
+        movimiento.setFechaMovimiento(LocalDateTime.now());
+        movimiento.setObservacion(observacionAjuste(request.observacion(), stockAnterior, request.stockFisico()));
+
+        MovimientoAlmacen guardado = movimientoAlmacenRepository.save(movimiento);
+
+        return toMovimientoAlmacenResponse(guardado);
+    }
+
     private void validarRequest(MovimientoAlmacenRequest request) {
         if (request == null) {
             throw new InventarioBusinessException("El movimiento es obligatorio.");
@@ -91,6 +134,21 @@ public class InventarioMovimientoService {
         }
         if (request.motivo() == null || request.motivo().isBlank()) {
             throw new InventarioBusinessException("El motivo es obligatorio.");
+        }
+    }
+
+    private void validarAjusteRequest(AjusteInventarioRequest request) {
+        if (request == null) {
+            throw new InventarioBusinessException("El ajuste es obligatorio.");
+        }
+        if (request.idProducto() == null) {
+            throw new InventarioBusinessException("El producto es obligatorio.");
+        }
+        if (request.idTrabajador() == null) {
+            throw new InventarioBusinessException("El trabajador es obligatorio.");
+        }
+        if (request.stockFisico() == null || request.stockFisico() < 0) {
+            throw new InventarioBusinessException("El stock fisico debe ser mayor o igual que cero.");
         }
     }
 
@@ -146,6 +204,20 @@ public class InventarioMovimientoService {
             }
             lote.setStockDisponible(lote.getStockDisponible() - cantidad);
         }
+    }
+
+    private String observacionAjuste(String observacion, Integer stockAnterior, Integer stockFisico) {
+        String resumen = "Ajuste de inventario: stock anterior "
+                + stockAnterior
+                + ", stock fisico "
+                + stockFisico
+                + ".";
+
+        if (observacion == null || observacion.isBlank()) {
+            return resumen;
+        }
+
+        return resumen + " " + observacion.trim();
     }
 
     private MovimientoAlmacenResponse toMovimientoAlmacenResponse(MovimientoAlmacen movimiento) {
