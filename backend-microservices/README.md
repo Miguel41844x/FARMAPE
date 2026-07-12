@@ -108,8 +108,10 @@ La base de datos del microservicio de inventario se inicializa desde `database/i
 
 - `01_farmape_inventario_schema.sql`: crea las tablas propias del microservicio.
 - `02_farmape_inventario_data.sql`: carga los datos base separados desde el dump original.
+- `03_farmape_inventario_verificaciones.sql`: agrega verificaciones de productos recibidos.
+- `04_farmape_inventario_despachos.sql`: agrega datos operativos de despacho usados por el frontend.
 
-Los scripts solo contienen tablas de inventario: categorias, productos, lotes y movimientos de almacen.
+Los scripts contienen tablas propias de inventario y datos operativos necesarios para que el frontend actual funcione durante la migracion.
 
 Antes de ejecutar Docker Compose, se puede crear un archivo `.env` local a partir del ejemplo:
 
@@ -173,15 +175,18 @@ http://localhost:8080/actuator/health
 
 ## Despliegue local en Kubernetes
 
-La carpeta `k8s/` contiene manifiestos base para los tres servicios de infraestructura. Siguiendo el orden de la PPT, primero se construyen los `.jar` e imagenes, y luego se aplican los manifiestos:
+La carpeta `k8s/` contiene manifiestos base para los servicios de infraestructura, el microservicio de inventario y su base de datos MySQL separada. Siguiendo el orden de la PPT, primero se construyen los `.jar` e imagenes, luego se crea el ConfigMap con los SQL de inventario y finalmente se aplican los manifiestos.
 
 Los `Deployment` mantienen las mismas variables principales del despliegue con Docker Compose: importacion desde Config Server, registro en Eureka, memoria Java y origenes permitidos para el frontend.
 
 ```powershell
 .\mvnw.cmd clean package -DskipTests
 docker compose build
+kubectl create configmap inventario-sql-init --from-file=database/inventario --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -f k8s/
 ```
+
+El ConfigMap `inventario-sql-init` se monta en `/docker-entrypoint-initdb.d` del pod `mysql-inventario`. MySQL ejecuta esos scripts solo en el primer arranque del volumen; si se quiere reinicializar desde cero en un entorno local de pruebas, eliminar antes el PVC `mysql-inventario-data`.
 
 Si se desea regenerar manifiestos con Kompose, usar la variante compatible que evita `depends_on.condition`:
 
@@ -196,6 +201,8 @@ kubectl get pods
 kubectl get svc
 kubectl logs deployment/config-server --tail=50
 kubectl logs deployment/eureka-server --tail=50
+kubectl logs deployment/mysql-inventario --tail=50
+kubectl logs deployment/inventario-service --tail=50
 kubectl logs deployment/gateway --tail=50
 ```
 
@@ -203,6 +210,12 @@ Para consumir el Gateway desde la maquina local:
 
 ```powershell
 kubectl port-forward service/gateway 8080:8080
+```
+
+Tambien se puede revisar directamente el microservicio de inventario:
+
+```powershell
+kubectl port-forward service/inventario-service 8081:8081
 ```
 
 ## Relacion con el frontend
