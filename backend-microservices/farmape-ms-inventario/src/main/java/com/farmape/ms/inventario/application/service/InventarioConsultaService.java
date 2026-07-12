@@ -7,14 +7,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.farmape.ms.inventario.api.dto.CategoriaResponse;
 import com.farmape.ms.inventario.api.dto.LoteProductoResponse;
+import com.farmape.ms.inventario.api.dto.MovimientoAlmacenResponse;
 import com.farmape.ms.inventario.api.dto.ProductoResponse;
 import com.farmape.ms.inventario.application.exception.InventarioNotFoundException;
 import com.farmape.ms.inventario.domain.model.Categoria;
 import com.farmape.ms.inventario.domain.model.EstadoProducto;
 import com.farmape.ms.inventario.domain.model.LoteProducto;
+import com.farmape.ms.inventario.domain.model.MovimientoAlmacen;
 import com.farmape.ms.inventario.domain.model.Producto;
 import com.farmape.ms.inventario.domain.repository.CategoriaRepository;
 import com.farmape.ms.inventario.domain.repository.LoteProductoRepository;
+import com.farmape.ms.inventario.domain.repository.MovimientoAlmacenRepository;
 import com.farmape.ms.inventario.domain.repository.ProductoRepository;
 
 @Service
@@ -24,15 +27,18 @@ public class InventarioConsultaService {
     private final CategoriaRepository categoriaRepository;
     private final ProductoRepository productoRepository;
     private final LoteProductoRepository loteProductoRepository;
+    private final MovimientoAlmacenRepository movimientoAlmacenRepository;
 
     public InventarioConsultaService(
             CategoriaRepository categoriaRepository,
             ProductoRepository productoRepository,
-            LoteProductoRepository loteProductoRepository
+            LoteProductoRepository loteProductoRepository,
+            MovimientoAlmacenRepository movimientoAlmacenRepository
     ) {
         this.categoriaRepository = categoriaRepository;
         this.productoRepository = productoRepository;
         this.loteProductoRepository = loteProductoRepository;
+        this.movimientoAlmacenRepository = movimientoAlmacenRepository;
     }
 
     public List<CategoriaResponse> listarCategoriasActivas() {
@@ -84,6 +90,24 @@ public class InventarioConsultaService {
                 .toList();
     }
 
+    public List<MovimientoAlmacenResponse> listarMovimientosRecientes() {
+        return movimientoAlmacenRepository.findTop20ByOrderByFechaMovimientoDesc()
+                .stream()
+                .map(this::toMovimientoAlmacenResponse)
+                .toList();
+    }
+
+    public List<MovimientoAlmacenResponse> listarMovimientosPorProducto(Integer idProducto) {
+        if (!productoRepository.existsById(idProducto)) {
+            throw new InventarioNotFoundException("Producto no encontrado: " + idProducto);
+        }
+
+        return movimientoAlmacenRepository.findTop20ByProductoIdProductoOrderByFechaMovimientoDesc(idProducto)
+                .stream()
+                .map(this::toMovimientoAlmacenResponse)
+                .toList();
+    }
+
     private CategoriaResponse toCategoriaResponse(Categoria categoria) {
         return new CategoriaResponse(
                 categoria.getIdCategoria(),
@@ -127,6 +151,27 @@ public class InventarioConsultaService {
                 lote.getStockDisponible(),
                 lote.getEstado(),
                 lote.getFechaIngreso()
+        );
+    }
+
+    private MovimientoAlmacenResponse toMovimientoAlmacenResponse(MovimientoAlmacen movimiento) {
+        Producto producto = movimiento.getProducto();
+        LoteProducto lote = movimiento.getLote();
+
+        return new MovimientoAlmacenResponse(
+                movimiento.getIdMovimiento(),
+                producto != null ? producto.getIdProducto() : null,
+                producto != null ? producto.getNombre() : null,
+                lote != null ? lote.getIdLote() : null,
+                lote != null ? lote.getNumeroLote() : null,
+                movimiento.getIdTrabajador(),
+                movimiento.getTipoMovimiento() != null ? movimiento.getTipoMovimiento().name() : null,
+                movimiento.getMotivo() != null ? movimiento.getMotivo().name() : null,
+                movimiento.getCantidad(),
+                movimiento.getReferenciaTipo(),
+                movimiento.getReferenciaId(),
+                movimiento.getFechaMovimiento(),
+                movimiento.getObservacion()
         );
     }
 }

@@ -15,9 +15,13 @@ import com.farmape.ms.inventario.api.dto.ProductoResponse;
 import com.farmape.ms.inventario.application.exception.InventarioNotFoundException;
 import com.farmape.ms.inventario.domain.model.Categoria;
 import com.farmape.ms.inventario.domain.model.EstadoProducto;
+import com.farmape.ms.inventario.domain.model.MotivoMovimiento;
+import com.farmape.ms.inventario.domain.model.MovimientoAlmacen;
 import com.farmape.ms.inventario.domain.model.Producto;
+import com.farmape.ms.inventario.domain.model.TipoMovimiento;
 import com.farmape.ms.inventario.domain.repository.CategoriaRepository;
 import com.farmape.ms.inventario.domain.repository.LoteProductoRepository;
+import com.farmape.ms.inventario.domain.repository.MovimientoAlmacenRepository;
 import com.farmape.ms.inventario.domain.repository.ProductoRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +39,9 @@ class InventarioConsultaServiceTests {
 
     @Mock
     private LoteProductoRepository loteProductoRepository;
+
+    @Mock
+    private MovimientoAlmacenRepository movimientoAlmacenRepository;
 
     @InjectMocks
     private InventarioConsultaService inventarioConsultaService;
@@ -64,6 +71,32 @@ class InventarioConsultaServiceTests {
         assertThatThrownBy(() -> inventarioConsultaService.obtenerProducto(999))
                 .isInstanceOf(InventarioNotFoundException.class)
                 .hasMessageContaining("Producto no encontrado: 999");
+    }
+
+    @Test
+    void listarMovimientosPorProductoMapsMovimientoToResponse() {
+        Producto producto = producto();
+        MovimientoAlmacen movimiento = new MovimientoAlmacen();
+        movimiento.setIdMovimiento(7);
+        movimiento.setProducto(producto);
+        movimiento.setIdTrabajador(3);
+        movimiento.setTipoMovimiento(TipoMovimiento.Salida);
+        movimiento.setMotivo(MotivoMovimiento.Venta);
+        movimiento.setCantidad(2);
+        movimiento.setObservacion("Salida por venta registrada");
+
+        when(productoRepository.existsById(1)).thenReturn(true);
+        when(movimientoAlmacenRepository.findTop20ByProductoIdProductoOrderByFechaMovimientoDesc(1))
+                .thenReturn(List.of(movimiento));
+
+        var responses = inventarioConsultaService.listarMovimientosPorProducto(1);
+
+        assertThat(responses).hasSize(1);
+        assertThat(responses.getFirst().idMovimiento()).isEqualTo(7);
+        assertThat(responses.getFirst().idProducto()).isEqualTo(1);
+        assertThat(responses.getFirst().producto()).isEqualTo("Paracetamol 500mg");
+        assertThat(responses.getFirst().tipoMovimiento()).isEqualTo("Salida");
+        assertThat(responses.getFirst().motivo()).isEqualTo("Venta");
     }
 
     private Producto producto() {

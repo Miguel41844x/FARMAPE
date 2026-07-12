@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.farmape.ms.inventario.api.dto.CategoriaResponse;
 import com.farmape.ms.inventario.api.dto.LoteProductoResponse;
+import com.farmape.ms.inventario.api.dto.MovimientoAlmacenResponse;
 import com.farmape.ms.inventario.api.dto.ProductoResponse;
 import com.farmape.ms.inventario.application.service.InventarioConsultaService;
 
@@ -51,5 +52,15 @@ public class InventarioConsultaController {
     @GetMapping("/productos/{idProducto}/lotes")
     public List<LoteProductoResponse> listarLotesPorProducto(@PathVariable Integer idProducto) {
         return inventarioConsultaService.listarLotesPorProducto(idProducto);
+    }
+
+    @GetMapping("/movimientos")
+    public List<MovimientoAlmacenResponse> listarMovimientosRecientes() {
+        return inventarioConsultaService.listarMovimientosRecientes();
+    }
+
+    @GetMapping("/productos/{idProducto}/movimientos")
+    public List<MovimientoAlmacenResponse> listarMovimientosPorProducto(@PathVariable Integer idProducto) {
+        return inventarioConsultaService.listarMovimientosPorProducto(idProducto);
     }
 }

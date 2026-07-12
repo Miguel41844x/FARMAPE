@@ -12,6 +12,8 @@ public interface MovimientoAlmacenRepository extends JpaRepository<MovimientoAlm
 
     boolean existsByReferenciaTipoAndReferenciaId(String referenciaTipo, Integer referenciaId);
 
+    List<MovimientoAlmacen> findTop20ByOrderByFechaMovimientoDesc();
+
     long countByTipoMovimientoAndFechaMovimientoBetween(
             TipoMovimiento tipoMovimiento,
             LocalDateTime desde,
