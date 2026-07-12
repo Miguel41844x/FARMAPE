@@ -44,3 +44,11 @@ http://localhost:8080/actuator/health
 ```
 
 Cuando se agreguen microservicios de negocio, se definiran rutas explicitas para mantener estable el contrato HTTP consumido por el frontend.
+
+## Imagen Docker
+
+El modulo incluye un `Dockerfile` basado en Java 21. Antes de construir la imagen se debe generar el `.jar`:
+
+```powershell
+..\mvnw.cmd -pl farmape-ms-gateway clean package -DskipTests
+```

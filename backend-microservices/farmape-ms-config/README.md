@@ -33,3 +33,11 @@ http://localhost:8888/actuator/health
 ```
 
 Estos endpoints permiten validar que la configuracion centralizada esta disponible antes de iniciar Eureka y Gateway.
+
+## Imagen Docker
+
+El modulo incluye un `Dockerfile` basado en Java 21. Antes de construir la imagen se debe generar el `.jar`:
+
+```powershell
+..\mvnw.cmd -pl farmape-ms-config clean package -DskipTests
+```

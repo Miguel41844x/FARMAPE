@@ -76,6 +76,16 @@ http://localhost:8080/actuator/health
 
 Por ahora usa descubrimiento dinamico de servicios. Cuando se creen los microservicios de negocio, se agregaran rutas explicitas para conservar las rutas `/api/...` que consume el frontend.
 
+## Empaquetado para contenedores
+
+Cada microservicio de infraestructura incluye su propio `Dockerfile`. Antes de construir imagenes se deben generar los archivos `.jar`:
+
+```powershell
+.\mvnw.cmd clean package -DskipTests
+```
+
+Luego se podra construir cada imagen desde su carpeta correspondiente. El despliegue coordinado se definira con `docker-compose.yml`.
+
 ## Relacion con el frontend
 
 El frontend actual se mantiene sin cambios. Mas adelante, cuando el Gateway tenga las rutas de negocio, el frontend debera apuntar a `http://localhost:8080` en desarrollo o a la URL publica del Gateway en despliegue.

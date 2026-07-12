@@ -38,3 +38,11 @@ http://localhost:8761/actuator/health
 ```
 
 Cuando existan microservicios de negocio y el Gateway este activo, deberan aparecer registrados en el panel de Eureka.
+
+## Imagen Docker
+
+El modulo incluye un `Dockerfile` basado en Java 21. Antes de construir la imagen se debe generar el `.jar`:
+
+```powershell
+..\mvnw.cmd -pl farmape-ms-eureka clean package -DskipTests
+```
