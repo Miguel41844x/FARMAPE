@@ -6,6 +6,9 @@ spring:
     name: farmape-ms-eureka
 
 eureka:
+  instance:
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
+    prefer-ip-address: true
   client:
     register-with-eureka: false
     fetch-registry: false

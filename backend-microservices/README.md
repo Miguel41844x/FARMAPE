@@ -56,6 +56,16 @@ http://localhost:8888/farmape-ms-gateway/default
 
 Estas URLs deben responder antes de levantar los demas servicios de infraestructura.
 
+## Verificacion de Eureka
+
+Eureka Server publica su panel de registro de servicios en:
+
+```text
+http://localhost:8761
+```
+
+En desarrollo local se ejecuta como servidor unico, por eso no se registra a si mismo ni descarga registros de otros servidores Eureka.
+
 ## Relacion con el frontend
 
 El frontend actual se mantiene sin cambios. Mas adelante, cuando el Gateway tenga las rutas de negocio, el frontend debera apuntar a `http://localhost:8080` en desarrollo o a la URL publica del Gateway en despliegue.
