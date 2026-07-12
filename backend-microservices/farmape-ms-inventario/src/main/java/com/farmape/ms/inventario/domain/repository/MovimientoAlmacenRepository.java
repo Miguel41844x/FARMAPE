@@ -14,6 +14,8 @@ public interface MovimientoAlmacenRepository extends JpaRepository<MovimientoAlm
 
     List<MovimientoAlmacen> findTop20ByOrderByFechaMovimientoDesc();
 
+    List<MovimientoAlmacen> findTop20ByTipoMovimientoOrderByFechaMovimientoDesc(TipoMovimiento tipoMovimiento);
+
     long countByTipoMovimientoAndFechaMovimientoBetween(
             TipoMovimiento tipoMovimiento,
             LocalDateTime desde,

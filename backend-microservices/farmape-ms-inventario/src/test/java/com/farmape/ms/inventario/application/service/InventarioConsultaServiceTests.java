@@ -15,6 +15,7 @@ import com.farmape.ms.inventario.api.dto.ProductoResponse;
 import com.farmape.ms.inventario.application.exception.InventarioNotFoundException;
 import com.farmape.ms.inventario.domain.model.Categoria;
 import com.farmape.ms.inventario.domain.model.EstadoProducto;
+import com.farmape.ms.inventario.domain.model.LoteProducto;
 import com.farmape.ms.inventario.domain.model.MotivoMovimiento;
 import com.farmape.ms.inventario.domain.model.MovimientoAlmacen;
 import com.farmape.ms.inventario.domain.model.Producto;
@@ -99,6 +100,57 @@ class InventarioConsultaServiceTests {
         assertThat(responses.getFirst().motivo()).isEqualTo("Venta");
     }
 
+    @Test
+    void obtenerResumenConsolidaIndicadoresDeInventario() {
+        Producto producto = producto();
+        LoteProducto lote = lote(producto);
+        MovimientoAlmacen movimiento = new MovimientoAlmacen();
+        movimiento.setIdMovimiento(7);
+        movimiento.setProducto(producto);
+        movimiento.setTipoMovimiento(TipoMovimiento.Entrada);
+        movimiento.setMotivo(MotivoMovimiento.Compra);
+        movimiento.setCantidad(3);
+        movimiento.setIdTrabajador(3);
+
+        when(productoRepository.countByEstado(EstadoProducto.Activo)).thenReturn(120L);
+        when(productoRepository.findProductosConStockBajo()).thenReturn(List.of(producto));
+        when(loteProductoRepository.countByFechaVencimientoBetweenAndStockDisponibleGreaterThan(
+                LocalDate.now(),
+                LocalDate.now().plusDays(30),
+                0
+        )).thenReturn(4L);
+        when(loteProductoRepository.findTop5ByStockDisponibleGreaterThanOrderByFechaVencimientoAsc(0))
+                .thenReturn(List.of(lote));
+        when(movimientoAlmacenRepository.countByTipoMovimientoAndFechaMovimientoBetween(
+                org.mockito.ArgumentMatchers.eq(TipoMovimiento.Entrada),
+                org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any()
+        )).thenReturn(2L);
+        when(movimientoAlmacenRepository.countByTipoMovimientoAndFechaMovimientoBetween(
+                org.mockito.ArgumentMatchers.eq(TipoMovimiento.Salida),
+                org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any()
+        )).thenReturn(1L);
+        when(movimientoAlmacenRepository.countByTipoMovimientoAndFechaMovimientoBetween(
+                org.mockito.ArgumentMatchers.eq(TipoMovimiento.Ajuste),
+                org.mockito.ArgumentMatchers.any(),
+                org.mockito.ArgumentMatchers.any()
+        )).thenReturn(1L);
+        when(movimientoAlmacenRepository.findTop20ByOrderByFechaMovimientoDesc())
+                .thenReturn(List.of(movimiento));
+
+        var response = inventarioConsultaService.obtenerResumen();
+
+        assertThat(response.totalProductosActivos()).isEqualTo(120);
+        assertThat(response.productosConStockBajo()).isEqualTo(1);
+        assertThat(response.lotesPorVencer()).isEqualTo(4);
+        assertThat(response.entradasHoy()).isEqualTo(2);
+        assertThat(response.salidasHoy()).isEqualTo(1);
+        assertThat(response.ajustesHoy()).isEqualTo(1);
+        assertThat(response.proximosVencimientos()).hasSize(1);
+        assertThat(response.ultimosMovimientos()).hasSize(1);
+    }
+
     private Producto producto() {
         Categoria categoria = new Categoria();
         categoria.setIdCategoria(10);
@@ -121,5 +173,17 @@ class InventarioConsultaServiceTests {
         producto.setEstado(EstadoProducto.Activo);
 
         return producto;
+    }
+
+    private LoteProducto lote(Producto producto) {
+        LoteProducto lote = new LoteProducto();
+        lote.setIdLote(11);
+        lote.setProducto(producto);
+        lote.setNumeroLote("LOTE-RESUMEN");
+        lote.setFechaVencimiento(LocalDate.now().plusDays(15));
+        lote.setCostoUnitario(new BigDecimal("0.35"));
+        lote.setStockDisponible(12);
+        lote.setEstado("Disponible");
+        return lote;
     }
 }

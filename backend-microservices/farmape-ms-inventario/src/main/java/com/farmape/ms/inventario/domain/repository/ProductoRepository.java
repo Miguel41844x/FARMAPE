@@ -15,6 +15,10 @@ import jakarta.persistence.LockModeType;
 
 public interface ProductoRepository extends JpaRepository<Producto, Integer> {
 
+    long countByEstado(EstadoProducto estado);
+
+    List<Producto> findAllByOrderByNombreAsc();
+
     List<Producto> findByEstadoOrderByNombreAsc(EstadoProducto estado);
 
     List<Producto> findByNombreContainingIgnoreCaseOrderByNombreAsc(String nombre);

@@ -21,6 +21,16 @@ spring:
                 - Path=/inventario/**
               filters:
                 - RewritePath=/inventario/(?<segment>.*), /api/inventario/${segment}
+            - id: inventario-api-legacy
+              uri: lb://FARMAPE-MS-INVENTARIO
+              predicates:
+                - Path=/api/productos,/api/productos/**,/api/categorias,/api/almacen,/api/almacen/**
+            - id: inventario-root-legacy
+              uri: lb://FARMAPE-MS-INVENTARIO
+              predicates:
+                - Path=/productos,/productos/**,/categorias,/almacen,/almacen/**
+              filters:
+                - RewritePath=/(?<segment>.*), /api/${segment}
           globalcors:
             cors-configurations:
               "[/**]":
