@@ -86,6 +86,8 @@ Cada microservicio de infraestructura incluye su propio `Dockerfile`. Antes de c
 
 Luego se podra construir cada imagen desde su carpeta correspondiente. El despliegue coordinado se definira con `docker-compose.yml`.
 
+Cada modulo tambien incluye un `.dockerignore` para enviar al contexto de Docker solo el `.jar` empaquetado y evitar archivos locales, logs, configuraciones privadas o salidas intermedias de Maven.
+
 ## Despliegue local con Docker Compose
 
 El archivo `docker-compose.yml` levanta los servicios de infraestructura en el orden esperado:
