@@ -31,6 +31,8 @@ La solucion sigue una arquitectura de microservicios con servicios de infraestru
 ```text
 backend-microservices/
   pom.xml
+  database/
+    inventario/
   farmape-ms-config/
   farmape-ms-eureka/
   farmape-ms-gateway/
@@ -101,6 +103,13 @@ El archivo `docker-compose.yml` levanta la base de datos de inventario y los ser
 3. `eureka-server`
 4. `inventario-service`
 5. `gateway`
+
+La base de datos del microservicio de inventario se inicializa desde `database/inventario/`:
+
+- `01_farmape_inventario_schema.sql`: crea las tablas propias del microservicio.
+- `02_farmape_inventario_data.sql`: carga los datos base separados desde el dump original.
+
+Los scripts solo contienen tablas de inventario: categorias, productos, lotes y movimientos de almacen.
 
 Antes de ejecutar Docker Compose, se puede crear un archivo `.env` local a partir del ejemplo:
 

@@ -13,6 +13,7 @@ services:
       - MYSQL_ROOT_PASSWORD=${INVENTARIO_DB_ROOT_PASSWORD:-root}
     volumes:
       - mysql-inventario-data:/var/lib/mysql
+      - ./database/inventario:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${INVENTARIO_DB_USER:-farmape} -p${INVENTARIO_DB_PASSWORD:-farmape} --silent"]
       interval: 10s
