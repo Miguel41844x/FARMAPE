@@ -32,6 +32,10 @@ public interface LoteProductoRepository extends JpaRepository<LoteProducto, Inte
     List<LoteProducto> findTop5ByStockDisponibleGreaterThanOrderByFechaVencimientoAsc(Integer stockMinimo);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT l FROM LoteProducto l WHERE l.idLote = :idLote")
+    Optional<LoteProducto> findByIdForUpdate(@Param("idLote") Integer idLote);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("""
             SELECT l
             FROM LoteProducto l
