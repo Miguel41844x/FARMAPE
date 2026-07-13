@@ -25,6 +25,16 @@ spring:
               uri: lb://FARMAPE-MS-INVENTARIO
               predicates:
                 - Path=/api/productos,/api/productos/**,/api/categorias,/api/almacen,/api/almacen/**,/api/despacho,/api/despacho/**
+            - id: ventas-api
+              uri: lb://FARMAPE-MS-VENTAS
+              predicates:
+                - Path=/api/ventas,/api/ventas/**
+            - id: ventas-root
+              uri: lb://FARMAPE-MS-VENTAS
+              predicates:
+                - Path=/ventas,/ventas/**
+              filters:
+                - RewritePath=/(?<segment>.*), /api/${segment}
             - id: inventario-root-legacy
               uri: lb://FARMAPE-MS-INVENTARIO
               predicates:

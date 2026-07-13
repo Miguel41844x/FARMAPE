@@ -1,0 +1,38 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: farmape-ms-ventas
+  mongodb:
+    uri: ${SPRING_MONGODB_URI:${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/farmape_ventas}}
+    database: ${SPRING_MONGODB_DATABASE:${SPRING_DATA_MONGODB_DATABASE:farmape_ventas}}
+  data:
+    mongodb:
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://localhost:27017/farmape_ventas}
+      database: ${SPRING_DATA_MONGODB_DATABASE:farmape_ventas}
+
+farmape:
+  inventario:
+    base-url: ${FARMAPE_INVENTARIO_BASE_URL:http://localhost:8081}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+info:
+  app:
+    name: FARMAPE Ventas
+    description: Microservicio de ventas y coordinacion de stock.
