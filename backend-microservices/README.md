@@ -14,6 +14,7 @@ La solucion sigue una arquitectura de microservicios con servicios de infraestru
 | `farmape-ms-eureka` | Registra y permite descubrir microservicios con Eureka Server. | `8761` |
 | `farmape-ms-gateway` | Expone el punto de entrada HTTP hacia los microservicios internos. | `8080` |
 | `farmape-ms-inventario` | Administra productos, categorias, lotes y movimientos de almacen. | `8081` |
+| `farmape-ms-ventas` | Registra ventas, calcula totales y coordina stock con Inventario. | `8082` |
 
 ## Tecnologias
 
@@ -24,6 +25,7 @@ La solucion sigue una arquitectura de microservicios con servicios de infraestru
 - Spring Cloud Config Server.
 - Netflix Eureka.
 - Spring Cloud Gateway WebFlux.
+- Spring Data MongoDB para ventas.
 - Actuator para endpoints de salud.
 
 ## Estructura
@@ -37,6 +39,7 @@ backend-microservices/
   farmape-ms-eureka/
   farmape-ms-gateway/
   farmape-ms-inventario/
+  farmape-ms-ventas/
 ```
 
 ## Ejecucion esperada
@@ -47,6 +50,7 @@ El orden de arranque local sera:
 2. `farmape-ms-eureka`
 3. `farmape-ms-gateway`
 4. `farmape-ms-inventario`
+5. `farmape-ms-ventas`
 
 Los microservicios de negocio se registran en Eureka y el Gateway enruta las peticiones del frontend hacia ellos.
 
@@ -58,6 +62,7 @@ El Config Server publica las configuraciones centralizadas desde el puerto `8888
 http://localhost:8888/farmape-ms-eureka/default
 http://localhost:8888/farmape-ms-gateway/default
 http://localhost:8888/farmape-ms-inventario/default
+http://localhost:8888/farmape-ms-ventas/default
 ```
 
 Estas URLs deben responder antes de levantar los demas servicios de infraestructura.
@@ -96,13 +101,15 @@ Cada modulo tambien incluye un `.dockerignore` para enviar al contexto de Docker
 
 ## Despliegue local con Docker Compose
 
-El archivo `docker-compose.yml` levanta la base de datos de inventario y los servicios en el orden esperado:
+El archivo `docker-compose.yml` levanta las bases de datos de inventario y ventas, y los servicios en el orden esperado:
 
 1. `mysql-inventario`
 2. `config-server`
 3. `eureka-server`
 4. `inventario-service`
-5. `gateway`
+5. `mongo-ventas`
+6. `ventas-service`
+7. `gateway`
 
 La base de datos del microservicio de inventario se inicializa desde `database/inventario/`:
 
@@ -113,6 +120,8 @@ La base de datos del microservicio de inventario se inicializa desde `database/i
 
 Los scripts contienen tablas propias de inventario y datos operativos necesarios para que el frontend actual funcione durante la migracion.
 
+La base de datos del microservicio de ventas se puede inicializar desde `database/ventas/` con scripts `.js` de MongoDB. Docker ejecuta esos scripts solo cuando el volumen `mongo-ventas-data` se crea por primera vez.
+
 Antes de ejecutar Docker Compose, se puede crear un archivo `.env` local a partir del ejemplo:
 
 ```powershell
@@ -120,6 +129,18 @@ Copy-Item .env.example .env
 ```
 
 El archivo `.env` permite cambiar puertos, URLs internas y origen permitido del frontend sin modificar archivos versionados.
+
+Ventas utiliza MongoDB con estos valores por defecto:
+
+```text
+VENTAS_PORT=8082
+VENTAS_MONGO_PORT=27017
+VENTAS_MONGO_DATABASE=farmape_ventas
+VENTAS_MONGO_URI=mongodb://mongo-ventas:27017/farmape_ventas
+FARMAPE_INVENTARIO_BASE_URL=http://inventario-service:8081
+```
+
+Los documentos de ventas deben respetar el modelo del backend MySQL: `ordenes_venta` como cabecera y `detalles` embebidos con los campos de `detalle_orden_venta`.
 
 Para ejecutar el entorno local:
 
@@ -152,6 +173,7 @@ docker compose ps
 docker compose logs config-server --tail=50
 docker compose logs eureka-server --tail=50
 docker compose logs inventario-service --tail=50
+docker compose logs ventas-service --tail=50
 docker compose logs gateway --tail=50
 ```
 
@@ -162,6 +184,7 @@ docker compose ps
 docker compose logs config-server --tail=50
 docker compose logs eureka-server --tail=50
 docker compose logs inventario-service --tail=50
+docker compose logs ventas-service --tail=50
 docker compose logs gateway --tail=50
 ```
 

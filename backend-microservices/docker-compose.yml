@@ -21,6 +21,24 @@ services:
       retries: 10
       start_period: 30s
 
+  # Ventas Database
+  mongo-ventas:
+    image: mongo:7
+    container_name: farmape-mongo-ventas
+    ports:
+      - "${VENTAS_MONGO_PORT:-27017}:27017"
+    environment:
+      - MONGO_INITDB_DATABASE=${VENTAS_MONGO_DATABASE:-farmape_ventas}
+    volumes:
+      - mongo-ventas-data:/data/db
+      - ./database/ventas:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand(\"ping\").ok' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
   # Config Server
   config-server:
     build: ./farmape-ms-config
@@ -29,6 +47,11 @@ services:
     ports:
       - "${CONFIG_SERVER_PORT:-8888}:8888"
     environment:
+      - SPRING_MONGODB_URI=${VENTAS_MONGO_URI:-mongodb://mongo-ventas:27017/farmape_ventas}
+      - SPRING_MONGODB_DATABASE=${VENTAS_MONGO_DATABASE:-farmape_ventas}
+      - SPRING_DATA_MONGODB_URI=${VENTAS_MONGO_URI:-mongodb://mongo-ventas:27017/farmape_ventas}
+      - SPRING_DATA_MONGODB_DATABASE=${VENTAS_MONGO_DATABASE:-farmape_ventas}
+      - FARMAPE_INVENTARIO_BASE_URL=${FARMAPE_INVENTARIO_BASE_URL:-http://inventario-service:8081}
       - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8888/actuator/health/readiness || exit 1"]
@@ -87,6 +110,38 @@ services:
       retries: 10
       start_period: 30s
 
+  # Ventas Service
+  ventas-service:
+    build: ./farmape-ms-ventas
+    image: farmape-ms-ventas
+    container_name: farmape-ms-ventas
+    ports:
+      - "${VENTAS_PORT:-8082}:8082"
+    environment:
+      - SPRING_CONFIG_IMPORT=optional:configserver:${CONFIG_SERVER_URL:-http://config-server:8888}
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_SERVER_URL:-http://eureka-server:8761/eureka/}
+      - SPRING_MONGODB_URI=${VENTAS_MONGO_URI:-mongodb://mongo-ventas:27017/farmape_ventas}
+      - SPRING_MONGODB_DATABASE=${VENTAS_MONGO_DATABASE:-farmape_ventas}
+      - SPRING_DATA_MONGODB_URI=${VENTAS_MONGO_URI:-mongodb://mongo-ventas:27017/farmape_ventas}
+      - SPRING_DATA_MONGODB_DATABASE=${VENTAS_MONGO_DATABASE:-farmape_ventas}
+      - FARMAPE_INVENTARIO_BASE_URL=${FARMAPE_INVENTARIO_BASE_URL:-http://inventario-service:8081}
+      - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
+    depends_on:
+      mongo-ventas:
+        condition: service_healthy
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      inventario-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8082/actuator/health/readiness || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
   # API Gateway
   gateway:
     build: ./farmape-ms-gateway
@@ -107,6 +162,8 @@ services:
         condition: service_healthy
       inventario-service:
         condition: service_healthy
+      ventas-service:
+        condition: service_healthy
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8080/actuator/health/readiness || exit 1"]
       interval: 10s
@@ -116,3 +173,4 @@ services:
 
 volumes:
   mysql-inventario-data:
+  mongo-ventas-data:
