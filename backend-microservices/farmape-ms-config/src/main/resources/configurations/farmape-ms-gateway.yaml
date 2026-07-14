@@ -41,6 +41,31 @@ spring:
                 - Path=/productos,/productos/**,/categorias,/almacen,/almacen/**,/despacho,/despacho/**
               filters:
                 - RewritePath=/(?<segment>.*), /api/${segment}
+            - id: auth-api
+              uri: lb://FARMAPE-MS-AUTH
+              predicates:
+                - Path=/api/auth/** 
+            - id: usuarios-api
+              uri: lb://FARMAPE-MS-AUTH
+              predicates:
+                - Path=/api/usuarios/**
+            - id: trabajadores-api
+              uri: lb://FARMAPE-MS-AUTH
+              predicates:
+                - Path=/api/trabajadores/**
+            - id: roles-api
+              uri: lb://FARMAPE-MS-AUTH
+              predicates:
+                - Path=/api/roles/**
+            - id: permisos-api
+              uri: lb://FARMAPE-MS-AUTH
+              predicates:
+                - Path=/api/permisos/**
+            - id: perfil-api
+              uri: lb://FARMAPE-MS-AUTH
+              predicates:
+                - Path=/api/perfil/**
+
           globalcors:
             cors-configurations:
               "[/**]":
