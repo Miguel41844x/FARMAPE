@@ -76,29 +76,6 @@ spring:
               predicates:
                 - Path=/api/perfil/**
 
-          globalcors:
-            cors-configurations:
-              "[/**]":
-                allowed-origins:
-                  - ${FRONTEND_LOCAL_ORIGIN:http://localhost:5173}
-                allowed-origin-patterns:
-                  - ${FRONTEND_ALLOWED_ORIGIN_PATTERN:https://*.vercel.app}
-                allowed-methods:
-                  - GET
-                  - POST
-                  - PUT
-                  - PATCH
-                  - DELETE
-                  - OPTIONS
-                allowed-headers:
-                  - Authorization
-                  - Content-Type
-                  - Accept
-                  - Origin
-                  - X-Requested-With
-                exposed-headers:
-                  - Authorization
-
 eureka:
   instance:
     prefer-ip-address: true
