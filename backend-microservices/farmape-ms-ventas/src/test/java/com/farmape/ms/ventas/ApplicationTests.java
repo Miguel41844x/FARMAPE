@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+import com.farmape.ms.ventas.application.service.ClienteService;
 import com.farmape.ms.ventas.application.service.VentaService;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +22,9 @@ class ApplicationTests {
 
     @MockitoBean
     private VentaService ventaService;
+
+    @MockitoBean
+    private ClienteService clienteService;
 
     @Test
     void contextLoads() {

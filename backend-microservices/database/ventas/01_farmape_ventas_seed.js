@@ -5,6 +5,133 @@ db.ordenes_venta.createIndex({ idCliente: 1 });
 db.ordenes_venta.createIndex({ estado: 1 });
 db.ordenes_venta.createIndex({ fechaOrden: -1 });
 
+db.clientes.createIndex({ idCliente: 1 }, { unique: true });
+db.clientes.createIndex({ dniRuc: 1 }, { unique: true });
+db.clientes.createIndex({ fechaRegistro: -1 });
+
+db.clientes.bulkWrite([
+  {
+    updateOne: {
+      filter: { idCliente: 1 },
+      update: {
+        $set: {
+          idCliente: 1,
+          tipoCliente: "Natural",
+          dniRuc: "00000001",
+          nombres: "Cliente",
+          apellidos: "Mostrador",
+          telefono: "900000001",
+          whatsapp: "900000001",
+          direccion: "Tienda principal",
+          email: "mostrador@farmape.local",
+          fechaRegistro: ISODate("2026-07-01T08:00:00Z")
+        }
+      },
+      upsert: true
+    }
+  },
+  {
+    updateOne: {
+      filter: { idCliente: 2 },
+      update: {
+        $set: {
+          idCliente: 2,
+          tipoCliente: "Natural",
+          dniRuc: "76543210",
+          nombres: "Ana",
+          apellidos: "Perez",
+          telefono: "987654321",
+          whatsapp: "987654321",
+          direccion: "Av. Los Jardines 123",
+          email: "ana.perez@example.com",
+          fechaRegistro: ISODate("2026-07-01T08:10:00Z")
+        }
+      },
+      upsert: true
+    }
+  },
+  {
+    updateOne: {
+      filter: { idCliente: 3 },
+      update: {
+        $set: {
+          idCliente: 3,
+          tipoCliente: "Natural",
+          dniRuc: "71234567",
+          nombres: "Luis",
+          apellidos: "Torres",
+          telefono: "955123456",
+          whatsapp: "955123456",
+          direccion: "Jr. Salud 450",
+          email: "luis.torres@example.com",
+          fechaRegistro: ISODate("2026-07-01T08:20:00Z")
+        }
+      },
+      upsert: true
+    }
+  },
+  {
+    updateOne: {
+      filter: { idCliente: 4 },
+      update: {
+        $set: {
+          idCliente: 4,
+          tipoCliente: "Natural",
+          dniRuc: "70123456",
+          nombres: "Maria",
+          apellidos: "Gomez",
+          telefono: "944987654",
+          whatsapp: "944987654",
+          direccion: "Calle Boticas 321",
+          email: "maria.gomez@example.com",
+          fechaRegistro: ISODate("2026-07-01T08:30:00Z")
+        }
+      },
+      upsert: true
+    }
+  },
+  {
+    updateOne: {
+      filter: { idCliente: 5 },
+      update: {
+        $set: {
+          idCliente: 5,
+          tipoCliente: "Natural",
+          dniRuc: "79876543",
+          nombres: "Carlos",
+          apellidos: "Ramirez",
+          telefono: "933111222",
+          whatsapp: "933111222",
+          direccion: "Psje. Primavera 210",
+          email: "carlos.ramirez@example.com",
+          fechaRegistro: ISODate("2026-07-01T08:40:00Z")
+        }
+      },
+      upsert: true
+    }
+  },
+  {
+    updateOne: {
+      filter: { idCliente: 6 },
+      update: {
+        $set: {
+          idCliente: 6,
+          tipoCliente: "Natural",
+          dniRuc: "70987654",
+          nombres: "Rosa",
+          apellidos: "Salazar",
+          telefono: "922333444",
+          whatsapp: "922333444",
+          direccion: "Av. Central 890",
+          email: "rosa.salazar@example.com",
+          fechaRegistro: ISODate("2026-07-01T08:50:00Z")
+        }
+      },
+      upsert: true
+    }
+  }
+]);
+
 db.ordenes_venta.bulkWrite([
   {
     updateOne: {

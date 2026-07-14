@@ -29,10 +29,20 @@ spring:
               uri: lb://FARMAPE-MS-VENTAS
               predicates:
                 - Path=/api/ventas,/api/ventas/**
+            - id: clientes-api
+              uri: lb://FARMAPE-MS-VENTAS
+              predicates:
+                - Path=/api/clientes,/api/clientes/**
             - id: ventas-root
               uri: lb://FARMAPE-MS-VENTAS
               predicates:
                 - Path=/ventas,/ventas/**
+              filters:
+                - RewritePath=/(?<segment>.*), /api/${segment}
+            - id: clientes-root
+              uri: lb://FARMAPE-MS-VENTAS
+              predicates:
+                - Path=/clientes,/clientes/**
               filters:
                 - RewritePath=/(?<segment>.*), /api/${segment}
             - id: inventario-root-legacy

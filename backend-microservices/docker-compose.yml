@@ -71,7 +71,6 @@ services:
       - SPRING_MONGODB_DATABASE=${VENTAS_MONGO_DATABASE:-farmape_ventas}
       - SPRING_DATA_MONGODB_URI=${VENTAS_MONGO_URI:-mongodb://mongo-ventas:27017/farmape_ventas}
       - SPRING_DATA_MONGODB_DATABASE=${VENTAS_MONGO_DATABASE:-farmape_ventas}
-      - FARMAPE_INVENTARIO_BASE_URL=${FARMAPE_INVENTARIO_BASE_URL:-http://inventario-service:8081}
       - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
     healthcheck:
       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:8888/actuator/health/readiness || exit 1"]
@@ -176,7 +175,6 @@ services:
       - SPRING_MONGODB_DATABASE=${VENTAS_MONGO_DATABASE:-farmape_ventas}
       - SPRING_DATA_MONGODB_URI=${VENTAS_MONGO_URI:-mongodb://mongo-ventas:27017/farmape_ventas}
       - SPRING_DATA_MONGODB_DATABASE=${VENTAS_MONGO_DATABASE:-farmape_ventas}
-      - FARMAPE_INVENTARIO_BASE_URL=${FARMAPE_INVENTARIO_BASE_URL:-http://inventario-service:8081}
       - JAVA_OPTS=${JAVA_OPTS:--Xmx300m -Xss512k}
     depends_on:
       mongo-ventas:

@@ -26,6 +26,7 @@ La solucion sigue una arquitectura de microservicios con servicios de infraestru
 - Netflix Eureka.
 - Spring Cloud Gateway WebFlux.
 - Spring Data MongoDB para ventas.
+- OpenFeign con descubrimiento Eureka para la comunicacion ventas-inventario.
 - Actuator para endpoints de salud.
 
 ## Estructura
@@ -137,10 +138,9 @@ VENTAS_PORT=8082
 VENTAS_MONGO_PORT=27017
 VENTAS_MONGO_DATABASE=farmape_ventas
 VENTAS_MONGO_URI=mongodb://mongo-ventas:27017/farmape_ventas
-FARMAPE_INVENTARIO_BASE_URL=http://inventario-service:8081
 ```
 
-Los documentos de ventas deben respetar el modelo del backend MySQL: `ordenes_venta` como cabecera y `detalles` embebidos con los campos de `detalle_orden_venta`.
+Los documentos de ventas deben respetar el modelo del backend MySQL: `ordenes_venta` como cabecera y `detalles` embebidos con los campos de `detalle_orden_venta`. El microservicio de ventas tambien expone `/api/clientes` para cubrir la busqueda y registro de clientes que consume el frontend antes de crear la venta.
 
 Para ejecutar el entorno local:
 

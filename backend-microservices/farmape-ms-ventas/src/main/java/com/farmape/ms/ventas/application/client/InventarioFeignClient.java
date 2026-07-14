@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(
         name = "farmape-ms-inventario",
-        url = "${farmape.inventario.base-url:http://localhost:8081}",
         path = "/api"
 )
 public interface InventarioFeignClient {
