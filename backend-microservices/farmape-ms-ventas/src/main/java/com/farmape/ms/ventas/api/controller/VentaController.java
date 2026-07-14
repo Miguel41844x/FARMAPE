@@ -39,6 +39,11 @@ public class VentaController {
         return ventaService.listarVentas();
     }
 
+    @GetMapping("/ultimas")
+    public List<VentaResponse> listarUltimasVentas() {
+        return ventaService.listarUltimasVentas();
+    }
+
     @GetMapping("/{idVenta}")
     public VentaResponse obtenerVenta(@PathVariable Integer idVenta) {
         return ventaService.obtenerVenta(idVenta);
@@ -72,8 +77,18 @@ public class VentaController {
         return ventaService.completarVenta(idVenta);
     }
 
+    @PatchMapping("/{idVenta}/confirmar")
+    public VentaResponse confirmarVenta(@PathVariable Integer idVenta) {
+        return ventaService.completarVenta(idVenta);
+    }
+
     @PatchMapping("/{idVenta}/cancelar")
     public VentaResponse cancelarVenta(@PathVariable Integer idVenta) {
         return ventaService.cancelarVenta(idVenta);
+    }
+
+    @PatchMapping("/{idVenta}/rechazar")
+    public VentaResponse rechazarVenta(@PathVariable Integer idVenta) {
+        return ventaService.rechazarVenta(idVenta);
     }
 }

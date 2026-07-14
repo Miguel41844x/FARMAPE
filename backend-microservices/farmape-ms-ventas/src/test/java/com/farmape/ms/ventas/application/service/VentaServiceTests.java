@@ -174,6 +174,30 @@ class VentaServiceTests {
     }
 
     @Test
+    void listarUltimasVentasDevuelveMaximoDiezOrdenadasPorRepositorio() {
+        when(ventaRepository.findAllByOrderByFechaOrdenDesc())
+                .thenReturn(List.of(
+                        ventaPendiente(12),
+                        ventaPendiente(11),
+                        ventaPendiente(10),
+                        ventaPendiente(9),
+                        ventaPendiente(8),
+                        ventaPendiente(7),
+                        ventaPendiente(6),
+                        ventaPendiente(5),
+                        ventaPendiente(4),
+                        ventaPendiente(3),
+                        ventaPendiente(2)
+                ));
+
+        var response = ventaService.listarUltimasVentas();
+
+        assertThat(response).hasSize(10);
+        assertThat(response.get(0).idOrdenVenta()).isEqualTo(12);
+        assertThat(response.get(9).idOrdenVenta()).isEqualTo(3);
+    }
+
+    @Test
     void actualizarVentaPendienteAjustaStockYRecalcula() {
         Venta venta = ventaPendiente(1);
         when(ventaRepository.findByIdOrdenVenta(1)).thenReturn(Optional.of(venta));
@@ -239,6 +263,17 @@ class VentaServiceTests {
         var response = ventaService.cancelarVenta(1);
 
         assertThat(response.estado()).isEqualTo(EstadoVenta.Anulada);
+        verify(inventarioClient).restaurarStock(1, 2, 1);
+    }
+
+    @Test
+    void rechazarVentaMarcaRechazadaYRestauraStock() {
+        when(ventaRepository.findByIdOrdenVenta(1)).thenReturn(Optional.of(ventaPendiente(1)));
+        when(ventaRepository.save(any(Venta.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = ventaService.rechazarVenta(1);
+
+        assertThat(response.estado()).isEqualTo(EstadoVenta.Rechazada);
         verify(inventarioClient).restaurarStock(1, 2, 1);
     }
 

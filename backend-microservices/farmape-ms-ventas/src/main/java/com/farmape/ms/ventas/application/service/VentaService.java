@@ -80,6 +80,14 @@ public class VentaService {
                 .toList();
     }
 
+    public List<VentaResponse> listarUltimasVentas() {
+        return ventaRepository.findAllByOrderByFechaOrdenDesc()
+                .stream()
+                .limit(10)
+                .map(this::toVentaResponse)
+                .toList();
+    }
+
     public VentaResponse obtenerVenta(Integer idVenta) {
         return toVentaResponse(obtenerVentaEntidad(idVenta));
     }
@@ -149,6 +157,14 @@ public class VentaService {
     }
 
     public VentaResponse cancelarVenta(Integer idVenta) {
+        return rechazarVentaComo(idVenta, EstadoVenta.Anulada);
+    }
+
+    public VentaResponse rechazarVenta(Integer idVenta) {
+        return rechazarVentaComo(idVenta, EstadoVenta.Rechazada);
+    }
+
+    private VentaResponse rechazarVentaComo(Integer idVenta, EstadoVenta nuevoEstado) {
         Venta venta = obtenerVentaEntidad(idVenta);
         validarVentaPendiente(venta, "Solo se pueden cancelar ventas pendientes.");
 
@@ -156,7 +172,7 @@ public class VentaService {
         try {
             restaurarStock(venta.getDetalles(), venta.getIdOrdenVenta(), stockRestaurado);
 
-            venta.setEstado(EstadoVenta.Anulada);
+            venta.setEstado(nuevoEstado);
             return toVentaResponse(ventaRepository.save(venta));
         } catch (RuntimeException exception) {
             reducirStockOriginalDespuesDeActualizacionFallida(stockRestaurado, venta.getIdOrdenVenta(), exception);

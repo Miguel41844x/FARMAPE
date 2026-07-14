@@ -27,7 +27,7 @@ class ApplicationTests {
     }
 
     @Test
-    void hasSpringBootBanner() throws Exception {
+    void hasCustomVentasBanner() throws Exception {
         try (InputStream input = getClass().getResourceAsStream("/banner.txt")) {
             assertThat(input).isNotNull();
 
@@ -35,10 +35,13 @@ class ApplicationTests {
 
             assertThat(banner)
                     .hasSizeGreaterThan(100)
+                    .contains("__   __")
+                    .contains("\\ V /")
                     .contains("${application.title}")
                     .contains("${application.version}")
                     .contains("Powered by Spring Boot")
-                    .contains("${spring-boot.version}");
+                    .contains("${spring-boot.version}")
+                    .doesNotContain("============================================================");
         }
     }
 }
