@@ -21,8 +21,8 @@ spec:
             - sh
             - -c
             - |
-              until nc -z -w 2 config-server 8888 && nc -z -w 2 eureka-server 8761; do
-                echo "Waiting for config-server and eureka-server..."
+              until nc -z -w 2 config-server 8888 && nc -z -w 2 eureka-server 8761 && nc -z -w 2 auth-service 8083 && nc -z -w 2 inventario-service 8081 && nc -z -w 2 ventas-service 8082; do
+                echo "Waiting for config-server, eureka-server, auth-service, inventario-service and ventas-service..."
                 sleep 2
               done
       containers:

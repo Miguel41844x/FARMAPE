@@ -1,0 +1,73 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    io.kompose.service: mongo-ventas
+  name: mongo-ventas-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: mongo-ventas
+  name: mongo-ventas
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: mongo-ventas
+  template:
+    metadata:
+      labels:
+        io.kompose.service: mongo-ventas
+    spec:
+      containers:
+        - image: mongo:7
+          imagePullPolicy: IfNotPresent
+          name: mongo-ventas
+          env:
+            - name: MONGO_INITDB_DATABASE
+              value: farmape_ventas
+          ports:
+            - containerPort: 27017
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mongosh --quiet --eval 'db.adminCommand("ping").ok' || exit 1
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mongosh --quiet --eval 'db.adminCommand("ping").ok' || exit 1
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 10
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-ventas-data
+            - mountPath: /docker-entrypoint-initdb.d
+              name: ventas-mongo-init
+              readOnly: true
+      restartPolicy: Always
+      volumes:
+        - name: mongo-ventas-data
+          persistentVolumeClaim:
+            claimName: mongo-ventas-data
+        - name: ventas-mongo-init
+          configMap:
+            name: ventas-mongo-init
