@@ -1,6 +1,5 @@
-package com.farmape.ms.auth.auth.model;
+package com.farmape.ms.auth.domain.model;
 
-import com.farmape.ms.auth.usuarios.model.CuentaUsuario;
 import jakarta.persistence.*;
 import lombok.*;
 

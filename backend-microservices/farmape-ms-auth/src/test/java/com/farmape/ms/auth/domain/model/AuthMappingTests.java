@@ -2,9 +2,6 @@ package com.farmape.ms.auth.domain.model;
 
 import org.junit.jupiter.api.Test;
 
-import com.farmape.ms.auth.usuarios.enums.EstadoCuentaUsuario;
-import com.farmape.ms.auth.trabajadores.enums.EstadoTrabajador;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class AuthMappingTests {

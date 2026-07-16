@@ -1,6 +1,6 @@
-package com.farmape.ms.auth.usuarios.dto;
+package com.farmape.ms.auth.api.dto;
 
-import com.farmape.ms.auth.usuarios.enums.EstadoCuentaUsuario;
+import com.farmape.ms.auth.domain.model.EstadoCuentaUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

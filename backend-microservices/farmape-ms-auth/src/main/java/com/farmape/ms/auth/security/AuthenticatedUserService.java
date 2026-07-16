@@ -1,7 +1,7 @@
 package com.farmape.ms.auth.security;
 
-import com.farmape.ms.auth.usuarios.model.CuentaUsuario;
-import com.farmape.ms.auth.usuarios.repository.CuentaUsuarioRepository;
+import com.farmape.ms.auth.domain.model.CuentaUsuario;
+import com.farmape.ms.auth.domain.repository.CuentaUsuarioRepository;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;

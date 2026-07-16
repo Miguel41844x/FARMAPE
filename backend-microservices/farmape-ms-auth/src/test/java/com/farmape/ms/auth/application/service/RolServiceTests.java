@@ -1,7 +1,6 @@
 package com.farmape.ms.auth.application.service;
 
 import com.farmape.ms.auth.Application;
-import com.farmape.ms.auth.roles.service.RolService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

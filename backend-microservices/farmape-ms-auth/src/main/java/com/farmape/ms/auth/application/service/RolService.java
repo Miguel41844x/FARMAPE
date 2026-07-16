@@ -1,11 +1,11 @@
-package com.farmape.ms.auth.roles.service;
+package com.farmape.ms.auth.application.service;
 
-import com.farmape.ms.auth.roles.dto.*;
-import com.farmape.ms.auth.roles.model.Permiso;
-import com.farmape.ms.auth.roles.model.Rol;
-import com.farmape.ms.auth.roles.repository.PermisoRepository;
-import com.farmape.ms.auth.roles.repository.RolRepository;
-import com.farmape.ms.auth.trabajadores.repository.TrabajadorRepository;
+import com.farmape.ms.auth.api.dto.*;
+import com.farmape.ms.auth.domain.model.Permiso;
+import com.farmape.ms.auth.domain.model.Rol;
+import com.farmape.ms.auth.domain.repository.PermisoRepository;
+import com.farmape.ms.auth.domain.repository.RolRepository;
+import com.farmape.ms.auth.domain.repository.TrabajadorRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

@@ -1,4 +1,4 @@
-package com.farmape.ms.auth.common;
+package com.farmape.ms.auth.api.error;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

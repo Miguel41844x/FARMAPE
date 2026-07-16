@@ -1,10 +1,11 @@
 package com.farmape.ms.auth.security;
 
-import com.farmape.ms.auth.roles.model.Rol;
-import com.farmape.ms.auth.trabajadores.enums.EstadoTrabajador;
-import com.farmape.ms.auth.trabajadores.model.Trabajador;
-import com.farmape.ms.auth.usuarios.enums.EstadoCuentaUsuario;
-import com.farmape.ms.auth.usuarios.model.CuentaUsuario;
+import com.farmape.ms.auth.domain.model.Rol;
+import com.farmape.ms.auth.domain.model.EstadoTrabajador;
+import com.farmape.ms.auth.domain.model.Trabajador;
+import com.farmape.ms.auth.domain.model.EstadoCuentaUsuario;
+import com.farmape.ms.auth.domain.model.CuentaUsuario;
+import com.farmape.ms.auth.application.service.JwtService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +15,6 @@ import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 
 import java.lang.reflect.Field;
-import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 

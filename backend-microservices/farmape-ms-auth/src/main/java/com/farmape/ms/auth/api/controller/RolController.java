@@ -1,7 +1,7 @@
-package com.farmape.ms.auth.roles.controller;
+package com.farmape.ms.auth.api.controller;
 
-import com.farmape.ms.auth.roles.dto.*;
-import com.farmape.ms.auth.roles.service.RolService;
+import com.farmape.ms.auth.api.dto.*;
+import com.farmape.ms.auth.application.service.RolService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

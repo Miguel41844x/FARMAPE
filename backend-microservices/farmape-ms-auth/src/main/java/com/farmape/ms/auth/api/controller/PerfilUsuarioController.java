@@ -1,8 +1,8 @@
-package com.farmape.ms.auth.perfil.controller;
+package com.farmape.ms.auth.api.controller;
 
-import com.farmape.ms.auth.perfil.dto.ActualizarPerfilRequest;
-import com.farmape.ms.auth.perfil.dto.PerfilUsuarioResponse;
-import com.farmape.ms.auth.perfil.service.PerfilUsuarioService;
+import com.farmape.ms.auth.api.dto.ActualizarPerfilRequest;
+import com.farmape.ms.auth.api.dto.PerfilUsuarioResponse;
+import com.farmape.ms.auth.application.service.PerfilUsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;

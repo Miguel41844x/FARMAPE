@@ -1,9 +1,9 @@
 package com.farmape.ms.auth.security;
 
-import com.farmape.ms.auth.usuarios.enums.EstadoCuentaUsuario;
-import com.farmape.ms.auth.trabajadores.enums.EstadoTrabajador;
-import com.farmape.ms.auth.usuarios.model.CuentaUsuario;
-import com.farmape.ms.auth.usuarios.repository.CuentaUsuarioRepository;
+import com.farmape.ms.auth.domain.model.EstadoCuentaUsuario;
+import com.farmape.ms.auth.domain.model.EstadoTrabajador;
+import com.farmape.ms.auth.domain.model.CuentaUsuario;
+import com.farmape.ms.auth.domain.repository.CuentaUsuarioRepository;
 
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

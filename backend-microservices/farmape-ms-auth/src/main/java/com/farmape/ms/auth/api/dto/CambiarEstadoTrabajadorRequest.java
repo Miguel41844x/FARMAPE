@@ -1,6 +1,6 @@
-package com.farmape.ms.auth.trabajadores.dto;
+package com.farmape.ms.auth.api.dto;
 
-import com.farmape.ms.auth.trabajadores.enums.EstadoTrabajador;
+import com.farmape.ms.auth.domain.model.EstadoTrabajador;
 import jakarta.validation.constraints.NotNull;
 
 public record CambiarEstadoTrabajadorRequest(

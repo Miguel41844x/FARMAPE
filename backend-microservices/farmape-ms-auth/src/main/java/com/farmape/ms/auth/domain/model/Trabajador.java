@@ -1,7 +1,5 @@
-package com.farmape.ms.auth.trabajadores.model;
+package com.farmape.ms.auth.domain.model;
 
-import com.farmape.ms.auth.roles.model.Rol;
-import com.farmape.ms.auth.trabajadores.enums.EstadoTrabajador;
 import jakarta.persistence.*;
 import lombok.*;
 

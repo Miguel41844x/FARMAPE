@@ -1,13 +1,13 @@
-package com.farmape.ms.auth.auth.controller;
+package com.farmape.ms.auth.api.controller;
 
-import com.farmape.ms.auth.auth.dto.LoginRequest;
-import com.farmape.ms.auth.auth.dto.LoginResponse;
-import com.farmape.ms.auth.auth.dto.RefreshTokenRequest;
-import com.farmape.ms.auth.auth.dto.RefreshTokenResponse;
-import com.farmape.ms.auth.auth.dto.SolicitarRestablecimientoRequest;
-import com.farmape.ms.auth.auth.dto.SolicitarRestablecimientoResponse;
-import com.farmape.ms.auth.auth.dto.SolicitudRestablecimientoResponse;
-import com.farmape.ms.auth.auth.service.AuthService;
+import com.farmape.ms.auth.api.dto.LoginRequest;
+import com.farmape.ms.auth.api.dto.LoginResponse;
+import com.farmape.ms.auth.api.dto.RefreshTokenRequest;
+import com.farmape.ms.auth.api.dto.RefreshTokenResponse;
+import com.farmape.ms.auth.api.dto.SolicitarRestablecimientoRequest;
+import com.farmape.ms.auth.api.dto.SolicitarRestablecimientoResponse;
+import com.farmape.ms.auth.api.dto.SolicitudRestablecimientoResponse;
+import com.farmape.ms.auth.application.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

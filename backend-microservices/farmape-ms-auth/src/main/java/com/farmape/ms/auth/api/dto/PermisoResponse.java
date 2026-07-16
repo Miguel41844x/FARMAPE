@@ -1,4 +1,4 @@
-package com.farmape.ms.auth.roles.dto;
+package com.farmape.ms.auth.api.dto;
 
 public record PermisoResponse(
         Integer idPermiso,

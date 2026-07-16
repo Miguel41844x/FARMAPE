@@ -1,6 +1,6 @@
-package com.farmape.ms.auth.roles.repository;
+package com.farmape.ms.auth.domain.repository;
 
-import com.farmape.ms.auth.roles.model.Rol;
+import com.farmape.ms.auth.domain.model.Rol;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

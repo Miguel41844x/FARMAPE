@@ -1,4 +1,4 @@
-package com.farmape.ms.auth.auth.dto;
+package com.farmape.ms.auth.api.dto;
 
 import java.util.List;
 

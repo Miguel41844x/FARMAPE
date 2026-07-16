@@ -1,11 +1,11 @@
-package com.farmape.ms.auth.usuarios.controller;
+package com.farmape.ms.auth.api.controller;
 
-import com.farmape.ms.auth.usuarios.dto.ActualizarUsuarioRequest;
-import com.farmape.ms.auth.usuarios.dto.CambiarClaveUsuarioRequest;
-import com.farmape.ms.auth.usuarios.dto.CambiarEstadoCuentaRequest;
-import com.farmape.ms.auth.usuarios.dto.CrearUsuarioRequest;
-import com.farmape.ms.auth.usuarios.dto.CuentaUsuarioResponse;
-import com.farmape.ms.auth.usuarios.service.CuentaUsuarioService;
+import com.farmape.ms.auth.api.dto.ActualizarUsuarioRequest;
+import com.farmape.ms.auth.api.dto.CambiarClaveUsuarioRequest;
+import com.farmape.ms.auth.api.dto.CambiarEstadoCuentaRequest;
+import com.farmape.ms.auth.api.dto.CrearUsuarioRequest;
+import com.farmape.ms.auth.api.dto.CuentaUsuarioResponse;
+import com.farmape.ms.auth.application.service.CuentaUsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 

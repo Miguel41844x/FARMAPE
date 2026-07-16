@@ -1,12 +1,12 @@
-package com.farmape.ms.auth.perfil.service;
+package com.farmape.ms.auth.application.service;
 
-import com.farmape.ms.auth.perfil.dto.ActualizarPerfilRequest;
-import com.farmape.ms.auth.perfil.dto.PerfilUsuarioResponse;
+import com.farmape.ms.auth.api.dto.ActualizarPerfilRequest;
+import com.farmape.ms.auth.api.dto.PerfilUsuarioResponse;
 import com.farmape.ms.auth.security.AuthenticatedUserService;
-import com.farmape.ms.auth.trabajadores.model.Trabajador;
-import com.farmape.ms.auth.trabajadores.repository.TrabajadorRepository;
-import com.farmape.ms.auth.usuarios.model.CuentaUsuario;
-import com.farmape.ms.auth.usuarios.repository.CuentaUsuarioRepository;
+import com.farmape.ms.auth.domain.model.Trabajador;
+import com.farmape.ms.auth.domain.repository.TrabajadorRepository;
+import com.farmape.ms.auth.domain.model.CuentaUsuario;
+import com.farmape.ms.auth.domain.repository.CuentaUsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

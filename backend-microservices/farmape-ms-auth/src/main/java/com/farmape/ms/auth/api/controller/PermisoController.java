@@ -1,7 +1,7 @@
-package com.farmape.ms.auth.roles.controller;
+package com.farmape.ms.auth.api.controller;
 
-import com.farmape.ms.auth.roles.dto.PermisoResponse;
-import com.farmape.ms.auth.roles.service.RolService;
+import com.farmape.ms.auth.api.dto.PermisoResponse;
+import com.farmape.ms.auth.application.service.RolService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

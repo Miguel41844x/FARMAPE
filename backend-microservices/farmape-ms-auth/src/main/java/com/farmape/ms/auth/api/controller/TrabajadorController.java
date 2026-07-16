@@ -1,9 +1,9 @@
-package com.farmape.ms.auth.trabajadores.controller;
+package com.farmape.ms.auth.api.controller;
 
-import com.farmape.ms.auth.trabajadores.dto.CambiarEstadoTrabajadorRequest;
-import com.farmape.ms.auth.trabajadores.dto.TrabajadorRequest;
-import com.farmape.ms.auth.trabajadores.dto.TrabajadorResponse;
-import com.farmape.ms.auth.trabajadores.service.TrabajadorService;
+import com.farmape.ms.auth.api.dto.CambiarEstadoTrabajadorRequest;
+import com.farmape.ms.auth.api.dto.TrabajadorRequest;
+import com.farmape.ms.auth.api.dto.TrabajadorResponse;
+import com.farmape.ms.auth.application.service.TrabajadorService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 

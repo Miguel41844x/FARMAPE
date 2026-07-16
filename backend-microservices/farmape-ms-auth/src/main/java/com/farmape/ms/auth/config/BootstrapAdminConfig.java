@@ -1,13 +1,13 @@
 package com.farmape.ms.auth.config;
 
-import com.farmape.ms.auth.roles.repository.RolRepository;
-import com.farmape.ms.auth.roles.model.Rol;
-import com.farmape.ms.auth.trabajadores.enums.EstadoTrabajador;
-import com.farmape.ms.auth.trabajadores.model.Trabajador;
-import com.farmape.ms.auth.trabajadores.repository.TrabajadorRepository;
-import com.farmape.ms.auth.usuarios.enums.EstadoCuentaUsuario;
-import com.farmape.ms.auth.usuarios.model.CuentaUsuario;
-import com.farmape.ms.auth.usuarios.repository.CuentaUsuarioRepository;
+import com.farmape.ms.auth.domain.repository.RolRepository;
+import com.farmape.ms.auth.domain.model.Rol;
+import com.farmape.ms.auth.domain.model.EstadoTrabajador;
+import com.farmape.ms.auth.domain.model.Trabajador;
+import com.farmape.ms.auth.domain.repository.TrabajadorRepository;
+import com.farmape.ms.auth.domain.model.EstadoCuentaUsuario;
+import com.farmape.ms.auth.domain.model.CuentaUsuario;
+import com.farmape.ms.auth.domain.repository.CuentaUsuarioRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

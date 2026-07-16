@@ -1,10 +1,10 @@
-package com.farmape.ms.auth.api.controller;
+package com.farmape.ms.auth.api;
 
-import com.farmape.ms.auth.auth.controller.AuthController;
-import com.farmape.ms.auth.auth.dto.LoginResponse;
-import com.farmape.ms.auth.auth.dto.RefreshTokenResponse;
-import com.farmape.ms.auth.auth.dto.SolicitarRestablecimientoResponse;
-import com.farmape.ms.auth.auth.service.AuthService;
+import com.farmape.ms.auth.api.controller.AuthController;
+import com.farmape.ms.auth.api.dto.LoginResponse;
+import com.farmape.ms.auth.api.dto.RefreshTokenResponse;
+import com.farmape.ms.auth.api.dto.SolicitarRestablecimientoResponse;
+import com.farmape.ms.auth.application.service.AuthService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

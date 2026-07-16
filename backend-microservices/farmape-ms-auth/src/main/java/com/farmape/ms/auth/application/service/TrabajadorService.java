@@ -1,14 +1,14 @@
-package com.farmape.ms.auth.trabajadores.service;
+package com.farmape.ms.auth.application.service;
 
-import com.farmape.ms.auth.roles.model.Rol;
-import com.farmape.ms.auth.roles.repository.RolRepository;
-import com.farmape.ms.auth.trabajadores.dto.TrabajadorRequest;
-import com.farmape.ms.auth.trabajadores.dto.TrabajadorResponse;
-import com.farmape.ms.auth.trabajadores.enums.EstadoTrabajador;
-import com.farmape.ms.auth.trabajadores.model.Trabajador;
-import com.farmape.ms.auth.trabajadores.repository.TrabajadorRepository;
-import com.farmape.ms.auth.usuarios.enums.EstadoCuentaUsuario;
-import com.farmape.ms.auth.usuarios.repository.CuentaUsuarioRepository;
+import com.farmape.ms.auth.domain.model.Rol;
+import com.farmape.ms.auth.domain.repository.RolRepository;
+import com.farmape.ms.auth.api.dto.TrabajadorRequest;
+import com.farmape.ms.auth.api.dto.TrabajadorResponse;
+import com.farmape.ms.auth.domain.model.EstadoTrabajador;
+import com.farmape.ms.auth.domain.model.Trabajador;
+import com.farmape.ms.auth.domain.repository.TrabajadorRepository;
+import com.farmape.ms.auth.domain.model.EstadoCuentaUsuario;
+import com.farmape.ms.auth.domain.repository.CuentaUsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 

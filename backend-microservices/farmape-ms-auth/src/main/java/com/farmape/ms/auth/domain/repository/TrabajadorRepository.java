@@ -1,6 +1,6 @@
-package com.farmape.ms.auth.trabajadores.repository;
+package com.farmape.ms.auth.domain.repository;
 
-import com.farmape.ms.auth.trabajadores.model.Trabajador;
+import com.farmape.ms.auth.domain.model.Trabajador;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

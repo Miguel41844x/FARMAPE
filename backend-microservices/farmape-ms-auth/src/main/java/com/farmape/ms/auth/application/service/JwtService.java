@@ -1,6 +1,6 @@
-package com.farmape.ms.auth.security;
+package com.farmape.ms.auth.application.service;
 
-import com.farmape.ms.auth.usuarios.model.CuentaUsuario;
+import com.farmape.ms.auth.domain.model.CuentaUsuario;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;

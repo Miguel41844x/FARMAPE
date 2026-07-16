@@ -1,4 +1,4 @@
-package com.farmape.ms.auth.perfil.dto;
+package com.farmape.ms.auth.api.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

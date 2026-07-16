@@ -1,7 +1,4 @@
-package com.farmape.ms.auth.usuarios.model;
-
-import com.farmape.ms.auth.trabajadores.model.Trabajador;
-import com.farmape.ms.auth.usuarios.enums.EstadoCuentaUsuario;
+package com.farmape.ms.auth.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;

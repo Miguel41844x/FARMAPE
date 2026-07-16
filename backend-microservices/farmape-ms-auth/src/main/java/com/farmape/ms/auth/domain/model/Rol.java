@@ -1,4 +1,4 @@
-package com.farmape.ms.auth.roles.model;
+package com.farmape.ms.auth.domain.model;
 
 import jakarta.persistence.*;
 import lombok.*;
