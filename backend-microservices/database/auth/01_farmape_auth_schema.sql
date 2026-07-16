@@ -54,3 +54,6 @@ CREATE TABLE IF NOT EXISTS solicitudes_restablecimiento_clave (
     estado              VARCHAR(30)  NOT NULL DEFAULT 'Pendiente',
     fecha_solicitud     TIMESTAMP    NOT NULL DEFAULT NOW()
 );
+
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO farmape;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO farmape;
