@@ -23,9 +23,11 @@ import com.farmape.ms.ventas.application.exception.VentaBusinessException;
 import com.farmape.ms.ventas.application.exception.VentaIntegrationException;
 import com.farmape.ms.ventas.application.exception.VentaNotFoundException;
 import com.farmape.ms.ventas.domain.model.CanalPedido;
+import com.farmape.ms.ventas.domain.model.Cliente;
 import com.farmape.ms.ventas.domain.model.DetalleVenta;
 import com.farmape.ms.ventas.domain.model.EstadoVenta;
 import com.farmape.ms.ventas.domain.model.Venta;
+import com.farmape.ms.ventas.domain.repository.ClienteRepository;
 import com.farmape.ms.ventas.domain.repository.VentaRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,6 +44,9 @@ class VentaServiceTests {
 
     @Mock
     private VentaRepository ventaRepository;
+
+    @Mock
+    private ClienteRepository clienteRepository;
 
     @Mock
     private InventarioClient inventarioClient;
@@ -61,6 +66,49 @@ class VentaServiceTests {
         assertThat(response.total()).isEqualByComparingTo("3.00");
         assertThat(response.detalles()).hasSize(1);
         verify(inventarioClient).reducirStock(1, 2, response.idOrdenVenta());
+    }
+
+    @Test
+    void registrarVentaUsaNombreDelClienteRegistrado() {
+        when(clienteRepository.findByIdCliente(2)).thenReturn(Optional.of(cliente(2, "Ana", "Perez")));
+        when(inventarioClient.obtenerProducto(1)).thenReturn(producto(1, "Paracetamol", "1.50", 10, "Activo"));
+        when(ventaRepository.save(any(Venta.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = ventaService.registrarVenta(new CrearVentaRequest(
+                2,
+                null,
+                null,
+                1,
+                "Empleado 1",
+                CanalPedido.Presencial,
+                null,
+                List.of(new DetalleVentaRequest(1, 2)),
+                null
+        ));
+
+        assertThat(response.cliente()).isEqualTo("Ana Perez");
+    }
+
+    @Test
+    void registrarVentaFallaCuandoClienteNoExisteYNoEnviaNombre() {
+        when(clienteRepository.findByIdCliente(99)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> ventaService.registrarVenta(new CrearVentaRequest(
+                99,
+                null,
+                null,
+                1,
+                "Empleado 1",
+                CanalPedido.Presencial,
+                null,
+                List.of(new DetalleVentaRequest(1, 2)),
+                null
+        )))
+                .isInstanceOf(VentaNotFoundException.class)
+                .hasMessageContaining("Cliente no encontrado: 99");
+
+        verify(inventarioClient, never()).obtenerProducto(any());
+        verify(ventaRepository, never()).save(any());
     }
 
     @Test
@@ -278,6 +326,33 @@ class VentaServiceTests {
     }
 
     @Test
+    void rechazarVentaConfirmadaMarcaRechazadaYRestauraStock() {
+        Venta venta = ventaPendiente(1);
+        venta.setEstado(EstadoVenta.Confirmada);
+        when(ventaRepository.findByIdOrdenVenta(1)).thenReturn(Optional.of(venta));
+        when(ventaRepository.save(any(Venta.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        var response = ventaService.rechazarVenta(1);
+
+        assertThat(response.estado()).isEqualTo(EstadoVenta.Rechazada);
+        verify(inventarioClient).restaurarStock(1, 2, 1);
+    }
+
+    @Test
+    void rechazarVentaPagadaNoEstaPermitido() {
+        Venta venta = ventaPendiente(1);
+        venta.setEstado(EstadoVenta.Pagada);
+        when(ventaRepository.findByIdOrdenVenta(1)).thenReturn(Optional.of(venta));
+
+        assertThatThrownBy(() -> ventaService.rechazarVenta(1))
+                .isInstanceOf(VentaBusinessException.class)
+                .hasMessageContaining("sin pago");
+
+        verify(inventarioClient, never()).restaurarStock(any(), any(), any());
+        verify(ventaRepository, never()).save(any());
+    }
+
+    @Test
     void cancelarVentaNuevamenteNoEstaPermitido() {
         Venta venta = ventaPendiente(1);
         venta.setEstado(EstadoVenta.Anulada);
@@ -398,5 +473,13 @@ class VentaServiceTests {
         venta.setObservacion("Prueba");
         venta.setDetalles(List.of(detalle));
         return venta;
+    }
+
+    private Cliente cliente(Integer idCliente, String nombres, String apellidos) {
+        Cliente cliente = new Cliente();
+        cliente.setIdCliente(idCliente);
+        cliente.setNombres(nombres);
+        cliente.setApellidos(apellidos);
+        return cliente;
     }
 }

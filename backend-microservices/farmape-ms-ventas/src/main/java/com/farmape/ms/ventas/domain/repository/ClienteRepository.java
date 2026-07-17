@@ -13,6 +13,8 @@ public interface ClienteRepository extends MongoRepository<Cliente, String> {
 
     Optional<Cliente> findByDniRuc(String dniRuc);
 
+    Optional<Cliente> findByIdCliente(Integer idCliente);
+
     boolean existsByDniRuc(String dniRuc);
 
     Optional<Cliente> findTopByOrderByIdClienteDesc();

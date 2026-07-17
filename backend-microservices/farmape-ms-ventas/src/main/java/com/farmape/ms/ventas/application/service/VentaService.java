@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -19,9 +20,11 @@ import com.farmape.ms.ventas.application.client.InventarioProductoResponse;
 import com.farmape.ms.ventas.application.exception.VentaBusinessException;
 import com.farmape.ms.ventas.application.exception.VentaNotFoundException;
 import com.farmape.ms.ventas.domain.model.CanalPedido;
+import com.farmape.ms.ventas.domain.model.Cliente;
 import com.farmape.ms.ventas.domain.model.DetalleVenta;
 import com.farmape.ms.ventas.domain.model.EstadoVenta;
 import com.farmape.ms.ventas.domain.model.Venta;
+import com.farmape.ms.ventas.domain.repository.ClienteRepository;
 import com.farmape.ms.ventas.domain.repository.VentaRepository;
 
 @Service
@@ -30,10 +33,16 @@ public class VentaService {
     private static final String ESTADO_PRODUCTO_ACTIVO = "Activo";
 
     private final VentaRepository ventaRepository;
+    private final ClienteRepository clienteRepository;
     private final InventarioClient inventarioClient;
 
-    public VentaService(VentaRepository ventaRepository, InventarioClient inventarioClient) {
+    public VentaService(
+            VentaRepository ventaRepository,
+            ClienteRepository clienteRepository,
+            InventarioClient inventarioClient
+    ) {
         this.ventaRepository = ventaRepository;
+        this.clienteRepository = clienteRepository;
         this.inventarioClient = inventarioClient;
     }
 
@@ -42,6 +51,7 @@ public class VentaService {
             throw new VentaBusinessException("La venta es obligatoria.");
         }
         validarCabecera(request.idCliente(), request.canalPedido());
+        String nombreCliente = clienteSeguro(request.idCliente(), request.cliente(), request.nombreCliente());
 
         List<DetalleVentaRequest> items = consolidarProductos(detallesRequest(request.detalles(), request.productos()));
         List<DetalleVenta> detalles = construirDetalles(items);
@@ -56,7 +66,7 @@ public class VentaService {
             Venta venta = new Venta();
             venta.setIdOrdenVenta(idOrdenVenta);
             venta.setIdCliente(request.idCliente());
-            venta.setCliente(clienteSeguro(request.cliente(), request.nombreCliente(), request.idCliente()));
+            venta.setCliente(nombreCliente);
             venta.setIdEmpleado(empleadoIdSeguro(request.idEmpleado()));
             venta.setEmpleado(empleadoSeguro(request.empleado(), request.idEmpleado()));
             venta.setCanalPedido(request.canalPedido());
@@ -120,6 +130,7 @@ public class VentaService {
         Venta venta = obtenerVentaEntidad(idVenta);
         validarVentaPendiente(venta, "Solo se pueden actualizar ventas pendientes.");
         validarCabecera(request.idCliente(), request.canalPedido());
+        String nombreCliente = clienteSeguro(request.idCliente(), request.cliente(), request.nombreCliente());
 
         List<DetalleVentaRequest> items = consolidarProductos(detallesRequest(request.detalles(), request.productos()));
         List<DetalleVenta> nuevosDetalles = construirDetalles(items);
@@ -132,7 +143,7 @@ public class VentaService {
             reducirStock(nuevosDetalles, venta.getIdOrdenVenta(), stockReducido);
 
             venta.setIdCliente(request.idCliente());
-            venta.setCliente(clienteSeguro(request.cliente(), request.nombreCliente(), request.idCliente()));
+            venta.setCliente(nombreCliente);
             venta.setIdEmpleado(empleadoIdSeguro(request.idEmpleado()));
             venta.setEmpleado(empleadoSeguro(request.empleado(), request.idEmpleado()));
             venta.setCanalPedido(request.canalPedido());
@@ -166,7 +177,7 @@ public class VentaService {
 
     private VentaResponse rechazarVentaComo(Integer idVenta, EstadoVenta nuevoEstado) {
         Venta venta = obtenerVentaEntidad(idVenta);
-        validarVentaPendiente(venta, "Solo se pueden cancelar ventas pendientes.");
+        validarVentaCancelable(venta);
 
         List<DetalleVenta> stockRestaurado = new ArrayList<>();
         try {
@@ -306,6 +317,16 @@ public class VentaService {
         }
     }
 
+    private void validarVentaCancelable(Venta venta) {
+        if (venta.getEstado() == EstadoVenta.Pendiente || venta.getEstado() == EstadoVenta.Confirmada) {
+            return;
+        }
+        if (venta.getEstado() == EstadoVenta.Anulada || venta.getEstado() == EstadoVenta.Rechazada) {
+            throw new VentaBusinessException("La orden anulada o rechazada no puede modificarse.");
+        }
+        throw new VentaBusinessException("Solo se pueden rechazar ventas pendientes o confirmadas sin pago.");
+    }
+
     private EstadoVenta parseEstado(String estado) {
         if (estado == null || estado.isBlank()) {
             throw new VentaBusinessException("El estado es obligatorio.");
@@ -351,14 +372,31 @@ public class VentaService {
         return detalles != null ? detalles : productos;
     }
 
-    private String clienteSeguro(String cliente, String nombreCliente, Integer idCliente) {
+    private String clienteSeguro(Integer idCliente, String cliente, String nombreCliente) {
+        return clienteRepository.findByIdCliente(idCliente)
+                .map(this::nombreCompletoCliente)
+                .or(() -> nombreSolicitud(cliente, nombreCliente))
+                .orElseThrow(() -> new VentaNotFoundException("Cliente no encontrado: " + idCliente));
+    }
+
+    private Optional<String> nombreSolicitud(String cliente, String nombreCliente) {
         if (cliente != null && !cliente.isBlank()) {
-            return cliente.trim();
+            return Optional.of(cliente.trim());
         }
         if (nombreCliente != null && !nombreCliente.isBlank()) {
-            return nombreCliente.trim();
+            return Optional.of(nombreCliente.trim());
         }
-        return "Cliente " + idCliente;
+        return Optional.empty();
+    }
+
+    private String nombreCompletoCliente(Cliente cliente) {
+        String nombres = cliente.getNombres() == null ? "" : cliente.getNombres().trim();
+        String apellidos = cliente.getApellidos() == null ? "" : cliente.getApellidos().trim();
+        String nombreCompleto = (nombres + " " + apellidos).trim();
+        if (!nombreCompleto.isBlank()) {
+            return nombreCompleto;
+        }
+        return "Cliente " + cliente.getIdCliente();
     }
 
     private Integer empleadoIdSeguro(Integer idEmpleado) {
